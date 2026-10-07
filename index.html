@@ -121,6 +121,26 @@ ul.food li .meta{display:block;font-size:.76rem;color:var(--muted)}
 .verdict ul{margin:6px 0 0;padding-left:18px}
 .hgt{display:flex;gap:6px;align-items:center}
 .hgt input{width:64px!important}
+/* daily menu */
+.menu-sec{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:12px 14px;margin:6px 0 14px}
+.menu-sec h3{margin:0;font-size:1rem;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.menu-sec h3 small{font-weight:400;color:var(--muted);font-size:.8rem}
+.mlist{list-style:none;margin:6px 0 0;padding:0}
+.mlist li{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+.mlist li:last-child{border-bottom:0}
+.mlist .ic{width:30px;height:30px;border-radius:50%;background:var(--plate);display:grid;place-items:center}
+.mlist .ic svg{width:24px;height:24px}
+.mlist .nm small{display:block;color:var(--muted);font-size:.76rem}
+.mlist .kv{font-size:.82rem;color:var(--muted);text-align:right;white-space:nowrap}
+.mlist li.on .nm span{text-decoration:line-through;color:var(--muted)}
+.mcheck{appearance:none;width:24px;height:24px;border:2px solid var(--line);border-radius:8px;cursor:pointer;display:grid;place-items:center;background:var(--surface);margin:0}
+.mcheck:checked{background:var(--good);border-color:var(--good)}
+.mcheck:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.medit li{grid-template-columns:auto minmax(0,1fr) auto}
+.medit .ctl{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.medit .ctl input{width:64px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 7px}
+.medit .ctl select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 6px}
+.slotlbl{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:10px 0 0}
 /* personal plan */
 .plan h2{margin-top:0}
 .ptable{width:100%;border-collapse:collapse;font-size:.9rem}
@@ -268,8 +288,9 @@ textarea{min-height:76px;resize:vertical}
     <div>
       <section class="block">
         <h2 class="secthead" data-icon="plate">Food</h2>
-        <p class="hint">Tap a dish to add it. Anything else goes in the row below.</p>
-        <div class="tiles" id="presets" aria-label="Meals from your plan"></div>
+        <div id="todayMenu"></div>
+        <p class="hint" style="margin-top:4px"><b>Extras</b> — ate something not on your menu (outside, a dawat, a snack)? Tap a dish or search below.</p>
+        <div class="tiles" id="presets" aria-label="Quick add"></div>
         <div class="adder">
           <div class="sugwrap"><span class="fieldlbl">Food — type to search the Pakistani food chart</span>
             <input id="fName" placeholder="e.g. roti, daal, karahi, apple" autocomplete="off" aria-label="Food name" aria-autocomplete="list">
@@ -280,6 +301,7 @@ textarea{min-height:76px;resize:vertical}
             <label class="mini"><span class="fieldlbl">kcal</span><input id="fKcal" type="number" inputmode="numeric" style="width:78px" aria-label="Calories"></label>
             <label class="mini"><span class="fieldlbl">Protein g</span><input id="fPro" type="number" inputmode="decimal" step="0.1" style="width:84px" aria-label="Protein grams"></label>
             <button class="btn" id="addFood">Add</button>
+            <button class="btn ghost" id="addToMenu" title="Add this food to your fixed daily menu">＋ Daily menu</button>
           </div>
           <p class="hint" id="fInfo" style="margin:6px 0 0"></p>
         </div>
@@ -345,6 +367,7 @@ textarea{min-height:76px;resize:vertical}
   <div class="hero" style="grid-template-columns:1fr"><div><h1>Food chart</h1>
     <p class="hint">Calories and protein for Pakistani dishes and ingredients. Tap a food, set how much, and add it to the day you're viewing. Values are typical home-cooked portions — restaurant food often has 30–50% more oil.</p></div></div>
   <div class="budget" id="budget"></div>
+  <div class="menu-sec" id="menuEditor"></div>
   <div class="sugwrap" style="max-width:520px"><input id="fcSearch" placeholder="Search — biryani, chana, dahi, anda…" aria-label="Search the food chart"></div>
   <div class="catchips" id="fcCats"></div>
   <ul class="flist" id="fcList"></ul>
@@ -550,7 +573,7 @@ function guessArt(name){
   if(/chana|chole|chickpea|lobia|beans/.test(n)) return "chana";
   if(/daal|dal|lentil/.test(n)) return "daal";
   if(/dahi|yogurt|yoghurt|raita|milk/.test(n)) return "dahi";
-  if(/chicken|murgh|fish|meat|kebab|kabab|tikka|beef|mutton|gosht|nihari|qorma|korma|haleem|keema|qeema|paye|karahi|broast|shawarma|prawn/.test(n)) return "chicken";
+  if(/chicken|murgh|fish|meat|kebab|kabab|tikka|beef|mutton|gosht|nihari|qorma|korma|haleem|keema|qeema|paye|karahi|broast|shawarma|prawn|zinger|burger|nugget|wings|tawook|doner|mandi/.test(n)) return "chicken";
   if(/oat|daliya|porridge/.test(n)) return "oats";
   if(/rice|chawal|biryani|pulao/.test(n)) return "rice";
   if(/fruit|apple|guava|orange|banana|mango|seb|amrood/.test(n)) return "fruit";
@@ -895,11 +918,13 @@ function sumFood(d){ return d.foods.reduce((a,f)=>({kcal:a.kcal+(+f.kcal||0), pr
    PERSISTENCE: local cache always, cloud db when the viewer grants it
 ------------------------------------------------------------------ */
 let customFoods = [];
-function saveLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({settings, days, customFoods, habits:HABITS})); }catch(e){} }
+let MENU = [];   // fixed daily menu: [{id,name,art,slot,qty,mode,base:{kcal,p,g,unit},kcal,protein}]
+function saveLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({settings, days, customFoods, habits:HABITS, menu:MENU})); }catch(e){} }
 function loadLocal(){ try{ const raw = localStorage.getItem(LS_KEY); if(!raw) return;
   const o = JSON.parse(raw); if(o.settings) settings = {...DEFAULT_SETTINGS, ...o.settings};
   if(Array.isArray(o.customFoods)) customFoods = o.customFoods;
   if(Array.isArray(o.habits)) HABITS = o.habits;
+  if(Array.isArray(o.menu)) MENU = o.menu;
   if(o.days) days = o.days; }catch(e){} }
 
 let savedTimer=null;
@@ -1026,13 +1051,14 @@ function renderToday(){
     const b = document.createElement("div"); b.className="val"; b.textContent=r.v;
     div.append(ri,a,b); wrap.appendChild(div); });
 
+  renderTodayMenu();
   // food list
   const ul = document.getElementById("foodList"); ul.innerHTML = "";
   d.foods.forEach((fd,i)=>{ const li = document.createElement("li");
     const n=document.createElement("span"); n.className="nm2";
     const ic=document.createElement("span"); ic.className="ic"; ic.innerHTML=ART[fd.art||guessArt(fd.name)]||ART.plate;
     const tx=document.createElement("span"); tx.className="n"; tx.textContent=fd.name;
-    if(fd.qty){ const mt=document.createElement("span"); mt.className="meta"; mt.textContent=fd.unit==="g" ? `${fmtQty(fd.qty)} g` : `${fmtQty(fd.qty)} × ${fd.unit}`; tx.appendChild(mt); }
+    if(fd.qty){ const mt=document.createElement("span"); mt.className="meta"; mt.textContent=(fd.unit==="g" ? `${fmtQty(fd.qty)} g` : `${fmtQty(fd.qty)} × ${fd.unit}`) + (fd.menuId?" · from menu":" · extra"); tx.appendChild(mt); }
     n.append(ic,tx);
     const k=document.createElement("span"); k.className="k"; k.textContent=fmt(fd.kcal)+" kcal";
     const p=document.createElement("span"); p.className="p"; p.textContent=fmt(fd.protein)+" g";
@@ -1323,7 +1349,7 @@ function renderBudget(){
     const b=document.createElement("div"); b.className="val"; b.textContent=r.v; div.append(ri,a,b); box.appendChild(div); });
 }
 function renderFoodChart(){
-  renderBudget();
+  renderBudget(); renderMenuEditor();
   const cats=document.getElementById("fcCats"); cats.innerHTML="";
   FOOD_CATS.forEach(c=>{ if(c==="My foods" && !customFoods.length) return;
     const b=document.createElement("button"); b.textContent=c; b.setAttribute("aria-pressed",String(c===fcCat));
@@ -1353,7 +1379,10 @@ function renderFoodChart(){
       add.textContent= current===todayKey() ? "Add to today" : `Add to ${keyToDate(current).toLocaleDateString("en-GB",{day:"numeric",month:"short"})}`;
       add.onclick=()=>{ const r=upd(); const qty=num(qi.value)||0; if(!qty) return;
         addFoodEntry(f, qty, us.value, r.kcal, r.protein); fcOpen=null; changed(); renderFoodChart(); };
-      upd(); ex.append(qi,us,calc,add); li.appendChild(ex);
+      const addm=document.createElement("button"); addm.className="btn ghost"; addm.textContent="Add to daily menu";
+      addm.onclick=()=>{ const r=upd(); const qty=num(qi.value)||0; if(!qty) return;
+        addMenuItem(menuItemFrom(f, qty, us.value, r.kcal, r.protein)); fcOpen=null; renderFoodChart(); renderAll(); };
+      upd(); ex.append(qi,us,calc,add,addm); li.appendChild(ex);
     }
     ul.appendChild(li); });
 }
@@ -1687,6 +1716,13 @@ function renderPlan(){
   const tk=level.rows.reduce((a,r)=>a+r[3],0), tp=level.rows.reduce((a,r)=>a+r[4],0);
   sec.appendChild(tableHTML(["When","What to eat","Amount"], level.rows.map(r=>[`${r[0]}\n${r[1]}`, r[2], `${r[3]} kcal\n${r[4]} g protein`]),
     ["Total","",`${tk.toLocaleString()} kcal\n${tp} g protein`]));
+  if(B.mine){ const rowm=el2("div","row"); rowm.style.margin="8px 0";
+    const bm=el2("button","btn ghost small","Use this timetable as my daily menu");
+    bm.onclick=()=>{ if(MENU.length && !confirm("Replace your current daily menu with this timetable?")) return;
+      const slotMap={"Breakfast":"Breakfast","Mid-morning":"Mid-morning","Lunch":"Lunch","Evening":"Evening","Dinner":"Dinner"};
+      MENU = level.rows.map((r,i)=>({id:"m"+Date.now().toString(36)+i, name:r[2], art:guessArt(r[2]), slot:slotMap[r[1]]||"Other", qty:1, mode:"unit", base:null, kcal:r[3], protein:r[4]}));
+      scheduleSave(); renderAll(); bm.textContent="Daily menu set ✓ — tick it off on Today"; };
+    rowm.appendChild(bm); sec.appendChild(rowm); }
   const diff=mid-tk;
   sec.appendChild(el2("p","hint", (Math.abs(diff)>=60 ? `This menu is ${tk.toLocaleString()} kcal; your target is about ${mid.toLocaleString()}. ${diff>0?`Add about ${Math.round(diff)} kcal — e.g. ${diff>=200?"1 more roti and a fruit":"half a roti or a fruit"}.`:`Trim about ${Math.round(-diff)} kcal — e.g. ${-diff>=200?"1 less roti and skip the nuts":"half a roti less"}.`} ` : "") +
     "Swap freely: daal ↔ chana or lobia, chicken ↔ fish or eggs, roti ↔ ¾ cup rice — check any swap in the Food chart. Vegetarian: replace chicken with extra daal, paneer or eggs."));
@@ -1749,6 +1785,91 @@ function bindBmi(){
     saveBmi(); renderBmi(); };
   document.getElementById("bmiClear").onclick=()=>{ B={sex:B.sex, eth:B.eth, act:B.act, age:null, w:null, h:null, waist:null, hip:null, neck:null, goalW:null, months:null, mine:false};
     document.getElementById("bFt").value=""; document.getElementById("bIn").value=""; saveBmi(); renderBmi(); };
+}
+
+
+/* ------------------------------------------------------------------
+   MY DAILY MENU — a fixed list you follow every day; tick what you ate
+------------------------------------------------------------------ */
+const SLOTS = ["Breakfast","Mid-morning","Lunch","Evening","Dinner","Other"];
+function guessSlot(){ const hr=new Date().getHours(); return hr<10?"Breakfast":hr<12?"Mid-morning":hr<16?"Lunch":hr<19?"Evening":"Dinner"; }
+function menuItemFrom(f, qty, mode, kcal, protein, slot){
+  return {id:"m"+Date.now().toString(36)+Math.random().toString(36).slice(2,5), name:f.name, art:guessArt(f.name),
+    slot:slot||guessSlot(), qty, mode, base: f.g!==undefined ? {kcal:f.kcal, p:f.p, g:f.g, unit:f.unit} : null, kcal, protein};
+}
+function recalcMenuItem(it){ if(!it.base) return; const r=calcFood(it.base, it.qty, it.mode);
+  it.kcal=r.kcal; it.protein=r.protein; }
+function menuTotals(){ return MENU.reduce((a,m)=>({kcal:a.kcal+m.kcal, protein:a.protein+m.protein}),{kcal:0,protein:0}); }
+function qtyText(it){ const u = it.mode==="g" ? "g" : (it.base?it.base.unit:"serving"); return u==="g" ? `${fmtQty(it.qty)} g` : `${fmtQty(it.qty)} × ${u}`; }
+function addMenuItem(it){ MENU.push(it); MENU.sort((a,b)=>SLOTS.indexOf(a.slot)-SLOTS.indexOf(b.slot)); scheduleSave(); }
+
+function renderTodayMenu(){
+  const box=document.getElementById("todayMenu"); box.innerHTML="";
+  const sec=el2("div","menu-sec");
+  const h=el2("h3"); h.append(el2("span","","My daily menu"));
+  const d=day(), eaten=MENU.filter(m=>d.foods.some(f=>f.menuId===m.id));
+  const t=menuTotals();
+  h.append(el2("small","", MENU.length ? `${eaten.length}/${MENU.length} eaten · menu ${fmt(t.kcal)} kcal · ${fmt(t.protein)} g` : ""));
+  sec.appendChild(h);
+  if(!MENU.length){
+    sec.appendChild(el2("p","hint","Set up the foods you eat every day once — then just tick them off. Build it in the Food chart tab (open any food → “Add to daily menu”), with “＋ Daily menu” below, or from your plan in the BMI tab."));
+    const b=el2("button","btn ghost small","Open the Food chart"); b.onclick=()=>document.querySelector('nav.tabs button[data-tab="foods"]').click();
+    sec.appendChild(b); box.appendChild(sec); return;
+  }
+  let lastSlot=null; const ul=el2("ul","mlist");
+  MENU.forEach(it=>{
+    if(it.slot!==lastSlot){ lastSlot=it.slot; const li0=el2("li"); li0.style.display="block"; li0.style.borderBottom="0"; li0.style.padding="0"; li0.appendChild(el2("div","slotlbl",it.slot)); ul.appendChild(li0); }
+    const on=d.foods.some(f=>f.menuId===it.id);
+    const li=el2("li"); if(on) li.classList.add("on");
+    const cb=document.createElement("input"); cb.type="checkbox"; cb.className="mcheck"; cb.checked=on; cb.setAttribute("aria-label",`Ate ${it.name}`);
+    cb.onchange=()=>{ if(cb.checked){ d.foods.push({name:it.name, kcal:it.kcal, protein:it.protein, art:it.art, qty:it.qty, unit: it.mode==="g"?"g":(it.base?it.base.unit:"serving"), menuId:it.id}); }
+      else { d.foods=d.foods.filter(f=>f.menuId!==it.id); } changed(); };
+    const ic=el2("span","ic"); ic.innerHTML=ART[it.art]||ART.plate;
+    const nm=el2("span","nm"); nm.append(el2("span","",it.name), el2("small","",qtyText(it)));
+    const kv=el2("span","kv"); kv.innerHTML=`${it.kcal} kcal<br>${it.protein} g`;
+    li.append(cb,ic,nm,kv); ul.appendChild(li); });
+  sec.appendChild(ul);
+  const row=el2("div","row"); row.style.marginTop="8px";
+  const all=el2("button","btn small","Ate everything on my menu");
+  all.onclick=()=>{ MENU.forEach(it=>{ if(!d.foods.some(f=>f.menuId===it.id)) d.foods.push({name:it.name, kcal:it.kcal, protein:it.protein, art:it.art, qty:it.qty, unit: it.mode==="g"?"g":(it.base?it.base.unit:"serving"), menuId:it.id}); }); changed(); };
+  const ed=el2("button","btn ghost small","Edit menu"); ed.onclick=()=>document.querySelector('nav.tabs button[data-tab="foods"]').click();
+  row.append(all,ed); sec.appendChild(row);
+  box.appendChild(sec);
+}
+
+function renderMenuEditor(){
+  const box=document.getElementById("menuEditor"); box.innerHTML="";
+  const t=menuTotals(), s=settings;
+  const h=el2("h3"); h.append(el2("span","","My daily menu"), el2("small","", MENU.length?`${fmt(t.kcal)} of ${fmt(s.kcal)} kcal · ${fmt(t.protein)} of ${s.protein} g protein`:""));
+  box.appendChild(h);
+  if(!MENU.length){ box.appendChild(el2("p","hint","Your fixed daily foods. Open any food below and tap “Add to daily menu”, or save your own recipe at the bottom and add it. Then on the Today page you just tick what you ate.")); return; }
+  const diff=s.kcal-t.kcal;
+  box.appendChild(el2("p","hint", Math.abs(diff)<=100 ? "Your menu matches your calorie target." :
+    diff>300 ? `Your menu is ${fmt(diff)} kcal under your target — keep adding your usual meals until it's close.` :
+    diff>0 ? `Your menu is ${fmt(diff)} kcal under your target — room for a fruit, a roti or an extra egg.` : `Your menu is ${fmt(-diff)} kcal over your target — trim a roti or the oil.`));
+  const ul=el2("ul","mlist medit");
+  MENU.forEach((it,i)=>{
+    const li=el2("li");
+    const ic=el2("span","ic"); ic.innerHTML=ART[it.art]||ART.plate;
+    const nm=el2("span","nm"); nm.append(el2("span","",it.name), el2("small","",`${qtyText(it)} · ${it.kcal} kcal · ${it.protein} g protein`));
+    const ctl=el2("div","ctl");
+    const sl=document.createElement("select"); sl.setAttribute("aria-label","When");
+    SLOTS.forEach(x=>{ const o=document.createElement("option"); o.value=x; o.textContent=x; if(x===it.slot) o.selected=true; sl.appendChild(o); });
+    sl.onchange=()=>{ it.slot=sl.value; MENU.sort((a,b)=>SLOTS.indexOf(a.slot)-SLOTS.indexOf(b.slot)); scheduleSave(); renderMenuEditor(); renderAll(); };
+    ctl.appendChild(sl);
+    if(it.base){ const q=document.createElement("input"); q.type="number"; q.step="0.25"; q.min="0"; q.value=it.qty; q.setAttribute("aria-label","Quantity");
+      q.onchange=()=>{ const v=num(q.value); if(!v) { q.value=it.qty; return; } it.qty=v; recalcMenuItem(it); scheduleSave(); renderMenuEditor(); renderAll(); };
+      ctl.appendChild(q); }
+    else { const k=document.createElement("input"); k.type="number"; k.value=it.kcal; k.setAttribute("aria-label","kcal"); k.title="kcal";
+      k.onchange=()=>{ const v=num(k.value); if(v!==null){ it.kcal=v; scheduleSave(); renderMenuEditor(); renderAll(); } }; ctl.appendChild(k); }
+    const del=el2("button","iconbtn","✕"); del.style.color="var(--bad)"; del.title="Remove"; del.setAttribute("aria-label","Remove "+it.name);
+    del.onclick=()=>{ MENU.splice(i,1); scheduleSave(); renderMenuEditor(); renderAll(); };
+    ctl.appendChild(del);
+    li.append(ic,nm,ctl); ul.appendChild(li); });
+  box.appendChild(ul);
+  const row=el2("div","row"); row.style.marginTop="8px";
+  const clr=el2("button","btn ghost small","Clear menu"); clr.onclick=()=>{ if(confirm("Remove every item from your daily menu?")){ MENU=[]; scheduleSave(); renderMenuEditor(); renderAll(); } };
+  row.appendChild(clr); box.appendChild(row);
 }
 
 /* ------------------------------------------------------------------
@@ -1830,6 +1951,16 @@ function bind(){
     day().foods.push({name:n.value.trim(), kcal, protein:pro, art:guessArt(n.value), qty, unit});
     n.value=""; k.value=""; p.value=""; document.getElementById("fQty").value=1; pick=null; manualVals=false; fillUnits(null);
     document.getElementById("fInfo").textContent=""; changed(); };
+  document.getElementById("addToMenu").onclick=()=>{
+    const n=document.getElementById("fName"), k=document.getElementById("fKcal"), p=document.getElementById("fPro");
+    const kcal=num(k.value), pro=num(p.value)||0, qty=num(document.getElementById("fQty").value)||1, mode=document.getElementById("fUnit").value;
+    if(!n.value.trim() || kcal===null){ n.focus(); n.placeholder="Pick a food or type a name and kcal"; return; }
+    const f = pick && !manualVals ? pick : {name:n.value.trim(), kcal, p:pro};
+    const it = menuItemFrom(f, qty, mode, kcal, pro); if(pick && manualVals){ it.base=null; }
+    if(!pick){ it.base=null; it.qty=qty; }
+    addMenuItem(it);
+    n.value=""; k.value=""; p.value=""; document.getElementById("fQty").value=1; pick=null; manualVals=false; fillUnits(null);
+    document.getElementById("fInfo").textContent=`Added to your daily menu (${it.slot}). Tick it off on Today when you eat it.`; renderAll(); };
   document.getElementById("fcSearch").addEventListener("input",()=>{ fcOpen=null; renderFoodChart(); });
   document.getElementById("cfAdd").onclick=()=>{
     const name=document.getElementById("cfName").value.trim(), unit=document.getElementById("cfUnit").value.trim()||"serving";
@@ -1879,7 +2010,7 @@ function bind(){
     r.dataset.theme = dark ? "light" : "dark"; try{ localStorage.setItem("cutlog.theme", r.dataset.theme); }catch(e){} };
 
   document.getElementById("backupBtn").onclick=()=>{
-    downloadFile(`cut-log-backup-${todayKey()}.json`, JSON.stringify({app:"cutlog",version:1,exported:new Date().toISOString(),settings,days,customFoods,habits:HABITS},null,1), "application/json");
+    downloadFile(`cut-log-backup-${todayKey()}.json`, JSON.stringify({app:"cutlog",version:1,exported:new Date().toISOString(),settings,days,customFoods,habits:HABITS,menu:MENU},null,1), "application/json");
     try{ localStorage.setItem("cutlog.lastBackup", new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})); }catch(e){}
     storageNote(); };
   document.getElementById("restoreFile").onchange=e=>{
@@ -1892,6 +2023,7 @@ function bind(){
         if(!confirm(`Restore ${incoming} days from this backup? Days in the backup replace the same dates here; other days are kept.`)) return;
         days={...days, ...o.days}; if(o.settings) settings={...DEFAULT_SETTINGS, ...o.settings};
         if(Array.isArray(o.habits) && o.habits.length) HABITS = o.habits;
+        if(Array.isArray(o.menu)) MENU = o.menu;
         if(Array.isArray(o.customFoods)){ const names=new Set(o.customFoods.map(f=>f.name.toLowerCase()));
           customFoods=customFoods.filter(f=>!names.has(f.name.toLowerCase())).concat(o.customFoods); }
         scheduleSave(); renderAll(); renderSettings(); alert("Backup restored.");
