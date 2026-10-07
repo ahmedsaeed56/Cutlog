@@ -101,6 +101,26 @@ section.block h2{font-size:1.12rem;margin:0 0 10px;font-weight:600}
 .fieldlbl{font-size:.72rem;color:var(--muted);display:block;margin:0 0 2px 2px}
 .mini{display:flex;flex-direction:column}
 ul.food li .meta{display:block;font-size:.76rem;color:var(--muted)}
+/* BMI / body check */
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bgrid{display:grid;gap:14px;margin-top:14px}
+@media (min-width:760px){.bgrid{grid-template-columns:1fr 1fr}}
+.bcard{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:14px 16px}
+.bcard h3{margin:0 0 2px;font-size:1rem;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.bcard .big{font-size:2rem;font-weight:700;line-height:1.1}
+.bcard .cat{font-weight:600}
+.bcard p{margin:6px 0 0;color:var(--muted);font-size:.88rem}
+.bcard svg{display:block;width:100%;height:auto;margin-top:8px}
+.verdict{border-radius:16px;padding:14px 16px;margin-top:14px;border:1px solid var(--line);background:var(--surface)}
+.verdict.hi{border-color:var(--bad);background:color-mix(in srgb, var(--bad) 9%, var(--surface))}
+.verdict.ok{border-color:var(--good);background:color-mix(in srgb, var(--good) 10%, var(--surface))}
+.verdict.mid{border-color:var(--cal);background:color-mix(in srgb, var(--cal) 10%, var(--surface))}
+.verdict h3{margin:0 0 6px;font-size:1.05rem}
+.verdict ul{margin:6px 0 0;padding-left:18px}
+.hgt{display:flex;gap:6px;align-items:center}
+.hgt input{width:64px!important}
 /* food chart */
 .budget{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:420px;margin:6px 0 14px}
 .budget .ring svg{width:116px;height:116px}
@@ -207,6 +227,7 @@ textarea{min-height:76px;resize:vertical}
   <nav class="tabs" role="tablist">
     <button role="tab" data-tab="today" aria-selected="true">Today</button>
     <button role="tab" data-tab="foods" aria-selected="false">Food chart</button>
+    <button role="tab" data-tab="body" aria-selected="false">BMI</button>
     <button role="tab" data-tab="week" aria-selected="false">This week</button>
     <button role="tab" data-tab="progress" aria-selected="false">Progress</button>
     <button role="tab" data-tab="settings" aria-selected="false">Targets</button>
@@ -222,6 +243,7 @@ textarea{min-height:76px;resize:vertical}
       <div class="num"><b id="scoreNum">0</b><span>day score</span></div></div>
     <div><h1 id="heroLine">Start logging your day.</h1><p id="heroSub">Add your meals, water, steps, gym and sleep. The rings fill as you go.</p></div>
   </div>
+  <div id="healthNote"></div>
   <div class="rings" id="rings"></div>
 
   <div class="cols">
@@ -319,6 +341,49 @@ textarea{min-height:76px;resize:vertical}
       <input id="cfPro" type="number" inputmode="decimal" step="0.1" placeholder="protein g" style="width:92px" aria-label="Protein per unit">
       <button class="btn" id="cfAdd">Save food</button>
     </div>
+  </section>
+</div>
+
+<!-- =========================== BMI / BODY CHECK =========================== -->
+<div id="tab-body" hidden>
+  <div class="hero" style="grid-template-columns:1fr"><div><h1>BMI and body check</h1>
+    <p class="hint">BMI plus the waist measurements the 2025 Lancet Commission on obesity recommends, because BMI alone can't tell fat from muscle. Use it for yourself or for anyone else — nothing here is saved to your log unless you tap “Use my data”.</p></div></div>
+
+  <div class="row" style="margin-bottom:10px">
+    <button class="btn" id="bmiMine">Use my data</button>
+    <button class="btn ghost" id="bmiClear">Clear for someone else</button>
+  </div>
+  <div class="grid2" style="max-width:640px">
+    <div class="field"><label>Sex</label><div class="seg" id="bSex"><button data-v="m">Male</button><button data-v="f">Female</button></div></div>
+    <div class="field"><label>Cut-offs</label><div class="seg" id="bEth"><button data-v="sa">South Asian</button><button data-v="who">International (WHO)</button></div></div>
+    <div class="field"><label for="bAge">Age (years)</label><input id="bAge" type="number" inputmode="numeric" min="2" max="120"></div>
+    <div class="field"><label for="bW">Weight (kg)</label><input id="bW" type="number" inputmode="decimal" step="0.1" min="20" max="400"></div>
+    <div class="field"><label for="bH">Height (cm)</label>
+      <input id="bH" type="number" inputmode="decimal" step="0.5" min="100" max="250">
+      <div class="hgt" style="margin-top:4px"><span class="hint" style="margin:0">or</span><input id="bFt" type="number" inputmode="numeric" placeholder="ft" aria-label="Feet"><input id="bIn" type="number" inputmode="decimal" placeholder="in" aria-label="Inches"></div></div>
+    <div class="field"><label for="bWaist">Waist (cm) — at belly button, after breathing out</label><input id="bWaist" type="number" inputmode="decimal" step="0.5"></div>
+    <div class="field"><label for="bHip">Hip (cm) — widest part, optional</label><input id="bHip" type="number" inputmode="decimal" step="0.5"></div>
+    <div class="field"><label for="bNeck">Neck (cm) — below the Adam's apple, optional</label><input id="bNeck" type="number" inputmode="decimal" step="0.5"></div>
+  </div>
+
+  <div id="bResults"></div>
+
+  <section class="block" style="margin-top:22px" id="bTrendWrap" hidden>
+    <h2>Your BMI over time</h2>
+    <p class="hint">From the weights you log in Today, using your height from Targets.</p>
+    <div class="chart" id="bTrend"></div>
+  </section>
+
+  <section class="block" style="margin-top:22px">
+    <h2>How to measure accurately</h2>
+    <ul class="hint" style="padding-left:18px;margin:0">
+      <li><b>Weight:</b> morning, after the toilet, before eating or drinking, same scale each time.</li>
+      <li><b>Height:</b> no shoes, heels against a wall, looking straight ahead.</li>
+      <li><b>Waist:</b> tape level around the belly, midway between the lowest rib and the top of the hip bone (near the belly button), snug but not pressing, at the end of a normal breath out. Measure twice and use the average.</li>
+      <li><b>Hip:</b> around the widest part of the buttocks, feet together.</li>
+      <li><b>Neck:</b> just below the Adam's apple, tape sloping slightly down at the front.</li>
+    </ul>
+    <p class="hint" style="margin-top:10px">This is a screening tool, not a diagnosis. Under 18s need age-and-sex BMI percentiles instead, and pregnancy changes everything here — speak to a doctor.</p>
   </section>
 </div>
 
@@ -872,7 +937,27 @@ function ringSVG(svg, frac, color, size, stroke, centerText){
 /* ------------------------------------------------------------------
    RENDER: TODAY
 ------------------------------------------------------------------ */
+function renderHealthNote(){
+  const box=document.getElementById("healthNote"); box.innerHTML="";
+  const hcm=settings.heightCm, w=latestOf("weight")||settings.startWeight, waist=latestOf("waist");
+  if(!hcm||!w) return;
+  const m=hcm/100, bmi=w/(m*m), eth=(B&&B.eth)||"sa", band=bandOf(bmi,bmiBands(eth));
+  const lines=[]; let level="ok";
+  if(band.l!=="Healthy"){ lines.push(`BMI ${bmi.toFixed(1)} — ${band.l.toLowerCase()} (${eth==="sa"?"South Asian":"WHO"} cut-offs).`); level = /Obesity/.test(band.l)?"hi":"mid"; }
+  if(waist){ const r=waist/hcm; if(r>=0.5){ lines.push(`Waist-to-height ${r.toFixed(2)} — ${r>=0.6?"high":"increased"} heart and diabetes risk (keep under 0.5).`); if(r>=0.6) level="hi"; else if(level==="ok") level="mid"; } }
+  else if(band.l!=="Healthy") lines.push("Log your waist once a week to track belly fat, not just weight.");
+  const d=document.createElement("div"); d.className="verdict "+level; d.style.cursor="pointer"; d.style.marginTop="6px";
+  const h=document.createElement("h3"); h.textContent = level==="ok" ? `Healthy range — BMI ${bmi.toFixed(1)}` : (level==="hi" ? "Health warning" : "Heads-up");
+  d.appendChild(h);
+  if(level!=="ok"){ const healthyTop=eth==="sa"?22.9:24.9;
+    lines.push(`Healthy weight for your height: up to ${(healthyTop*m*m).toFixed(1)} kg. Every kg you lose moves these numbers down.`); }
+  if(lines.length){ const ul=document.createElement("ul"); lines.forEach(t=>{ const li=document.createElement("li"); li.textContent=t; ul.appendChild(li); }); d.appendChild(ul); }
+  const p=document.createElement("p"); p.className="hint"; p.style.margin="6px 0 0"; p.textContent="Tap for the full body check →"; d.appendChild(p);
+  d.onclick=()=>document.querySelector('nav.tabs button[data-tab="body"]').click();
+  box.appendChild(d);
+}
 function renderToday(){
+  renderHealthNote();
   const d = day(), s = settings, f = sumFood(d);
   document.getElementById("dateInput").value = current;
 
@@ -1245,13 +1330,184 @@ function renderFoodChart(){
     ul.appendChild(li); });
 }
 
+
+/* ------------------------------------------------------------------
+   BMI + BODY CHECK
+   Sources for the cut-offs:
+   - BMI: WHO international; South Asian: WHO expert consultation (2004) and
+     the South Asian consensus (healthy 18.5–22.9, overweight 23–24.9, obesity 25+).
+   - Waist-to-height ratio: keep it under 0.5 (NICE 2022).
+   - Waist: South Asian (IDF) men 90 / women 80 cm; WHO international men 102 / women 88 cm
+     (increased risk from 94 / 80).
+   - Waist-to-hip: WHO, men 0.90 / women 0.85.
+   - Excess body fat: 2025 Lancet Commission — BMI plus at least one body-size measure,
+     or at least two body-size measures regardless of BMI; assumed above BMI 40.
+   - Body fat %: Relative Fat Mass (Woolcott & Bergman 2018) and the US Navy tape method.
+------------------------------------------------------------------ */
+const BMI_KEY="cutlog.bmi";
+let B = {sex:"m", eth:"sa", age:null, w:null, h:null, waist:null, hip:null, neck:null};
+function loadBmi(){ try{ const o=JSON.parse(localStorage.getItem(BMI_KEY)||"null"); if(o) B={...B,...o}; }catch(e){} }
+function saveBmi(){ try{ localStorage.setItem(BMI_KEY, JSON.stringify(B)); }catch(e){} }
+function latestOf(key){ const ks=Object.keys(days).sort().reverse(); for(const k of ks){ const v=days[k] && days[k][key]; if(v) return +v; } return null; }
+
+function bmiBands(eth){
+  return eth==="sa"
+    ? [{to:18.5,c:"var(--wat)",l:"Underweight"},{to:23,c:"var(--good)",l:"Healthy"},{to:25,c:"var(--cal)",l:"Overweight"},{to:99,c:"var(--bad)",l:"Obesity"}]
+    : [{to:18.5,c:"var(--wat)",l:"Underweight"},{to:25,c:"var(--good)",l:"Healthy"},{to:30,c:"var(--cal)",l:"Overweight"},{to:35,c:"var(--bad)",l:"Obesity class 1"},{to:40,c:"var(--bad)",l:"Obesity class 2"},{to:99,c:"var(--bad)",l:"Obesity class 3"}];
+}
+function bandOf(v, bands){ return bands.find(b=>v<b.to) || bands[bands.length-1]; }
+
+function gaugeSVG(value, min, max, bands, fmtv){
+  const W=320,H=58,L=6,R=6,y=26,h=12; const x=v=>L+(W-L-R)*(Math.min(max,Math.max(min,v))-min)/(max-min);
+  const svg=el("svg",{viewBox:`0 0 ${W} ${H}`,role:"img","aria-label":`Value ${fmtv(value)}`});
+  let start=min, lastLabel=-99;
+  bands.forEach(b=>{ const end=Math.min(b.to,max); if(end<=start) return;
+    el("rect",{x:x(start),y,width:Math.max(1,x(end)-x(start)-1),height:h,rx:3,fill:b.c,opacity:.85},svg);
+    if(end<max && x(end)-lastLabel>26){ const t=el("text",{x:x(end),y:y+h+14,"text-anchor":"middle","font-size":11,fill:"var(--muted)"},svg); t.textContent=fmtv(end); lastLabel=x(end); }
+    start=end; });
+  const px=x(value);
+  el("path",{d:`M${px-7} ${y-12} L${px+7} ${y-12} L${px} ${y-2} Z`,fill:"var(--ink)"},svg);
+  el("line",{x1:px,x2:px,y1:y-2,y2:y+h+2,stroke:"var(--ink)","stroke-width":2},svg);
+  return svg;
+}
+function card(title, big, cat, color, svg, note){
+  const c=document.createElement("div"); c.className="bcard";
+  const h=document.createElement("h3"); const t=document.createElement("span"); t.textContent=title;
+  const ct=document.createElement("span"); ct.className="cat"; ct.textContent=cat||""; ct.style.color=color||"var(--ink)"; h.append(t,ct);
+  const b=document.createElement("div"); b.className="big"; b.textContent=big; c.append(h,b);
+  if(svg) c.appendChild(svg);
+  if(note){ const p=document.createElement("p"); p.textContent=note; c.appendChild(p); }
+  return c;
+}
+
+function renderBmi(){
+  // inputs -> UI
+  document.querySelectorAll("#bSex button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===B.sex)));
+  document.querySelectorAll("#bEth button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===B.eth)));
+  [["bAge","age"],["bW","w"],["bH","h"],["bWaist","waist"],["bHip","hip"],["bNeck","neck"]].forEach(([id,k])=>{
+    const e=document.getElementById(id); if(document.activeElement!==e) e.value = B[k]==null ? "" : B[k]; });
+
+  const out=document.getElementById("bResults"); out.innerHTML="";
+  const {sex,eth,age,w,h,waist,hip,neck}=B;
+  if(!(w>0 && h>0)){ const p=document.createElement("p"); p.className="hint"; p.style.marginTop="14px";
+    p.textContent="Enter weight and height to see BMI. Add your waist for the full body check."; out.appendChild(p); renderBmiTrend(); return; }
+  const m=h/100, bmi=w/(m*m), bands=bmiBands(eth), band=bandOf(bmi,bands);
+  const healthyTop = eth==="sa" ? 22.9 : 24.9, obeseAt = eth==="sa" ? 25 : 30;
+  const lo=18.5*m*m, hi=healthyTop*m*m;
+  const grid=document.createElement("div"); grid.className="bgrid";
+
+  let note=`Healthy weight for ${h} cm: ${lo.toFixed(1)}–${hi.toFixed(1)} kg (${eth==="sa"?"South Asian":"WHO"} cut-offs).`;
+  if(w>hi) note+=` That's ${(w-hi).toFixed(1)} kg above the healthy range.`; else if(w<lo) note+=` That's ${(lo-w).toFixed(1)} kg below it.`;
+  if(age!=null && age<18) note="Under 18: adult BMI categories don't apply — use age-and-sex BMI percentiles with a doctor.";
+  grid.appendChild(card("BMI", bmi.toFixed(1), band.l, band.c, gaugeSVG(bmi,15,42,bands,v=>v.toFixed(1)), note));
+
+  // waist-based measures
+  const flags=[]; let measured=0;
+  if(waist>0){
+    measured++;
+    const whtr=waist/h;
+    const wb=[{to:0.4,c:"var(--wat)",l:"Low"},{to:0.5,c:"var(--good)",l:"Healthy"},{to:0.6,c:"var(--cal)",l:"Increased risk"},{to:9,c:"var(--bad)",l:"High risk"}];
+    const wbb=bandOf(whtr,wb); if(whtr>=0.5) flags.push(`waist-to-height ${whtr.toFixed(2)} (limit 0.5)`);
+    grid.appendChild(card("Waist-to-height ratio", whtr.toFixed(2), wbb.l, wbb.c, gaugeSVG(whtr,0.35,0.75,wb,v=>v.toFixed(2)),
+      `Keep your waist under half your height: under ${(h/2).toFixed(0)} cm for you. Often a better guide to heart and diabetes risk than BMI.`));
+    const lim = eth==="sa" ? (sex==="m"?90:80) : (sex==="m"?102:88);
+    const inc = eth==="sa" ? lim : (sex==="m"?94:80);
+    const wcb=[{to:inc,c:"var(--good)",l:"Healthy"},{to:lim,c:"var(--cal)",l:"Increased risk"},{to:999,c:"var(--bad)",l:"High risk"}];
+    if(eth==="sa") wcb.splice(1,1);
+    const wcbb=bandOf(waist,wcb); if(waist>=lim) flags.push(`waist ${waist} cm (limit ${lim})`);
+    grid.appendChild(card("Waist", `${waist} cm`, wcbb.l, wcbb.c, gaugeSVG(waist,60,150,wcb,v=>String(Math.round(v))),
+      `${eth==="sa"?"South Asian":"WHO"} limit for ${sex==="m"?"men":"women"}: ${lim} cm.`));
+    if(hip>0){ measured++;
+      const whr=waist/hip, lim2= sex==="m"?0.90:0.85;
+      const hb=[{to:lim2,c:"var(--good)",l:"Healthy"},{to:9,c:"var(--bad)",l:"Increased risk"}];
+      if(whr>=lim2) flags.push(`waist-to-hip ${whr.toFixed(2)} (limit ${lim2.toFixed(2)})`);
+      grid.appendChild(card("Waist-to-hip ratio", whr.toFixed(2), bandOf(whr,hb).l, bandOf(whr,hb).c, gaugeSVG(whr,0.7,1.2,hb,v=>v.toFixed(2)),
+        `WHO limit for ${sex==="m"?"men":"women"}: ${lim2.toFixed(2)}.`)); }
+    // body fat
+    const rfm = (sex==="m"?64:76) - 20*(h/waist);
+    let navy=null;
+    if(neck>0){ const cm2in=v=>v/2.54;
+      if(sex==="m" && waist>neck) navy = 86.010*Math.log10(cm2in(waist-neck)) - 70.041*Math.log10(cm2in(h)) + 36.76;
+      if(sex==="f" && hip>0 && waist+hip>neck) navy = 163.205*Math.log10(cm2in(waist+hip-neck)) - 97.684*Math.log10(cm2in(h)) - 78.387; }
+    const fat = navy!=null ? (rfm+navy)/2 : rfm;
+    const fb = sex==="m"
+      ? [{to:6,c:"var(--wat)",l:"Essential"},{to:18,c:"var(--good)",l:"Fit"},{to:25,c:"var(--cal)",l:"Average"},{to:99,c:"var(--bad)",l:"High"}]
+      : [{to:14,c:"var(--wat)",l:"Essential"},{to:25,c:"var(--good)",l:"Fit"},{to:32,c:"var(--cal)",l:"Average"},{to:99,c:"var(--bad)",l:"High"}];
+    const fbb=bandOf(fat,fb);
+    const fatKg=w*fat/100, lean=w-fatKg;
+    grid.appendChild(card("Estimated body fat", `${fat.toFixed(1)}%`, fbb.l, fbb.c, gaugeSVG(fat,5,50,fb,v=>Math.round(v)+"%"),
+      `≈ ${fatKg.toFixed(1)} kg fat, ${lean.toFixed(1)} kg lean mass. ${navy!=null?`Average of Relative Fat Mass (${rfm.toFixed(1)}%) and the US Navy tape method (${navy.toFixed(1)}%).`:"Relative Fat Mass formula — add your neck for a second method."} Tape estimates are typically within about 3–5 percentage points of a DXA scan.`));
+  }
+  out.appendChild(grid);
+
+  // excess body fat check (2025 Lancet Commission)
+  const v=document.createElement("div"); v.className="verdict";
+  const hd=document.createElement("h3"); const ul=document.createElement("ul");
+  const bmiHigh = bmi>=obeseAt;
+  if(bmi>40){ v.classList.add("hi"); hd.textContent="Excess body fat: likely (BMI over 40)"; }
+  else if(!measured){ v.classList.add("mid"); hd.textContent= bmiHigh ? "BMI is in the obesity range — add your waist to confirm" : "Add your waist for the full check";
+    const li=document.createElement("li"); li.textContent="The 2025 Lancet Commission says BMI alone can't confirm excess fat: it needs at least one waist-based measurement."; ul.appendChild(li); }
+  else if((bmiHigh && flags.length>=1) || flags.length>=2){ v.classList.add("hi"); hd.textContent="Excess body fat: confirmed";
+    if(bmiHigh){ const li=document.createElement("li"); li.textContent=`BMI ${bmi.toFixed(1)} (obesity from ${obeseAt})`; ul.appendChild(li); }
+    flags.forEach(f=>{ const li=document.createElement("li"); li.textContent=f; ul.appendChild(li); }); }
+  else if(bmiHigh || flags.length===1){ v.classList.add("mid"); hd.textContent="Borderline: one sign of excess fat";
+    (bmiHigh?[`BMI ${bmi.toFixed(1)} is high, but your waist measurements are within limits — this can happen with high muscle mass.`]:flags.map(f=>`${f} — but BMI is not in the obesity range.`))
+      .forEach(t=>{ const li=document.createElement("li"); li.textContent=t; ul.appendChild(li); }); }
+  else { v.classList.add("ok"); hd.textContent="No excess body fat signs"; const li=document.createElement("li"); li.textContent="BMI and waist measurements are within the healthy limits."; ul.appendChild(li); }
+  v.appendChild(hd); if(ul.children.length) v.appendChild(ul);
+  const p=document.createElement("p"); p.className="hint"; p.style.margin="8px 0 0";
+  p.textContent="Method: 2025 Lancet Commission on clinical obesity — excess fat is confirmed by BMI plus at least one waist-based measure, or two waist-based measures regardless of BMI. Whether it's “clinical obesity” also depends on health signs (blood pressure, sugar, joints, breathing) — that part needs a doctor.";
+  v.appendChild(p); out.appendChild(v);
+
+  // goal context for the user's own data
+  if(B.mine){ const g=settings.goalWeight; const gb=g/(m*m);
+    const gc=document.createElement("div"); gc.className="verdict"; const gh=document.createElement("h3");
+    gh.textContent=`Your goal: ${g} kg = BMI ${gb.toFixed(1)} (${bandOf(gb,bands).l.toLowerCase()})`;
+    const gp=document.createElement("p"); gp.className="hint"; gp.style.margin="0";
+    gp.textContent = gb<=healthyTop ? `That goal sits inside the healthy range for your height.`
+      : `A strong milestone: it takes you from BMI ${bmi.toFixed(1)} to ${gb.toFixed(1)}. The healthy range for ${h} cm tops out at ${hi.toFixed(1)} kg — a possible next goal once you reach ${g} kg. Watch your waist too: it often keeps shrinking after the scale slows down.`;
+    gc.append(gh,gp); out.appendChild(gc); }
+  renderBmiTrend();
+}
+function renderBmiTrend(){
+  const wrap=document.getElementById("bTrendWrap"), host=document.getElementById("bTrend");
+  const hcm=settings.heightCm; const pts=Object.keys(days).sort().filter(k=>days[k].weight).map(k=>({k, v:days[k].weight/((hcm/100)**2)}));
+  if(pts.length<2 || !hcm){ wrap.hidden=true; return; } wrap.hidden=false;
+  const W=640,H=200,L=40,R=14,T=12,Bm=26; const vals=pts.map(p=>p.v);
+  const top=Math.max(...vals,26)+1, bot=Math.min(...vals,22)-1;
+  const y=v=>T+(H-T-Bm)*(top-v)/(top-bot), x=i=>L+(W-L-R)*(pts.length===1?0:i/(pts.length-1));
+  const svg=el("svg",{viewBox:`0 0 ${W} ${H}`,role:"img","aria-label":"BMI over time"});
+  [[23,"var(--cal)"],[25,"var(--bad)"],[30,"var(--bad)"]].forEach(([v,c])=>{ if(v<bot||v>top) return;
+    el("line",{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:c,"stroke-dasharray":"5 4"},svg);
+    const t=el("text",{x:W-R,y:y(v)-4,"text-anchor":"end","font-size":12,fill:"var(--muted)"},svg); t.textContent=String(v); });
+  el("path",{d:pts.map((p,i)=>(i?"L":"M")+x(i)+" "+y(p.v)).join(" "),fill:"none",stroke:"var(--pro)","stroke-width":2.5},svg);
+  pts.forEach((p,i)=>el("circle",{cx:x(i),cy:y(p.v),r:4,fill:"var(--pro)"},svg));
+  [0,pts.length-1].forEach(i=>{ const t=el("text",{x:x(i),y:H-6,"text-anchor":i?"end":"start","font-size":12,fill:"var(--muted)"},svg);
+    t.textContent=`${keyToDate(pts[i].k).toLocaleDateString("en-GB",{day:"numeric",month:"short"})} · ${pts[i].v.toFixed(1)}`; });
+  host.innerHTML=""; host.appendChild(svg);
+}
+function bindBmi(){
+  document.querySelectorAll("#bSex button").forEach(b=>b.onclick=()=>{ B.sex=b.dataset.v; saveBmi(); renderBmi(); });
+  document.querySelectorAll("#bEth button").forEach(b=>b.onclick=()=>{ B.eth=b.dataset.v; saveBmi(); renderBmi(); });
+  [["bAge","age"],["bW","w"],["bH","h"],["bWaist","waist"],["bHip","hip"],["bNeck","neck"]].forEach(([id,k])=>
+    document.getElementById(id).addEventListener("input",e=>{ B[k]=num(e.target.value); if(id==="bH"){ document.getElementById("bFt").value=""; document.getElementById("bIn").value=""; } saveBmi(); renderBmi(); }));
+  const ftin=()=>{ const ft=num(document.getElementById("bFt").value)||0, inch=num(document.getElementById("bIn").value)||0;
+    if(ft||inch){ B.h=Math.round((ft*30.48+inch*2.54)*10)/10; saveBmi(); renderBmi(); } };
+  document.getElementById("bFt").addEventListener("input",ftin); document.getElementById("bIn").addEventListener("input",ftin);
+  document.getElementById("bmiMine").onclick=()=>{
+    B={...B, mine:true, h:settings.heightCm||B.h, w:latestOf("weight")||settings.startWeight, waist:latestOf("waist")||B.waist};
+    saveBmi(); renderBmi(); };
+  document.getElementById("bmiClear").onclick=()=>{ B={sex:B.sex, eth:B.eth, age:null, w:null, h:null, waist:null, hip:null, neck:null, mine:false};
+    document.getElementById("bFt").value=""; document.getElementById("bIn").value=""; saveBmi(); renderBmi(); };
+}
+
 /* ------------------------------------------------------------------
    RENDER: SETTINGS
 ------------------------------------------------------------------ */
 const SETTING_FIELDS = [
   ["kcal","Daily calories (kcal)",1], ["floor","Never below (kcal)",1], ["protein","Protein (g)",1],
   ["water","Water (glasses of 250 ml)",1], ["steps","Steps",100], ["sleep","Sleep (hours)",0.25],
-  ["gym","Workout (minutes)",5], ["startWeight","Start weight (kg)",0.1], ["goalWeight","Goal weight (kg)",0.1],
+  ["gym","Workout (minutes)",5], ["heightCm","Height (cm)",0.5], ["startWeight","Start weight (kg)",0.1], ["goalWeight","Goal weight (kg)",0.1],
   ["startDate","Start date",null]
 ];
 function renderHabitEditor(){
@@ -1348,7 +1604,8 @@ function bind(){
 
   document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{
     document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
-    ["today","foods","week","progress","settings"].forEach(t=>document.getElementById("tab-"+t).hidden = t!==b.dataset.tab);
+    ["today","foods","body","week","progress","settings"].forEach(t=>document.getElementById("tab-"+t).hidden = t!==b.dataset.tab);
+    if(b.dataset.tab==="body") renderBmi();
     if(b.dataset.tab==="foods") renderFoodChart();
     if(b.dataset.tab==="week") renderWeek();
     if(b.dataset.tab==="progress") renderProgress();
@@ -1410,6 +1667,7 @@ if(!settings.startDate){ settings.startDate = todayKey(); }
 document.querySelectorAll(".secthead").forEach(h=>{ const i=document.createElement("span");
   i.innerHTML=ICONS[h.dataset.icon]||""; i.setAttribute("aria-hidden","true"); i.style.display="inline-flex"; h.prepend(i); });
 bind();
+loadBmi(); bindBmi();
 renderAll();
 storageNote();
 setSync("Saved on this device");
