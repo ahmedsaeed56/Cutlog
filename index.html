@@ -382,6 +382,8 @@ textarea{min-height:76px;resize:vertical}
     <div class="field"><label for="bWaist">Waist (cm) — at belly button, after breathing out</label><input id="bWaist" type="number" inputmode="decimal" step="0.5"></div>
     <div class="field"><label for="bHip">Hip (cm) — widest part, optional</label><input id="bHip" type="number" inputmode="decimal" step="0.5"></div>
     <div class="field"><label for="bNeck">Neck (cm) — below the Adam's apple, optional</label><input id="bNeck" type="number" inputmode="decimal" step="0.5"></div>
+    <div class="field"><label for="bGoal">Your target weight (kg)</label><input id="bGoal" type="number" inputmode="decimal" step="0.5" min="30" max="300" placeholder="e.g. 90"></div>
+    <div class="field"><label for="bMonths">In how many months?</label><input id="bMonths" type="number" inputmode="numeric" step="1" min="1" max="36" placeholder="e.g. 3"></div>
     <div class="field" style="grid-column:1/-1"><label for="bAct">How active are you now? (before starting the plan)</label>
       <select id="bAct">
         <option value="1.2">Mostly sitting — desk work, little walking</option>
@@ -1411,7 +1413,7 @@ function renderBmi(){
   document.getElementById("bAct").value = B.act || "1.375";
   document.querySelectorAll("#bSex button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===B.sex)));
   document.querySelectorAll("#bEth button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===B.eth)));
-  [["bAge","age"],["bW","w"],["bH","h"],["bWaist","waist"],["bHip","hip"],["bNeck","neck"]].forEach(([id,k])=>{
+  [["bAge","age"],["bW","w"],["bH","h"],["bWaist","waist"],["bHip","hip"],["bNeck","neck"],["bGoal","goalW"],["bMonths","months"]].forEach(([id,k])=>{
     const e=document.getElementById(id); if(document.activeElement!==e) e.value = B[k]==null ? "" : B[k]; });
 
   const out=document.getElementById("bResults"); out.innerHTML="";
@@ -1550,92 +1552,153 @@ function renderPlan(){
   const box=document.getElementById("bPlan"); box.innerHTML="";
   const {sex,w,h,eth}=B; const age = B.age || 30; const act = +(B.act||1.375);
   if(!(w>0 && h>0)) return;
-  if(B.age!=null && B.age<18){ const p=el2("p","hint","Plans here are for adults. Under 18, growth needs are different — please plan with a doctor or dietitian."); box.appendChild(p); return; }
-  const m=h/100, bmi=w/(m*m), healthyTop = eth==="sa"?22.9:24.9;
+  if(B.age!=null && B.age<18){ box.appendChild(el2("p","hint","Plans here are for adults. Under 18, growth needs are different — please plan with a doctor or dietitian.")); return; }
+  const m=h/100, m2=m*m, bmi=w/m2, healthyTop = eth==="sa"?22.9:24.9;
   const bmr=mifflin(sex,w,h,age), tdee=bmr*act, floor = sex==="m"?1500:1200;
-  let mode = bmi>healthyTop ? "lose" : (bmi<18.5 ? "gain" : "keep");
-  let lo, hi; if(mode==="lose"){ lo=Math.max(floor, tdee-750); hi=Math.max(floor, tdee-500); if(hi-lo<100) hi=lo+100; }
-  else if(mode==="gain"){ lo=tdee+300; hi=tdee+500; } else { lo=tdee-100; hi=tdee+100; }
-  const r50=v=>Math.round(v/50)*50; lo=r50(lo); hi=r50(hi); const mid=Math.round((lo+hi)/2/50)*50;
-  const deficit = tdee-mid, perWeek = Math.max(0, deficit*7/7700);
-  const refW = Math.min(w, 25*m*m);                      // protein reference weight
-  const pLo=Math.round(1.2*refW/5)*5, pHi=Math.round(1.6*refW/5)*5;
-  const waterL = Math.min(3.5, Math.max(2, w*0.03)).toFixed(1);
+  const r50=v=>Math.round(v/50)*50, fmt1=v=>v.toFixed(1), kg=v=>`${fmt1(v)} kg`;
+  const safeMax = Math.min(1.2, Math.max(0.5, 0.01*w));       // ~1% of body weight a week, capped
+  const actLabel = ({"1.2":"mostly sitting","1.375":"lightly active","1.55":"moderately active","1.725":"very active"})[String(act)];
 
   const sec=el2("section","block"); sec.style.marginTop="22px"; box.appendChild(sec);
-  sec.appendChild(el2("h2","", mode==="lose"?"Your plan to lose weight safely": mode==="gain"?"Your plan to gain healthy weight":"Your plan to stay where you are"));
-  sec.appendChild(el2("p","hint", `Based on ${sex==="m"?"a man":"a woman"}, ${age} years${B.age?"":" (age not entered — assumed 30)"}, ${w} kg, ${h} cm, ${({"1.2":"mostly sitting","1.375":"lightly active","1.55":"moderately active","1.725":"very active"})[String(act)]}.`));
+
+  // ---------- 1. the goal ----------
+  let goalW = B.goalW, months = B.months;
+  const hasGoal = goalW>0 && months>0;
+  if(!hasGoal){
+    sec.appendChild(el2("h2","","Your plan"));
+    const v=el2("div","verdict mid");
+    v.append(el2("h3","","Set your target to build the plan"));
+    v.append(el2("p","hint", `Enter your target weight and how many months you want to take, above. Not sure? A proven first goal is losing 10% — ${kg(w*0.9)} — in about 3–5 months.`));
+    const b=el2("button","btn","Use the suggested goal"); b.style.marginTop="8px";
+    b.onclick=()=>{ B.goalW=Math.round(w*0.9*10)/10; B.months=4; saveBmi(); renderBmi(); };
+    v.appendChild(b); sec.appendChild(v); return;
+  }
+  const weeks = months*4.345, need = w - goalW, goalBmi = goalW/m2;
+  const mode = need>0.05 ? "lose" : (need < -0.05 ? "gain" : "keep");
+  sec.appendChild(el2("h2","", mode==="lose" ? `Your plan: ${kg(w)} → ${kg(goalW)} in ${months} month${months>1?"s":""}`
+                                : mode==="gain" ? `Your plan: gain to ${kg(goalW)} in ${months} months` : "Your plan: stay at this weight"));
+  sec.appendChild(el2("p","hint", `For ${sex==="m"?"a man":"a woman"}, ${age} years${B.age?"":" (age not entered — assumed 30)"}, ${h} cm, ${actLabel}. Target BMI ${fmt1(goalBmi)} (${bandOf(goalBmi,bmiBands(eth)).l.toLowerCase()}).`));
+
+  // ---------- 2. is it possible? ----------
+  const rate = mode==="lose" ? need/weeks : 0;
+  let status, cls, msg;
+  if(goalBmi < 18.5){ status="Target is too low"; cls="hi"; msg=`${kg(goalW)} would be underweight for ${h} cm (BMI under 18.5). The lowest healthy weight for you is ${kg(18.5*m2)}.`; }
+  else if(mode!=="lose"){ status = mode==="gain" ? "Gaining weight" : "Maintaining"; cls="ok"; msg = mode==="gain" ? "Aim for 0.25–0.5 kg a week, with strength training so it's muscle, not just fat." : "Eat around what you burn and keep the habits below."; }
+  else if(rate<=0.5){ status="Comfortable — very doable"; cls="ok"; msg=`That's ${fmt1(rate)} kg a week — easy to sustain. You could even reach it sooner if you want.`; }
+  else if(rate<=1.0){ status="Realistic — doable with consistency"; cls="ok"; msg=`That's ${fmt1(rate)} kg a week — the standard safe pace (0.5–1 kg a week).`; }
+  else if(rate<=safeMax){ status="Ambitious — possible, but strict"; cls="mid"; msg=`That's ${fmt1(rate)} kg a week. At your weight up to about ${fmt1(safeMax)} kg a week (≈1% of body weight) can be safe at the start, but you'll need the diet, steps and gym every single day.`; }
+  else { status="Too fast to be safe"; cls="hi"; msg=`That needs ${fmt1(rate)} kg a week. The safe maximum for you is about ${fmt1(safeMax)} kg a week — faster than that mostly burns muscle, drains energy and usually comes back.`; }
+  const fv=el2("div","verdict "+cls); fv.append(el2("h3","",`Is it possible? ${status}`), el2("p","hint",msg)); fv.querySelector("p").style.margin="0";
+  if(mode==="lose" && (cls==="hi" || cls==="mid") && goalBmi>=18.5){
+    const ul=el2("ul");
+    const mSafe=Math.ceil(need/safeMax/4.345), mComfy=Math.ceil(need/0.75/4.345), reach=w - Math.min(1.0,safeMax)*weeks;
+    ul.appendChild(el2("li","",`Keep your target: allow ${mSafe}–${mComfy} months for ${kg(goalW)}.`));
+    ul.appendChild(el2("li","",`Keep your ${months} months: aim for about ${kg(Math.max(goalW,reach))} instead (BMI ${fmt1(Math.max(goalW,reach)/m2)}), then keep going.`));
+    if(cls==="hi"){ const b1=el2("button","btn small","Use the safe timeline"); b1.style.marginRight="6px";
+      b1.onclick=()=>{ B.months=mComfy; saveBmi(); renderBmi(); };
+      const b2=el2("button","btn ghost small","Use the reachable target");
+      b2.onclick=()=>{ B.goalW=Math.round(Math.max(goalW,reach)*10)/10; saveBmi(); renderBmi(); };
+      const row=el2("div","row"); row.style.marginTop="8px"; row.append(b1,b2); fv.append(ul,row); }
+    else fv.appendChild(ul);
+  }
+  if(mode==="lose" && goalBmi>healthyTop && goalBmi>=18.5){
+    const p=el2("p","hint",`Good first step. ${kg(goalW)} is still above the healthy BMI range for ${h} cm (up to ${kg(healthyTop*m2)}) — set a new target once you get there.`); p.style.margin="8px 0 0"; fv.appendChild(p); }
+  sec.appendChild(fv);
+  if(goalBmi<18.5) return;
+
+  // ---------- 3. calories, split between food and exercise ----------
+  const planRate = mode==="lose" ? Math.min(rate, safeMax) : (mode==="gain" ? 0.35 : 0);
+  const needDeficit = planRate*1100;                         // 7,700 kcal per kg ÷ 7 days
+  const dietDeficit = mode==="lose" ? Math.min(needDeficit, Math.max(0,tdee-floor), 1000) : 0;
+  let exerciseNeed = mode==="lose" ? Math.max(0, needDeficit-dietDeficit) : 0;
+  const intake = mode==="gain" ? tdee+385 : tdee - dietDeficit;
+  const lo=r50(intake-75), hi=r50(intake+75), mid=r50(intake);
+  const stepKcal = 0.0005*w;                                 // ≈ kcal per step for this body weight
+  const extraSteps = exerciseNeed>0 ? Math.min(6000, Math.ceil(exerciseNeed*0.6/stepKcal/500)*500) : 0;
+  const gymKcal = Math.round(4.5*w*0.75);                    // ~45 min moderate session
+  const refW = Math.min(w, 25*m2), pLo=Math.round(1.2*refW/5)*5, pHi=Math.round(1.6*refW/5)*5;
+  const waterL = Math.min(3.5, Math.max(2, w*0.03)).toFixed(1);
+  const stepTarget = exerciseNeed>0 ? Math.min(12000, 7000+extraSteps) : (mode==="lose"?8500:7500);
 
   const k=el2("div","kpis");
   [[`${lo.toLocaleString()}–${hi.toLocaleString()}`,"kcal a day to eat"],
-   [`${Math.round(tdee).toLocaleString()}`,"kcal your body burns a day"],
+   [`${Math.round(tdee).toLocaleString()}`,"kcal your body burns now"],
    [`${pLo}–${pHi} g`,"protein a day"],
-   [mode==="lose"?`${perWeek.toFixed(1)} kg`:`${waterL} L`, mode==="lose"?"expected loss a week":"water a day"]]
+   [mode==="lose"?`${fmt1(planRate)} kg`:`${waterL} L`, mode==="lose"?"planned loss a week":"water a day"]]
    .forEach(([b,sp])=>{ const d=el2("div","kpi"); d.append(el2("b","",b), el2("span","",sp)); k.appendChild(d); });
   sec.appendChild(k);
-  const why=el2("p","hint");
-  why.textContent = mode==="lose"
-    ? `Your body burns about ${Math.round(tdee).toLocaleString()} kcal a day (${Math.round(bmr).toLocaleString()} at rest × activity). Eating ${lo.toLocaleString()}–${hi.toLocaleString()} creates a deficit of about ${Math.round(tdee-hi)}–${Math.round(tdee-lo)} kcal — a safe pace of 0.5–1 kg a week. Don't go below ${floor.toLocaleString()} kcal without a doctor: you'd lose muscle and energy, not just fat. Drink about ${waterL} L of water a day.`
-    : mode==="gain" ? `Eat 300–500 kcal above what you burn, with protein at every meal, and get checked by a doctor to rule out a medical cause of low weight.`
-    : `You're in the healthy range — eat around what you burn and keep the training and steps below to stay there.`;
-  sec.appendChild(why);
-
   if(mode==="lose"){
-    sec.appendChild(el2("h3","","Milestones — realistic, one at a time"));
-    const wk = kg=>{ const a=Math.ceil(kg/1.0), b=Math.ceil(kg/0.5); return `${a}–${b} weeks`; };
-    const g1=w*0.05, g2=w*0.10, top=healthyTop*m*m;
-    const rows=[[`1 · First 5%\nBlood pressure, sugar and cholesterol start improving`,`${(w-g1).toFixed(1)} kg\n(−${g1.toFixed(1)})`,wk(g1)],
-                [`2 · 10%\nBig drop in diabetes and joint-pain risk — reassess`,`${(w-g2).toFixed(1)} kg\n(−${g2.toFixed(1)})`,wk(g2)]];
-    if(top < w-g2) rows.push([`3 · Long-term\nHealthy BMI range — reach it in more 5–10% steps`,`${top.toFixed(1)} kg\n(−${(w-top).toFixed(1)})`,"many months"]);
-    sec.appendChild(tableHTML(["Stage","Weight","Time"], rows));
-    sec.appendChild(el2("p","hint","Losing faster than about 1 kg a week (after the first 1–2 weeks of water loss) mostly costs muscle and is hard to keep off. Slow and steady keeps it off."));
+    const split = exerciseNeed>0
+      ? `Your goal needs a deficit of about ${Math.round(needDeficit)} kcal a day. Food can safely cover ${Math.round(dietDeficit)} (eating below ${floor.toLocaleString()} kcal costs muscle), so the other ${Math.round(exerciseNeed)} has to come from moving more: about ${stepTarget.toLocaleString()} steps a day plus 4 gym sessions a week (≈${gymKcal} kcal each).`
+      : `Eating ${lo.toLocaleString()}–${hi.toLocaleString()} kcal creates the ${Math.round(needDeficit)} kcal daily deficit your goal needs — food alone can do it. Steps and gym make it faster and protect your muscle.`;
+    sec.appendChild(el2("p","hint", split + ` Drink about ${waterL} L of water a day.`));
   }
 
-  sec.appendChild(el2("h3","","Daily steps — build up gradually"));
-  const st=el2("div","steps3");
-  [["6,000–7,000","weeks 1–2"],["7,000–8,500","weeks 3–4"],["8,500–10,000","week 5 onward"]].forEach(([b,sp])=>{ const d=el2("div"); d.append(el2("b","",b), el2("span","",sp)); st.appendChild(d); });
-  sec.appendChild(st);
-  sec.appendChild(el2("p","hint","Most health benefit arrives by about 7,000 steps a day; going towards 10,000 helps weight loss. Easy wins: a 15-minute walk after lunch and after dinner, walking during phone calls, stairs instead of the lift."));
+  // ---------- 4. month-by-month ----------
+  if(mode==="lose"){
+    sec.appendChild(el2("h3","","Month by month"));
+    const rows=[]; const step = months>12 ? 3 : 1;
+    for(let i=step;i<=Math.ceil(months);i+=step){
+      const wt=Math.max(goalW, w - planRate*4.345*i), b=wt/m2;
+      let note = i===step ? "Includes 1–3 kg of early water loss" : "";
+      if(w-wt >= w*0.05 && w-(w - planRate*4.345*(i-step)) < w*0.05) note="5% lost — blood pressure, sugar and cholesterol improve";
+      if(w-wt >= w*0.10 && w-(w - planRate*4.345*(i-step)) < w*0.10) note="10% lost — big drop in diabetes and joint risk";
+      if(wt<=goalW+0.05) note="Target reached ✓";
+      rows.push([`Month ${i}`, `${kg(wt)}\nBMI ${fmt1(b)}`, note]);
+      if(wt<=goalW+0.05) break;
+    }
+    sec.appendChild(tableHTML(["When","Expected","Milestone"], rows));
+    sec.appendChild(el2("p","hint","Weight goes down in steps, not a straight line — some weeks show nothing, then a drop. Judge by the 2-week trend and your waist, not one weigh-in. Re-run this plan every month with your new weight: calories need to come down a little as you get lighter."));
+  }
 
+  // ---------- 5. steps ----------
+  sec.appendChild(el2("h3","","Daily steps"));
+  const st=el2("div","steps3");
+  const s1=Math.max(5000, stepTarget-2500), s2=Math.max(6000, stepTarget-1200);
+  [[`${s1.toLocaleString()}`,"weeks 1–2"],[`${s2.toLocaleString()}`,"weeks 3–4"],[`${stepTarget.toLocaleString()}`,"week 5 onward"]]
+    .forEach(([b,sp])=>{ const d=el2("div"); d.append(el2("b","",b), el2("span","",sp)); st.appendChild(d); });
+  sec.appendChild(st);
+  sec.appendChild(el2("p","hint","Most health benefit comes by about 7,000 steps a day; more helps weight loss. Easy wins: a 15-minute walk after lunch and after dinner, walking during calls, stairs instead of the lift."));
+
+  // ---------- 6. training ----------
   sec.appendChild(el2("h3","","Weekly training — gym or home"));
   const heavy = bmi>=35;
   const T = heavy ? [
-    ["Mon","Strength A (gentle)","Chair squats, wall push-ups, seated dumbbell rows, glute bridges, standing calf raises — 2 sets × 10–12","35 min"],
+    ["Mon","Strength A (gentle)","Chair squats, wall push-ups, seated dumbbell rows, glute bridges, calf raises — 2 sets × 10–12","35 min"],
     ["Tue","Low-impact cardio","Brisk walk, stationary bike or swimming — talk-but-not-sing pace","30 min"],
     ["Wed","Strength B (gentle)","Step-ups on a low step, incline push-ups, band pull-aparts, bird-dog, wall sit — 2 × 10–12","35 min"],
-    ["Thu","Low-impact cardio","Walk or bike, slightly longer than Tuesday","35 min"],
+    ["Thu","Low-impact cardio","Walk or bike, a little longer than Tuesday","35 min"],
     ["Fri","Strength A","Same as Monday — add a set or a little weight when it feels easy","35 min"],
     ["Sat","Long walk","Park or market walk with family — steady pace","45 min"],
     ["Sun","Rest","Light stretching, 10 minutes","—"]] : [
-    ["Mon","Strength A","Goblet squat, dumbbell bench press, seated cable row, Romanian deadlift (light), plank — 3 sets × 10–15","50 min"],
-    ["Tue","Cardio","Brisk walk on incline, cycling or elliptical — moderate pace","30–40 min"],
+    ["Mon","Strength A","Goblet squat, dumbbell bench press, seated cable row, Romanian deadlift (light), plank — 3 × 10–15","50 min"],
+    ["Tue","Cardio","Incline walk, cycling or elliptical — moderate pace","30–40 min"],
     ["Wed","Strength B","Leg press, lat pulldown, shoulder press, walking lunges, dead bug — 3 × 10–15","50 min"],
     ["Thu","Cardio","Brisk walk or cycling + 10 min stretching","30–40 min"],
     ["Fri","Strength A","Same as Monday — add weight when 15 reps feel easy","50 min"],
     ["Sat","Long cardio or sport","Long walk, swim, cricket or badminton","45–60 min"],
     ["Sun","Rest","Stretching or an easy walk","—"]];
   sec.appendChild(tableHTML(["Day","Session","What to do","Time"], T));
-  sec.appendChild(el2("p","hint", (heavy?"At this weight, low-impact exercise protects your knees and back — no running or jumping yet. ":"") + "Strength training keeps your muscle while you lose fat, so most of what you lose is fat. Rest 60–90 seconds between sets; stop if anything hurts sharply. This matches the WHO advice of 150–300 minutes of moderate activity plus 2+ strength days a week."));
+  sec.appendChild(el2("p","hint", (heavy?"At this weight, low-impact exercise protects knees and back — no running or jumping yet. ":"") + "Strength training keeps your muscle while you lose fat. Rest 60–90 seconds between sets; stop if anything hurts sharply. This meets the WHO advice of 150–300 minutes of moderate activity plus 2+ strength days a week."));
 
+  // ---------- 7. food ----------
   sec.appendChild(el2("h3","","Daily timetable — Pakistani food"));
-  const target = mode==="lose" ? mid : (mode==="gain" ? mid : Math.round(tdee/50)*50);
-  const level = MEAL_LEVELS.reduce((a,b)=>Math.abs(b.kcal-target)<Math.abs(a.kcal-target)?b:a);
+  const level = MEAL_LEVELS.reduce((a,b)=>Math.abs(b.kcal-mid)<Math.abs(a.kcal-mid)?b:a);
   const tk=level.rows.reduce((a,r)=>a+r[3],0), tp=level.rows.reduce((a,r)=>a+r[4],0);
-  const rows = level.rows.map(r=>[`${r[0]}\n${r[1]}`, r[2], `${r[3]} kcal\n${r[4]} g protein`]);
-  sec.appendChild(tableHTML(["When","What to eat","Amount"], rows, ["Total","",`${tk.toLocaleString()} kcal\n${tp} g protein`]));
-  const diff=target-tk;
-  sec.appendChild(el2("p","hint", (Math.abs(diff)>=60 ? `This menu is ${tk.toLocaleString()} kcal; your target is about ${target.toLocaleString()}. ${diff>0?`Add about ${Math.round(diff)} kcal — for example ${diff>=200?"1 more roti and a fruit":"half a roti or a fruit"}.`:`Trim about ${Math.round(-diff)} kcal — for example ${-diff>=200?"1 less roti and no snack nuts":"half a roti less"}.`} ` : "") +
-    "Swap freely: daal ↔ chana or lobia, chicken ↔ fish or eggs, roti ↔ ¾ cup rice. Use the Food chart to check any swap. Vegetarian: replace chicken with extra daal, paneer or eggs."));
+  sec.appendChild(tableHTML(["When","What to eat","Amount"], level.rows.map(r=>[`${r[0]}\n${r[1]}`, r[2], `${r[3]} kcal\n${r[4]} g protein`]),
+    ["Total","",`${tk.toLocaleString()} kcal\n${tp} g protein`]));
+  const diff=mid-tk;
+  sec.appendChild(el2("p","hint", (Math.abs(diff)>=60 ? `This menu is ${tk.toLocaleString()} kcal; your target is about ${mid.toLocaleString()}. ${diff>0?`Add about ${Math.round(diff)} kcal — e.g. ${diff>=200?"1 more roti and a fruit":"half a roti or a fruit"}.`:`Trim about ${Math.round(-diff)} kcal — e.g. ${-diff>=200?"1 less roti and skip the nuts":"half a roti less"}.`} ` : "") +
+    "Swap freely: daal ↔ chana or lobia, chicken ↔ fish or eggs, roti ↔ ¾ cup rice — check any swap in the Food chart. Vegetarian: replace chicken with extra daal, paneer or eggs."));
 
   sec.appendChild(el2("h3","","The Pakistani plate — rules that do most of the work"));
   const ul=el2("ul"); ul.style.paddingLeft="18px";
   ["Half the plate sabzi or salad, a quarter protein (daal, chana, chicken, fish, eggs, dahi), a quarter roti or rice.",
-   "Oil: about 1–2 teaspoons per person per meal. Most Pakistani home food is high in calories because of oil and ghee, not the ingredients.",
-   "No sugar in chai; no soft drinks or packaged juice. Keep mithai, bakery and fried items (samosa, pakora, paratha) to once a week.",
-   "Eat protein at every meal — it keeps you full and protects muscle.",
-   "Biryani, karahi or a dawat? Have it — one plate, extra salad, skip the second helping and the cold drink.",
-   "Sleep 7–8 hours: short sleep makes you hungrier the next day."]
-   .forEach(t=>ul.appendChild(el2("li","",t)));
+   "Oil: about 1–2 teaspoons per person per meal — most extra calories in home food come from oil and ghee.",
+   "No sugar in chai; no soft drinks or packaged juice. Mithai, bakery and fried items (samosa, pakora, paratha) once a week.",
+   "Protein at every meal — it keeps you full and protects muscle.",
+   "Biryani or a dawat? Have it — one plate, extra salad, no second helping or cold drink.",
+   "Sleep 7–8 hours: short sleep makes you hungrier the next day."].forEach(t=>ul.appendChild(el2("li","",t)));
   sec.appendChild(ul);
 
   const doc=el2("div","verdict mid"); doc.style.marginTop="14px";
@@ -1643,14 +1706,14 @@ function renderPlan(){
   const dl=el2("ul");
   ["your BMI is 35 or more, or you have diabetes, high blood pressure, heart, kidney or liver disease",
    "you take medicines for blood sugar or blood pressure — doses may need changing as you lose weight",
-   "you're pregnant or breastfeeding, or you get chest pain, dizziness or breathlessness when active"]
-   .forEach(t=>dl.appendChild(el2("li","",t)));
+   "you're pregnant or breastfeeding, or you get chest pain, dizziness or breathlessness when active"].forEach(t=>dl.appendChild(el2("li","",t)));
   doc.appendChild(dl); sec.appendChild(doc);
 
   if(B.mine){ const row=el2("div","row"); row.style.marginTop="14px";
     const btn=el2("button","btn","Use this plan as my daily targets");
-    btn.onclick=()=>{ settings.kcal=mid; settings.protein=Math.round((pLo+pHi)/2); settings.steps=Math.max(settings.steps||0,8000); settings.floor=floor;
-      scheduleSave(); renderAll(); btn.textContent=`Targets set: ${mid.toLocaleString()} kcal · ${settings.protein} g protein · ${settings.steps.toLocaleString()} steps`; };
+    btn.onclick=()=>{ settings.kcal=mid; settings.protein=Math.round((pLo+pHi)/2); settings.steps=stepTarget; settings.floor=floor;
+      if(mode==="lose") settings.goalWeight=goalW;
+      scheduleSave(); renderAll(); btn.textContent=`Targets set: ${mid.toLocaleString()} kcal · ${settings.protein} g protein · ${stepTarget.toLocaleString()} steps · goal ${goalW} kg`; };
     row.appendChild(btn); sec.appendChild(row); }
 }
 
@@ -1675,15 +1738,16 @@ function bindBmi(){
   document.querySelectorAll("#bSex button").forEach(b=>b.onclick=()=>{ B.sex=b.dataset.v; saveBmi(); renderBmi(); });
   document.querySelectorAll("#bEth button").forEach(b=>b.onclick=()=>{ B.eth=b.dataset.v; saveBmi(); renderBmi(); });
   document.getElementById("bAct").addEventListener("change",e=>{ B.act=e.target.value; saveBmi(); renderBmi(); });
-  [["bAge","age"],["bW","w"],["bH","h"],["bWaist","waist"],["bHip","hip"],["bNeck","neck"]].forEach(([id,k])=>
+  [["bAge","age"],["bW","w"],["bH","h"],["bWaist","waist"],["bHip","hip"],["bNeck","neck"],["bGoal","goalW"],["bMonths","months"]].forEach(([id,k])=>
     document.getElementById(id).addEventListener("input",e=>{ B[k]=num(e.target.value); if(id==="bH"){ document.getElementById("bFt").value=""; document.getElementById("bIn").value=""; } saveBmi(); renderBmi(); }));
   const ftin=()=>{ const ft=num(document.getElementById("bFt").value)||0, inch=num(document.getElementById("bIn").value)||0;
     if(ft||inch){ B.h=Math.round((ft*30.48+inch*2.54)*10)/10; saveBmi(); renderBmi(); } };
   document.getElementById("bFt").addEventListener("input",ftin); document.getElementById("bIn").addEventListener("input",ftin);
   document.getElementById("bmiMine").onclick=()=>{
-    B={...B, mine:true, h:settings.heightCm||B.h, w:latestOf("weight")||settings.startWeight, waist:latestOf("waist")||B.waist};
+    B={...B, mine:true, h:settings.heightCm||B.h, w:latestOf("weight")||settings.startWeight, waist:latestOf("waist")||B.waist,
+       goalW:B.goalW||settings.goalWeight, months:B.months||3};
     saveBmi(); renderBmi(); };
-  document.getElementById("bmiClear").onclick=()=>{ B={sex:B.sex, eth:B.eth, age:null, w:null, h:null, waist:null, hip:null, neck:null, mine:false};
+  document.getElementById("bmiClear").onclick=()=>{ B={sex:B.sex, eth:B.eth, act:B.act, age:null, w:null, h:null, waist:null, hip:null, neck:null, goalW:null, months:null, mine:false};
     document.getElementById("bFt").value=""; document.getElementById("bIn").value=""; saveBmi(); renderBmi(); };
 }
 
