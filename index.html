@@ -249,6 +249,7 @@ textarea{min-height:76px;resize:vertical}
 
       <section class="block">
         <h2 class="secthead" data-icon="check">Habits</h2>
+        <p class="hint">Change these anytime under Targets → Habits.</p>
         <div class="habits" id="habits"></div>
       </section>
     </div>
@@ -363,6 +364,16 @@ textarea{min-height:76px;resize:vertical}
     <input type="file" id="restoreFile" accept="application/json,.json" hidden>
     <button class="btn ghost" id="themeBtn">Switch theme</button>
   </div>
+  <section class="block" style="margin-top:22px;max-width:640px">
+    <h2>Habits</h2>
+    <p class="hint">Edit the wording, remove the ones you don't need, or add your own. Days you already ticked keep their history.</p>
+    <div id="habitEditor"></div>
+    <div class="row" style="margin-top:10px">
+      <input id="newHabit" placeholder="New habit, e.g. 10 minutes of walking after dinner" style="flex:1 1 240px" aria-label="New habit">
+      <button class="btn" id="addHabit">Add habit</button>
+      <button class="btn ghost" id="resetHabits">Reset to defaults</button>
+    </div>
+  </section>
   <div class="banner" id="storageNote"></div>
 </div>
 
@@ -391,13 +402,14 @@ const PRESETS = [
   {name:"Bowl of daal", short:"Bowl of daal", kcal:200, protein:12, art:"daal"},
   {name:"Fruit", short:"Fruit", kcal:80, protein:0, art:"fruit"}
 ];
-const HABITS = [
+const DEFAULT_HABITS = [
   {key:"closed7", label:"Kitchen closed after 7 pm"},
   {key:"noSugar", label:"No sugar in tea"},
   {key:"noFried", label:"No fried food or bakery"},
   {key:"noDrinks", label:"No soft drinks or juice"},
   {key:"yolks", label:"Egg whites over yolks (cholesterol)"}
 ];
+let HABITS = DEFAULT_HABITS.map(h=>({...h}));   // editable in Targets
 
 /* ------------------------------------------------------------------
    ILLUSTRATIONS (hand-drawn SVG, 64×64)
@@ -459,7 +471,7 @@ function guessArt(name){
    Values are estimates — edit any entry's numbers when you log it.
 ------------------------------------------------------------------ */
 const FOOD_ROWS = [
-// ---- Breads ----
+// ---- Breads (Pakistani) ----
 ["Roti / chapati (medium)","Bread","piece",45,120,4,"chapati phulka atta roti"],
 ["Phulka (small roti)","Bread","piece",30,80,3,"phulka"],
 ["Tandoori roti","Bread","piece",60,160,5,"tandoor roti"],
@@ -624,6 +636,82 @@ const FOOD_ROWS = [
 ["Zarda","Sweets","plate",150,300,4,"meethe chawal"],
 ["Sheer khurma","Sweets","bowl",200,380,9,"sheer korma"],
 ["Custard","Sweets","bowl",150,180,5,"custard"],
+// ---- Oats & breakfast (more) ----
+["Oats with full-cream milk","Breakfast","bowl",290,310,13.3,"oats milk daliya doodh"],
+["Oats with low-fat milk","Breakfast","bowl",290,265,13.3,"oats low fat milk"],
+["Oats with skimmed milk","Breakfast","bowl",290,235,13.8,"oats skim milk"],
+["Oats with milk + banana","Breakfast","bowl",410,415,14.6,"oats banana kela"],
+["Oats with milk + honey","Breakfast","bowl",310,375,13.3,"oats honey shehad"],
+["Overnight oats with dahi","Breakfast","jar",190,240,10.6,"overnight oats yogurt"],
+["Granola","Breakfast","50 g",50,230,5,"granola"],
+["Muesli","Breakfast","50 g",50,185,5,"muesli"],
+["Peanut butter toast (brown)","Breakfast","slice",44,160,6.5,"pb toast"],
+["Avocado toast","Breakfast","slice",110,250,6,"avocado toast"],
+["Pancakes with syrup (2)","Breakfast","serving",150,350,8,"pancake"],
+["French toast (2 slices)","Breakfast","serving",130,300,11,"french toast"],
+["Egg sandwich","Breakfast","piece",150,300,15,"anda sandwich"],
+// ---- Healthy & high-protein ----
+["Greek yogurt (plain, non-fat)","Healthy","170 g",170,100,17,"greek yogurt"],
+["Cottage cheese","Healthy","100 g",100,98,11,"cottage cheese"],
+["Tofu","Healthy","100 g",100,76,8,"tofu"],
+["Quinoa (cooked)","Healthy","cup",185,222,8,"quinoa"],
+["Brown rice (cooked)","Healthy","cup",195,216,5,"brown rice"],
+["Avocado","Healthy","half",100,160,2,"avocado makhan phal"],
+["Protein bar","Healthy","bar",60,220,20,"protein bar"],
+["Protein shake with low-fat milk","Healthy","glass",280,225,33,"whey milk shake"],
+["Tuna (canned in water)","Healthy","100 g",100,116,26,"tuna"],
+["Sweet corn","Healthy","cup",150,130,5,"corn bhutta"],
+["Chia seeds","Healthy","tbsp",12,58,2,"chia"],
+["Flax seeds","Healthy","tbsp",10,55,1.9,"alsi flax"],
+["Banana-oats smoothie","Healthy","glass",350,350,12,"smoothie"],
+// ---- Chinese ----
+["Chicken fried rice","Chinese","plate",300,520,20,"fried rice"],
+["Egg fried rice","Chinese","plate",300,480,13,"egg fried rice"],
+["Chicken chow mein","Chinese","plate",300,450,22,"chowmein noodles"],
+["Chicken manchurian","Chinese","bowl",200,330,20,"manchurian"],
+["Chicken chilli dry","Chinese","bowl",200,360,26,"chilli chicken"],
+["Sweet and sour chicken","Chinese","bowl",200,420,20,"sweet sour"],
+["Chicken with vegetables","Chinese","bowl",200,250,25,"chicken vegetable chinese"],
+["Hot and sour soup","Chinese","bowl",250,120,7,"hot sour soup"],
+// ---- Continental & Italian ----
+["Pasta in white sauce","Continental","plate",300,600,20,"alfredo pasta"],
+["Pasta in red sauce","Continental","plate",300,420,14,"arrabbiata pasta"],
+["Spaghetti bolognese","Continental","plate",300,500,26,"spaghetti"],
+["Lasagna","Continental","piece",250,450,25,"lasagne"],
+["Mac and cheese","Continental","cup",200,400,15,"macaroni"],
+["Grilled chicken steak + veg","Continental","plate",350,450,45,"steak chicken"],
+["Mashed potatoes","Continental","cup",210,240,4,"mash"],
+["Caesar salad with chicken","Continental","bowl",300,450,30,"caesar"],
+["Greek salad","Continental","bowl",200,210,6,"greek salad"],
+["Garden salad with olive oil","Continental","bowl",200,120,2,"salad"],
+["Grilled chicken sandwich","Continental","piece",220,350,28,"sandwich"],
+["Chicken wrap","Continental","piece",230,400,26,"wrap"],
+["Tuna sandwich","Continental","piece",200,350,22,"tuna sandwich"],
+["Chicken nuggets (6)","Continental","serving",100,280,15,"nuggets"],
+["Chicken wings (6)","Continental","serving",200,480,34,"wings"],
+["Hot dog","Continental","piece",150,300,11,"hotdog"],
+["Fish and chips","Continental","plate",350,800,30,"fish chips"],
+// ---- Middle Eastern & Turkish ----
+["Chicken mandi","Middle Eastern","plate",400,750,40,"mandi"],
+["Doner kebab / gyro wrap","Middle Eastern","piece",300,550,30,"doner gyro"],
+["Shish tawook","Middle Eastern","skewer",150,250,35,"tawook"],
+["Falafel (4 pieces)","Middle Eastern","serving",100,230,9,"falafel"],
+["Hummus","Middle Eastern","2 tbsp",30,70,2,"hummus"],
+["Pita bread","Middle Eastern","piece",60,170,6,"pita"],
+// ---- Drinks (more) ----
+["Black coffee","Drinks","cup",240,2,0.3,"coffee black"],
+["Cappuccino","Drinks","cup",240,120,6,"cappuccino"],
+["Latte / iced coffee","Drinks","glass",350,190,9,"latte iced coffee"],
+["Diet soda","Drinks","can",330,0,0,"diet coke zero"],
+["Energy drink","Drinks","can",250,110,0,"sting red bull"],
+["Coconut water","Drinks","glass",250,45,0.5,"nariyal pani"],
+["Lemonade (with sugar)","Drinks","glass",250,100,0,"nimbu pani shikanjvi"],
+// ---- Desserts (more) ----
+["Chocolate bar","Sweets","bar",45,230,3,"chocolate dairy milk"],
+["Dark chocolate (2 squares)","Sweets","serving",20,110,1.5,"dark chocolate"],
+["Brownie","Sweets","piece",60,240,3,"brownie"],
+["Donut (glazed)","Sweets","piece",60,250,3,"doughnut"],
+["Cheesecake","Sweets","slice",100,320,6,"cheesecake"],
 // ---- INGREDIENTS (raw, per 100 g unless stated) ----
 ["Atta (whole-wheat flour)","Ingredient","100 g",100,340,13,"wheat flour"],
 ["Maida (white flour)","Ingredient","100 g",100,364,10,"all purpose flour"],
@@ -686,7 +774,7 @@ const FOOD_ROWS = [
 ["Peanuts","Ingredient","100 g",100,567,26,"moongphali"]
 ];
 const FOOD_DB = FOOD_ROWS.map(([name,cat,unit,g,kcal,p,alias])=>({name,cat,unit,g,kcal,p,alias:alias||""}));
-const FOOD_CATS = ["All","Bread","Rice","Daal","Chicken","Meat","Fish","Vegetable","Eggs","Breakfast","Dairy","Drinks","Fruit","Nuts","Snacks","Sweets","Ingredient","My foods"];
+const FOOD_CATS = ["All","Breakfast","Bread","Rice","Daal","Chicken","Meat","Fish","Vegetable","Eggs","Healthy","Chinese","Continental","Middle Eastern","Dairy","Drinks","Fruit","Nuts","Snacks","Sweets","Ingredient","My foods"];
 
 /* ------------------------------------------------------------------
    STATE
@@ -714,10 +802,11 @@ function sumFood(d){ return d.foods.reduce((a,f)=>({kcal:a.kcal+(+f.kcal||0), pr
    PERSISTENCE: local cache always, cloud db when the viewer grants it
 ------------------------------------------------------------------ */
 let customFoods = [];
-function saveLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({settings, days, customFoods})); }catch(e){} }
+function saveLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({settings, days, customFoods, habits:HABITS})); }catch(e){} }
 function loadLocal(){ try{ const raw = localStorage.getItem(LS_KEY); if(!raw) return;
   const o = JSON.parse(raw); if(o.settings) settings = {...DEFAULT_SETTINGS, ...o.settings};
   if(Array.isArray(o.customFoods)) customFoods = o.customFoods;
+  if(Array.isArray(o.habits)) HABITS = o.habits;
   if(o.days) days = o.days; }catch(e){} }
 
 let savedTimer=null;
@@ -750,7 +839,7 @@ function parts(d){
   const f = sumFood(d), s = settings;
   const kcalScore = !f.kcal ? 0 : f.kcal < s.floor ? 0.5 : f.kcal <= s.kcal*1.05 ? 1 :
                     Math.max(0, 1 - (f.kcal - s.kcal*1.05)/(s.kcal*0.3));
-  const hab = HABITS.filter(h=>d.habits && d.habits[h.key]).length / HABITS.length;
+  const hab = HABITS.length ? HABITS.filter(h=>d.habits && d.habits[h.key]).length / HABITS.length : 1;
   return {
     kcal:kcalScore,
     protein:Math.min(1,(f.protein)/s.protein),
@@ -1165,7 +1254,21 @@ const SETTING_FIELDS = [
   ["gym","Workout (minutes)",5], ["startWeight","Start weight (kg)",0.1], ["goalWeight","Goal weight (kg)",0.1],
   ["startDate","Start date",null]
 ];
+function renderHabitEditor(){
+  const box=document.getElementById("habitEditor"); box.innerHTML="";
+  if(!HABITS.length){ const p=document.createElement("p"); p.className="hint"; p.textContent="No habits yet — add one below."; box.appendChild(p); }
+  HABITS.forEach((h,i)=>{ const row=document.createElement("div"); row.className="row"; row.style.margin="6px 0";
+    const inp=document.createElement("input"); inp.value=h.label; inp.style.flex="1 1 0"; inp.style.minWidth="0"; inp.setAttribute("aria-label","Habit "+(i+1));
+    inp.addEventListener("change",()=>{ const v=inp.value.trim(); if(!v){ inp.value=h.label; return; } h.label=v; scheduleSave(); renderAll(); });
+    const up=document.createElement("button"); up.className="iconbtn"; up.textContent="↑"; up.setAttribute("aria-label","Move up"); up.disabled=i===0;
+    up.onclick=()=>{ [HABITS[i-1],HABITS[i]]=[HABITS[i],HABITS[i-1]]; scheduleSave(); renderHabitEditor(); renderAll(); };
+    const del=document.createElement("button"); del.className="iconbtn"; del.textContent="✕"; del.style.color="var(--bad)";
+    del.setAttribute("aria-label","Remove "+h.label); del.title="Remove";
+    del.onclick=()=>{ if(!confirm(`Remove “${h.label}”?`)) return; HABITS.splice(i,1); scheduleSave(); renderHabitEditor(); renderAll(); };
+    row.append(inp,up,del); box.appendChild(row); });
+}
 function renderSettings(){
+  renderHabitEditor();
   const f = document.getElementById("settingsForm"); f.innerHTML="";
   SETTING_FIELDS.forEach(([k,l,step])=>{ const w=document.createElement("div"); w.className="field";
     const lab=document.createElement("label"); lab.textContent=l; lab.htmlFor="set-"+k;
@@ -1253,6 +1356,11 @@ function bind(){
     window.scrollTo(0,0);
   });
 
+  document.getElementById("addHabit").onclick=()=>{ const i=document.getElementById("newHabit"); const v=i.value.trim(); if(!v){ i.focus(); return; }
+    HABITS.push({key:"h"+Date.now().toString(36), label:v}); i.value=""; scheduleSave(); renderHabitEditor(); renderAll(); };
+  document.getElementById("newHabit").addEventListener("keydown",e=>{ if(e.key==="Enter") document.getElementById("addHabit").click(); });
+  document.getElementById("resetHabits").onclick=()=>{ if(!confirm("Put the original five habits back? Your custom ones will be removed.")) return;
+    HABITS=DEFAULT_HABITS.map(h=>({...h})); scheduleSave(); renderHabitEditor(); renderAll(); };
   document.getElementById("saveSettings").onclick=()=>{
     SETTING_FIELDS.forEach(([k,,step])=>{ const v=document.getElementById("set-"+k).value;
       settings[k] = step===null ? v : (num(v) ?? DEFAULT_SETTINGS[k]); });
@@ -1264,7 +1372,7 @@ function bind(){
     r.dataset.theme = dark ? "light" : "dark"; try{ localStorage.setItem("cutlog.theme", r.dataset.theme); }catch(e){} };
 
   document.getElementById("backupBtn").onclick=()=>{
-    downloadFile(`cut-log-backup-${todayKey()}.json`, JSON.stringify({app:"cutlog",version:1,exported:new Date().toISOString(),settings,days,customFoods},null,1), "application/json");
+    downloadFile(`cut-log-backup-${todayKey()}.json`, JSON.stringify({app:"cutlog",version:1,exported:new Date().toISOString(),settings,days,customFoods,habits:HABITS},null,1), "application/json");
     try{ localStorage.setItem("cutlog.lastBackup", new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})); }catch(e){}
     storageNote(); };
   document.getElementById("restoreFile").onchange=e=>{
@@ -1276,6 +1384,7 @@ function bind(){
         const incoming=Object.keys(o.days).length;
         if(!confirm(`Restore ${incoming} days from this backup? Days in the backup replace the same dates here; other days are kept.`)) return;
         days={...days, ...o.days}; if(o.settings) settings={...DEFAULT_SETTINGS, ...o.settings};
+        if(Array.isArray(o.habits) && o.habits.length) HABITS = o.habits;
         if(Array.isArray(o.customFoods)){ const names=new Set(o.customFoods.map(f=>f.name.toLowerCase()));
           customFoods=customFoods.filter(f=>!names.has(f.name.toLowerCase())).concat(o.customFoods); }
         scheduleSave(); renderAll(); renderSettings(); alert("Backup restored.");
