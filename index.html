@@ -2256,9 +2256,12 @@ function renderCare(){
   const rings=document.getElementById("careRings"); rings.innerHTML="";
   const daily=CARE.routine.filter(r=>r.every<=1), longer=CARE.routine.filter(r=>r.every>1);
   const dDone=daily.filter(r=>careLast(r.id,current)===current).length;
-  const upToDate=longer.filter(r=>{ const k=careStatus(r,current).k; return k==="ok"; }).length;
-  [{lbl:"Daily care", frac: daily.length?dDone/daily.length:0, color:"var(--wat)", c:`${dDone}/${daily.length}`, v:"done today"},
-   {lbl:"Up to date", frac: longer.length?upToDate/longer.length:0, color:"var(--good)", c:`${upToDate}/${longer.length}`, v:"nails, hair, sheets…"}]
+  const tracked=longer.filter(r=>careLast(r.id,current));            // items you've logged at least once
+  const upToDate=tracked.filter(r=>careStatus(r,current).k==="ok").length;
+  const notYet=longer.length-tracked.length;
+  [{lbl:"Daily care", frac: daily.length?dDone/daily.length:0, color:"var(--good)", c: daily.length?`${dDone}/${daily.length}`:"–", v: daily.length?"done today":"add daily items"},
+   {lbl:"Up to date", frac: tracked.length?upToDate/tracked.length:0, color:"var(--wat)", c: tracked.length?`${upToDate}/${tracked.length}`:"–",
+    v: notYet ? `${notYet} not logged yet` : "nails, hair, sheets…"}]
    .forEach(r=>{ const div=el2("div","ring"); const svg=el("svg",{role:"img","aria-label":`${r.lbl}: ${r.c}`}); div.appendChild(svg);
      ringSVG(svg,r.frac,r.color,116,11,r.c); div.append(el2("div","lbl",r.lbl), el2("div","val",r.v)); rings.appendChild(div); });
 
@@ -2328,7 +2331,8 @@ function renderCare(){
     const add=el2("button", inR?"btn ghost small":"btn small", inR?"In routine ✓":"Add to routine");
     add.onclick=()=>{ if(inR) CARE.routine=CARE.routine.filter(x=>x.id!==c.id); else CARE.routine.push({id:c.id, every:c.every}); scheduleSave(); renderCare(); renderAll(); };
     const on=careLast(c.id,current)===current;
-    const done=el2("button","donebtn"+(on?" on":""), on?"Done ✓":"Done today"); done.onclick=()=>{ toggleCare(c.id,current); renderCare(); renderAll(); };
+    const done=el2("button","donebtn"+(on?" on":""), on?"Done ✓":"Done today");
+    done.onclick=()=>{ if(!inRoutine(c.id)) CARE.routine.push({id:c.id, every:c.every}); toggleCare(c.id,current); renderCare(); renderAll(); };
     ctl.append(add,done); row.append(ci,cn,ctl); list.appendChild(row); });
 }
 function bindCare(){
