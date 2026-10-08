@@ -21,6 +21,7 @@
   --bg:#EEF2EE; --surface:#F8FAF7; --ink:#1C2733; --muted:#5E6B76; --line:#D3DBD4; --track:#DDE4DE;
   --cal:#C98A12; --pro:#2F8A5B; --wat:#2E79B8; --stp:#8B4FA6; --slp:#4A55B0; --gym:#178A8A;
   --bad:#B4412F; --good:#2F8A5B; --focus:#2E79B8; --plate:#E4EBE3;
+  --npro:#C23B85; --ncarb:#9A6B2F; --nfat:#D9622B; --nfib:#2F8A5B; --nfv:#8AA312; --nsat:#A3323A;
   --font:"Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 @media (prefers-color-scheme: dark){
@@ -28,12 +29,14 @@
     --bg:#0F1519; --surface:#1A252C; --ink:#F4F7F5; --muted:#C2CDD3; --line:#2A3740; --track:#26333B;
     --cal:#E6AE3E; --pro:#4DB37E; --wat:#5AA0DD; --stp:#B27BCB; --slp:#8590E0; --gym:#3DB6B6;
     --bad:#E0735F; --good:#4DB37E; --focus:#5AA0DD; --plate:#22303A;
+  --npro:#EC86B9; --ncarb:#D3A264; --nfat:#F28A5A; --nfib:#4DB37E; --nfv:#B8D24A; --nsat:#E36B6B;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0F1519; --surface:#1A252C; --ink:#F4F7F5; --muted:#C2CDD3; --line:#2A3740; --track:#26333B;
   --cal:#E6AE3E; --pro:#4DB37E; --wat:#5AA0DD; --stp:#B27BCB; --slp:#8590E0; --gym:#3DB6B6;
   --bad:#E0735F; --good:#4DB37E; --focus:#5AA0DD; --plate:#22303A;
+  --npro:#EC86B9; --ncarb:#D3A264; --nfat:#F28A5A; --nfib:#4DB37E; --nfv:#B8D24A; --nsat:#E36B6B;
 }
 *,*::before,*::after{box-sizing:inherit}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
@@ -230,6 +233,16 @@ details.gd .ptable{margin:6px 0}
 .ntop span:last-child{color:var(--muted);text-align:right}
 .nbar{height:8px;border-radius:999px;background:var(--track);overflow:hidden;margin-top:3px}
 .nbar i{display:block;height:100%;border-radius:999px}
+.nbar.over{box-shadow:0 0 0 2px var(--bad)}
+.nsw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-inline-end:6px;vertical-align:-1px;flex:none}
+.nname{display:inline-flex;align-items:center}
+.nstat{font-size:.74rem;margin-top:2px;font-weight:600}
+.nstat.ok{color:var(--good)} .nstat.warn{color:var(--cal)} .nstat.bad{color:var(--bad)} .nstat.low{color:var(--muted);font-weight:500}
+.nlegend{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;margin:6px 0 10px;font-size:.82rem}
+.nlegend .nlt{color:var(--muted)}
+.nlegend .nli{display:inline-flex;align-items:center}
+.nchip{display:inline-flex;align-items:center;background:color-mix(in srgb, var(--nc) 12%, var(--surface));color:var(--ink)}
+.nchip .nsw{width:8px;height:8px;border-radius:50%;margin-inline-end:4px;background:var(--nc)}
 .frow .vals .mac{display:block;font-size:.74rem;color:var(--muted)}
 /* daily menu */
 .menu-sec{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:12px 14px;margin:6px 0 14px}
@@ -1020,10 +1033,10 @@ rice:`<svg viewBox="0 0 64 64"><path d="M7 32h50a25 22 0 0 1-50 0z" fill="#3E6E8
 };
 const ICONS = {
 pill:`<svg viewBox="0 0 24 24"><g transform="rotate(-40 12 12)"><rect x="3.5" y="8" width="17" height="8" rx="4" fill="none" stroke="var(--wat)" stroke-width="2"/><path d="M12 8h4.5a4 4 0 0 1 0 8H12z" fill="var(--wat)"/></g></svg>`,
-fib:`<svg viewBox="0 0 24 24"><path d="M12 22V9" stroke="var(--good)" stroke-width="2" stroke-linecap="round"/><path d="M12 9c-3-1-4-4-3-7 3 1 4 4 3 7zM12 14c-3-1-5-3-5-6 3 0 5 3 5 6zM12 14c3-1 5-3 5-6-3 0-5 3-5 6zM12 19c-3-1-5-3-5-6 3 0 5 3 5 6zM12 19c3-1 5-3 5-6-3 0-5 3-5 6z" fill="var(--good)"/></svg>`,
+fib:`<svg viewBox="0 0 24 24"><path d="M12 22V9" stroke="var(--nfib)" stroke-width="2" stroke-linecap="round"/><path d="M12 9c-3-1-4-4-3-7 3 1 4 4 3 7zM12 14c-3-1-5-3-5-6 3 0 5 3 5 6zM12 14c3-1 5-3 5-6-3 0-5 3-5 6zM12 19c-3-1-5-3-5-6 3 0 5 3 5 6zM12 19c3-1 5-3 5-6-3 0-5 3-5 6z" fill="var(--nfib)"/></svg>`,
 fat:`<svg viewBox="0 0 24 24"><path d="M12 3c3.5 5 6 8 6 11.5a6 6 0 0 1-12 0C6 11 8.5 8 12 3z" fill="var(--cal)"/><ellipse cx="10" cy="14" rx="1.6" ry="2.4" fill="#fff" opacity=".55"/></svg>`,
 cal:`<svg viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4 0-6 1-9z" fill="var(--cal)"/></svg>`,
-pro:`<svg viewBox="0 0 24 24"><ellipse cx="12" cy="13" rx="7" ry="9" fill="var(--pro)"/><circle cx="12" cy="15" r="3.2" fill="var(--surface)"/></svg>`,
+pro:`<svg viewBox="0 0 24 24"><ellipse cx="12" cy="13" rx="7" ry="9" fill="var(--npro)"/><circle cx="12" cy="15" r="3.2" fill="var(--surface)"/></svg>`,
 wat:`<svg viewBox="0 0 24 24"><path d="M12 2c4 6 7 9 7 13a7 7 0 0 1-14 0c0-4 3-7 7-13z" fill="var(--wat)"/></svg>`,
 stp:`<svg viewBox="0 0 24 24"><ellipse cx="8" cy="9" rx="3" ry="5" fill="var(--stp)"/><ellipse cx="16" cy="14" rx="3" ry="5" fill="var(--stp)"/><circle cx="8" cy="17" r="2" fill="var(--stp)"/><circle cx="16" cy="22" r="1.6" fill="var(--stp)"/></svg>`,
 slp:`<svg viewBox="0 0 24 24"><path d="M15 3a9 9 0 1 0 6 13A7 7 0 0 1 15 3z" fill="var(--slp)"/></svg>`,
@@ -1549,7 +1562,7 @@ function renderToday(){
   const over = f.kcal > s.kcal*1.05;
   const R = [
     {lbl:"Calories", icon:"cal", frac:f.kcal/s.kcal, color: over?"var(--bad)":"var(--cal)", c:fmt(f.kcal), v:`of ${fmt(s.kcal)} kcal`},
-    {lbl:"Protein", icon:"pro", frac:f.protein/s.protein, color:"var(--pro)", c:fmt(f.protein)+"g", v:`of ${s.protein} g`},
+    {lbl:"Protein", icon:"pro", frac:f.protein/s.protein, color:"var(--npro)", c:fmt(f.protein)+"g", v:`of ${s.protein} g`},
     {lbl:"Fiber", icon:"fib", frac:f.fiber/(s.fiber||30), color:"var(--good)", c:fmt(f.fiber)+"g", v:`of ${s.fiber||30} g`},
     {lbl:"Fat", icon:"fat", frac:f.fat/nutrTargets().fat, color: f.fat>nutrTargets().fat?"var(--bad)":"var(--cal)", c:fmt(f.fat)+"g", v:`limit ${nutrTargets().fat} g`},
     {lbl:"Water", icon:"wat", frac:(d.water||0)/s.water, color:"var(--wat)", c:String(d.water||0), v:`of ${s.water} glasses`},
@@ -1647,7 +1660,7 @@ function renderWeek(){
   barChart(document.getElementById("chCal"), keys, kc, {label:"Calories per day", target:s.kcal, fmt:fmt,
     color:v=> (v>s.kcal*1.05 || v<s.floor) ? "var(--bad)" : "var(--cal)"});
   barChart(document.getElementById("chPro"), keys, pr, {label:"Protein per day", target:s.protein, fmt:fmt,
-    color:v=> v>=s.protein*0.9 ? "var(--pro)" : "var(--track)"});
+    color:v=> v>=s.protein*0.9 ? "var(--npro)" : "var(--track)"});
   const NT=nutrTargets();
   barChart(document.getElementById("chFib"), keys, ds.map(d=>sumFood(d).fiber||null), {label:"Fiber per day", target:NT.fiber, fmt:fmt,
     color:v=> v>=NT.fiber ? "var(--good)" : "var(--track)"});
@@ -1930,7 +1943,7 @@ function renderBudget(){
   const d=day(), f=sumFood(d), s=settings, box=document.getElementById("budget"); box.innerHTML="";
   const left=s.kcal-f.kcal, over=f.kcal>s.kcal*1.05;
   [{lbl:"Calories allowed", frac:f.kcal/s.kcal, color:over?"var(--bad)":"var(--cal)", c: left>=0?`${fmt(left)} left`:`${fmt(-left)} over`, v:`${fmt(f.kcal)} of ${fmt(s.kcal)} kcal eaten`, icon:"cal"},
-   {lbl:"Protein eaten", frac:f.protein/s.protein, color:"var(--pro)", c:`${fmt(f.protein)} g`, v:`of ${s.protein} g target`, icon:"pro"}]
+   {lbl:"Protein eaten", frac:f.protein/s.protein, color:"var(--npro)", c:`${fmt(f.protein)} g`, v:`of ${s.protein} g target`, icon:"pro"}]
   .forEach(r=>{ const div=document.createElement("div"); div.className="ring";
     const svg=el("svg",{role:"img","aria-label":`${r.lbl}: ${r.c}, ${r.v}`}); div.appendChild(svg); ringSVG(svg,r.frac,r.color,116,11,r.c);
     const ri=document.createElement("span"); ri.className="ricon"; ri.innerHTML=ICONS[r.icon];
@@ -2527,13 +2540,15 @@ function renderTodayMenu(){
 const NUTR_ROWS=[["kcal","Calories","kcal"],["protein","Protein","g"],["carbs","Carbs","g"],["fat","Fat","g"],["sat","Saturated fat (est.)","g"],["fiber","Fiber","g"],["fv","Fruit & veg","g"]];
 function nutrChips(it){
   const wrap=el2("div","chips2");
-  [["P",it.protein,"g"],["C",it.carbs,"g"],["F",it.fat,"g"],["Fib",it.fiber,"g"]].forEach(([l,v,u])=>{
-    const c=el2("span","chip2", v==null?`${l} –`:`${l} ${fmt(v)}${u}`); wrap.appendChild(c); });
+  [[L("Protein","پروٹین"),it.protein,"g","--npro"],[L("Carbs","کاربز"),it.carbs,"g","--ncarb"],[L("Fat","چکنائی"),it.fat,"g","--nfat"],[L("Fiber","فائبر"),it.fiber,"g","--nfib"]].forEach(([l,v,u,c])=>{
+    const ch=el2("span","chip2 nchip"); ch.style.setProperty("--nc",`var(${c})`); const sw=el2("i","nsw"); ch.append(sw, document.createTextNode(v==null?`${l} –`:`${l} ${fmt(v)} ${L(u,"گرام")}`)); wrap.appendChild(ch); });
   return wrap;
 }
 function nutrTable(it){
   const t=el2("table","ptable mini-t");
-  NUTR_ROWS.forEach(([k,l,u])=>{ const tr=el2("tr"); tr.append(el2("td","",l), el2("td","n", it[k]==null?"–":`${fmt(it[k])} ${u}`)); t.appendChild(tr); });
+  const NC={protein:"--npro",carbs:"--ncarb",fat:"--nfat",sat:"--nsat",fiber:"--nfib",fv:"--nfv",kcal:"--cal"};
+  NUTR_ROWS.forEach(([k,l,u])=>{ const tr=el2("tr"); const td=el2("td","nname"); const sw=el2("i","nsw"); sw.style.background=`var(${NC[k]})`; td.append(sw, document.createTextNode(l));
+    tr.append(td, el2("td","n", it[k]==null?"–":`${fmt(it[k])} ${u}`)); t.appendChild(tr); });
   return t;
 }
 function menuAllTotals(){
@@ -3073,31 +3088,36 @@ function renderNutriCard(f){
   const pk=f.protein*4, ck=f.carbs*4, fk=f.fat*9, tot=pk+ck+fk;
   if(tot>0){
     const split=document.createElement("div"); split.className="split";
-    [["var(--pro)",pk,"protein"],["var(--wat)",ck,"carbs"],["var(--cal)",fk,"fat"]].forEach(([c,v,l])=>{ const sp=document.createElement("span"); sp.style.background=c; sp.style.width=(100*v/tot)+"%"; sp.title=`${l} ${Math.round(100*v/tot)}%`; split.appendChild(sp); });
+    const parts=[["var(--npro)",pk,L("Protein","پروٹین")],["var(--ncarb)",ck,L("Carbs","کاربز")],["var(--nfat)",fk,L("Fat","چکنائی")]];
+    parts.forEach(([c,v,l])=>{ const sp=document.createElement("span"); sp.style.background=c; sp.style.width=(100*v/tot)+"%"; sp.title=`${l} ${Math.round(100*v/tot)}%`; split.appendChild(sp); });
     card.appendChild(split);
-    const lg=document.createElement("p"); lg.className="hint"; lg.style.margin="4px 0 8px";
-    lg.textContent=`Calories from protein ${Math.round(100*pk/tot)}% · carbs ${Math.round(100*ck/tot)}% · fat ${Math.round(100*fk/tot)}%`;
+    const lg=document.createElement("div"); lg.className="nlegend";
+    lg.appendChild(el2("span","nlt",L("Calories from:","کیلوریز کہاں سے:")));
+    parts.forEach(([c,v,l])=>{ const it=el2("span","nli"); const sw=el2("i","nsw"); sw.style.background=c; it.append(sw, document.createTextNode(`${l} ${Math.round(100*v/tot)}%`)); lg.appendChild(it); });
     card.appendChild(lg);
   }
   const rows=[
-    {l:"Protein", v:f.protein, t:s.protein, kind:"min", note:"aim to reach"},
-    {l:"Fiber", v:f.fiber, t:T.fiber, kind:"min", note:"at least"},
-    {l:"Fruit & vegetables", v:f.fv, t:T.fv, kind:"min", unit:"g", note:"at least"},
-    {l:"Carbs", v:f.carbs, t:T.carbs, kind:"info", note:"about"},
-    {l:"Fat", v:f.fat, t:T.fat, kind:"max", note:`limit (${s.fatPct}% of calories)`},
-    {l:"Saturated fat (est.)", v:f.sat, t:T.sat, kind:"max", note:`limit (${s.satPct}% of calories)`}
+    {l:"Protein", c:"var(--npro)", v:f.protein, t:s.protein, kind:"min", note:"aim to reach"},
+    {l:"Fiber", c:"var(--nfib)", v:f.fiber, t:T.fiber, kind:"min", note:"at least"},
+    {l:"Fruit & vegetables", c:"var(--nfv)", v:f.fv, t:T.fv, kind:"min", unit:"g", note:"at least"},
+    {l:"Carbs", c:"var(--ncarb)", v:f.carbs, t:T.carbs, kind:"info", note:"about"},
+    {l:"Fat", c:"var(--nfat)", v:f.fat, t:T.fat, kind:"max", note:`limit (${s.fatPct}% of calories)`},
+    {l:"Saturated fat (est.)", c:"var(--nsat)", v:f.sat, t:T.sat, kind:"max", note:`limit (${s.satPct}% of calories)`}
   ];
   rows.forEach(r=>{
     const frac=r.t? r.v/r.t : 0;
-    const color = r.kind==="max" ? (frac>1?"var(--bad)":frac>0.85?"var(--cal)":"var(--good)")
-                : r.kind==="min" ? (frac>=1?"var(--good)":frac>=0.6?"var(--cal)":"var(--track)") : "var(--wat)";
+    const pct=Math.round(frac*100);
+    // status is told in words; the bar keeps the nutrient's own colour
+    const st = r.kind==="max" ? (frac>1?[L("Over the limit","حد سے زیادہ"),"bad"]:frac>0.85?[L("Near the limit","حد کے قریب"),"warn"]:[L("Within limit ✓","حد کے اندر ✓"),"ok"])
+             : r.kind==="min" ? (frac>=1?[L("Reached ✓","پورا ✓"),"ok"]:[L(`${pct}% of goal`,`ہدف کا ${pct}%`),frac>=0.6?"warn":"low"]) : [L(`${pct}% of guide`,`اندازے کا ${pct}%`),"low"];
     const row=document.createElement("div"); row.className="nrow";
     const top=document.createElement("div"); top.className="ntop";
-    const a=document.createElement("span"); a.textContent=r.l;
+    const a=document.createElement("span"); a.className="nname"; const sw=el2("i","nsw"); sw.style.background=r.c; a.append(sw, document.createTextNode(r.l));
     const b=document.createElement("span"); b.textContent=`${fmt(r.v)} / ${fmt(r.t)} ${r.unit||"g"} · ${r.note}`;
     top.append(a,b);
-    const bar=document.createElement("div"); bar.className="nbar"; const fill=document.createElement("i"); fill.style.width=Math.min(100,frac*100)+"%"; fill.style.background=color; bar.appendChild(fill);
-    row.append(top,bar); card.appendChild(row);
+    const bar=document.createElement("div"); bar.className="nbar"+(st[1]==="bad"?" over":""); const fill=document.createElement("i"); fill.style.width=Math.min(100,frac*100)+"%"; fill.style.background=r.c; bar.appendChild(fill);
+    const stl=el2("div","nstat "+st[1],st[0]);
+    row.append(top,bar,stl); card.appendChild(row);
   });
   if(f.unknown){ const p=document.createElement("p"); p.className="hint"; p.style.margin="6px 0 0";
     p.textContent=`${f.unknown} item${f.unknown>1?"s":""} today ${f.unknown>1?"have":"has"} no fat or fiber data (typed by hand or logged before this update), so these totals are a little low.`; card.appendChild(p); }
