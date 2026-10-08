@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sehat Log — صحت لاگ</title>
-<meta name="theme-color" content="#1C2733">
+<meta name="theme-color" content="#16784A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Sehat Log">
 <link rel="manifest" href="manifest.webmanifest">
@@ -250,6 +250,58 @@ details.gd .ptable{margin:6px 0}
 .medit .ctl{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .medit .ctl input{width:64px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 7px}
 .medit .ctl select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 6px}
+.mealpick{margin:10px 0 2px;flex-basis:100%}
+/* medicines */
+.medbanner{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;margin:12px 0 0;padding:12px 14px;border-radius:16px;
+  border:1.5px solid var(--wat);background:color-mix(in srgb, var(--wat) 10%, var(--surface))}
+.medbanner[hidden]{display:none}
+.medbanner .ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--wat);color:#fff}
+.medbanner .ic svg{width:24px;height:24px}
+.medbanner .tx b{display:block;font-size:1rem}
+.medbanner .tx span{display:block;color:var(--muted);font-size:.85rem}
+.medbanner .tx .latehint{color:var(--bad);margin-top:2px}
+.medbanner .bb{display:flex;gap:6px;flex-wrap:wrap}
+@media (max-width:560px){ .medbanner{grid-template-columns:auto minmax(0,1fr)} .medbanner .bb{grid-column:1/-1} }
+.dlist li.slotrow{display:block;border-bottom:0;padding:0}
+.dlist li.helprow{display:block;border-bottom:1px dashed var(--line);padding:2px 0 8px}
+.dlist li.helprow .hint{margin:0;padding:8px 10px;border-radius:10px;background:color-mix(in srgb, var(--bad) 8%, var(--surface));color:var(--ink)}
+.dlist li.st-late .nm>span,.dlist li.st-missed .nm>span{color:var(--bad)}
+.dlist li.st-skipped .nm>span{color:var(--muted)}
+.dright{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.mchip{font-size:.74rem;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap;background:var(--plate);color:var(--muted)}
+.mchip.ok{background:color-mix(in srgb, var(--good) 16%, var(--surface));color:var(--good)}
+.mchip.due{background:var(--wat);color:#fff}
+.mchip.late{background:var(--bad);color:#fff}
+.mcheck-spacer{width:24px}
+.medwarn{margin-top:10px;border:1px solid var(--cal);background:color-mix(in srgb, var(--cal) 9%, var(--surface));border-radius:12px;padding:6px 12px}
+.medwarn p{margin:4px 0;font-size:.85rem}
+.medcard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 12px;align-items:start;padding:10px 0;border-bottom:1px dashed var(--line)}
+.medcard:last-child{border-bottom:0}
+.medcard.paused{opacity:.6}
+.medcard .ic{width:34px;height:34px;border-radius:50%;background:var(--plate);display:grid;place-items:center}
+.medcard .ic svg{width:24px;height:24px}
+.medcard .tx small{display:block;color:var(--muted);font-size:.8rem}
+.medcard .ctl{grid-column:2;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.mfield{margin:12px 0 0}
+.mfield>.hint{margin:4px 0 0}
+.unitlbl{color:var(--muted)}
+.patseg button b{font-variant-numeric:tabular-nums}
+.timesrow{margin-top:8px;gap:8px;align-items:center}
+.timechip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:12px;padding:4px 6px 4px 8px;background:var(--surface)}
+.timechip input{border:0;background:transparent;font:inherit;color:inherit}
+.timechip small{color:var(--muted);font-size:.76rem}
+.remopt{border-top:1px dashed var(--line);padding:10px 0 4px}
+.remopt .hint{margin:4px 0 8px}
+.medhist{display:grid;gap:8px;margin:6px 0 10px}
+.hrow{display:grid;grid-template-columns:minmax(80px,10rem) minmax(0,1fr) 3rem;gap:10px;align-items:center}
+.hn{font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hp{font-weight:600;text-align:end}
+.dots{display:grid;grid-template-columns:repeat(14,1fr);gap:3px}
+.hd{height:16px;border-radius:4px;background:var(--track)}
+.hd.all{background:var(--good)} .hd.some{background:var(--cal)} .hd.zero{background:var(--bad)} .hd.none{background:var(--track);opacity:.5}
+nav.tabs button.hasdue{position:relative}
+nav.tabs button.hasdue::after{content:"";position:absolute;top:6px;inset-inline-end:6px;width:8px;height:8px;border-radius:50%;background:var(--bad)}
+.mealseg button{padding:6px 11px;font-size:.84rem;border-radius:999px}
 .slotlbl{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:10px 0 0}
 .tmenu li{grid-template-columns:auto auto minmax(0,1fr) auto auto}
 .tmenu li.skipped .nm span{color:var(--muted);text-decoration:line-through}
@@ -378,7 +430,18 @@ textarea{min-height:76px;resize:vertical}
 <body>
 <header class="top">
   <div class="bar">
-    <div class="brand"><svg class="logo" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#1C2733"/><circle cx="256" cy="256" r="150" fill="none" stroke="#2F4152" stroke-width="44"/><circle cx="256" cy="256" r="150" fill="none" stroke="#4DB37E" stroke-width="44" stroke-linecap="round" stroke-dasharray="660 943" transform="rotate(-90 256 256)"/><circle cx="256" cy="256" r="84" fill="none" stroke="#E6AE3E" stroke-width="30" stroke-linecap="round" stroke-dasharray="380 528" transform="rotate(-90 256 256)"/></svg><div class="txt">Sehat Log<small><span id="goalLine">114 kg → goal</span> · <span id="syncNote"></span></small></div></div>
+    <div class="brand"><svg class="logo" viewBox="0 0 512 512" aria-hidden="true">
+  <defs>
+    <linearGradient id="logobg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3FBF7F"/>
+      <stop offset="1" stop-color="#16784A"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#logobg)"/>
+  <path d="M256 404 C 236 388 112 306 112 210 C 112 158 152 122 198 122 C 226 122 246 136 256 156 C 266 136 286 122 314 122 C 360 122 400 158 400 210 C 400 306 276 388 256 404 Z" fill="#FFFFFF"/>
+  <polyline points="128,248 196,248 220,206 250,300 280,226 300,262 384,262" fill="none" stroke="#16784A" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="384" cy="262" r="17" fill="#F2B544"/>
+</svg><div class="txt">Sehat Log<small><span id="goalLine">114 kg → goal</span> · <span id="syncNote"></span></small></div></div>
     <div class="datebox">
       <button class="iconbtn" id="prevDay" aria-label="Previous day">‹</button>
       <input type="date" id="dateInput" aria-label="Day">
@@ -389,6 +452,7 @@ textarea{min-height:76px;resize:vertical}
   </div>
   <nav class="tabs" role="tablist">
     <button role="tab" data-tab="today" aria-selected="true">Today</button>
+    <button role="tab" data-tab="meds" aria-selected="false">Medicine</button>
     <button role="tab" data-tab="foods" aria-selected="false">Food chart</button>
     <button role="tab" data-tab="care" aria-selected="false">Care</button>
     <button role="tab" data-tab="body" aria-selected="false">BMI</button>
@@ -400,6 +464,7 @@ textarea{min-height:76px;resize:vertical}
 </header>
 
 <main class="wrap">
+<div id="medBanner" class="medbanner" hidden role="status" aria-live="polite"></div>
 
 <!-- =========================== TODAY =========================== -->
 <div id="tab-today">
@@ -414,6 +479,11 @@ textarea{min-height:76px;resize:vertical}
 
   <div class="cols">
     <div>
+      <section class="block">
+        <h2 class="secthead" data-icon="pill">Medicines</h2>
+        <div id="medToday"></div>
+      </section>
+
       <section class="block">
         <h2 class="secthead" data-icon="plate">Food</h2>
         <div id="todayMenu"></div>
@@ -434,6 +504,7 @@ textarea{min-height:76px;resize:vertical}
             <button class="btn" id="addFood">Add</button>
             <button class="btn ghost" id="addToMenu" title="Add this food to your fixed daily menu">＋ Daily menu</button>
           </div>
+          <div id="fMeals"></div>
           <p class="hint" id="fInfo" style="margin:6px 0 0"></p>
         </div>
         <ul class="food" id="foodList"></ul>
@@ -580,6 +651,17 @@ textarea{min-height:76px;resize:vertical}
 </div>
 
 <!-- =========================== PERSONAL CARE =========================== -->
+<div id="tab-meds" hidden>
+  <div class="hero" style="grid-template-columns:1fr"><div><h1>Medicines</h1>
+    <p class="hint">Add each medicine or supplement once — how much, when, before or after food, and for how long. Every time you open Sehat Log you'll see what's due, and you just tick it.</p></div></div>
+  <div id="medTabToday"></div>
+  <section class="block"><h2>Your medicines</h2><div id="medList"></div></section>
+  <section class="block" id="medForm" style="margin-top:14px"></section>
+  <section class="block" id="medRemind" style="margin-top:14px"></section>
+  <section class="block" style="margin-top:14px"><h2>Last 14 days</h2><div id="medHistory"></div></section>
+  <p class="hint" style="margin-top:14px">Sehat Log only reminds you — it doesn't give medical advice. Don't start, stop or change a medicine without your doctor or pharmacist.</p>
+</div>
+
 <div id="tab-care" hidden>
   <div class="hero" style="grid-template-columns:1fr"><div><h1>Personal care</h1>
     <p class="hint">Choose what you want to keep up with, and the app tells you what's due today, what's overdue and when each thing comes round again. Timings follow dermatologist and dental advice — change any of them to suit you.</p></div></div>
@@ -703,6 +785,17 @@ textarea{min-height:76px;resize:vertical}
       <li>Clearing the browser's site data deletes your log — back up once a week.</li>
     </ul>
   </details>
+  <details class="gd"><summary>8 · Medicines and reminders</summary>
+    <ul>
+      <li><b>Add once:</b> Medicine tab → write the name, pick tablet / syrup / drops…, how much each time, and the pattern from your prescription — <b>1+0+1</b> means morning and night, <b>1+1+1</b> three times a day. Fix the clock times to match your day.</li>
+      <li><b>Food:</b> choose before food, after food, with food, empty stomach or bedtime — exactly as the doctor or the leaflet says.</li>
+      <li><b>How long:</b> “Ongoing” for daily medicines like BP or sugar tablets; “Number of days” for a course like an antibiotic — it stops showing after the last day and tells you when the course is ending.</li>
+      <li><b>Every day:</b> when a dose is due, a blue banner appears at the top of every tab. Tick it on Today or tap <b>Taken</b> in the banner. <b>Skip</b> if you're not taking that dose.</li>
+      <li><b>Forgot a dose?</b> The app shows the general rule: under 2 hours late, take it; later than that, it depends on how often you take it and when the next dose is. Never take a double dose. The leaflet or your doctor's advice comes first.</li>
+      <li><b>Running out:</b> enter how many you have and the app counts down as you tick, warning you a few days before it runs out. Tap <b>Bought more</b> when you refill.</li>
+      <li><b>When the app is closed:</b> phones don't let an offline web app ring by itself, so add the calendar reminders or set Clock-app alarms for the times shown in the Medicine tab.</li>
+    </ul>
+  </details>
 
   <p class="hint" style="margin-top:14px">Sehat Log is a tracking and education tool, not medical advice. If you have diabetes, high blood pressure, heart or kidney disease, take medicines, or are pregnant, plan your diet with a doctor or dietitian.</p>
   </div>
@@ -792,6 +885,17 @@ textarea{min-height:76px;resize:vertical}
       <li>سب کچھ اسی ڈیوائس اور اسی براؤزر میں رہتا ہے۔ کچھ اپ لوڈ نہیں ہوتا۔</li>
       <li>ہر فون یا لیپ ٹاپ کا ڈیٹا الگ ہے۔ منتقل کرنے کے لیے: ایک پر <b>فون / لیپ ٹاپ پر بھیجیں</b>، دوسرے پر <b>بیک اپ سے واپس لائیں</b>۔</li>
       <li>براؤزر کا ڈیٹا صاف کرنے سے آپ کا ریکارڈ مٹ جاتا ہے — ہفتے میں ایک بار بیک اپ لیں۔</li>
+    </ul>
+  </details>
+  <details class="gd"><summary>8 · دوائیں اور یاد دہانی</summary>
+    <ul>
+      <li><b>ایک بار شامل کریں:</b> دوائیں والا حصہ ← نام لکھیں، گولی / شربت / قطرے… چنیں، ہر بار کتنی، اور پرچی والا طریقہ — <b>1+0+1</b> یعنی صبح اور رات، <b>1+1+1</b> یعنی دن میں تین بار۔ وقت اپنے معمول کے مطابق ٹھیک کریں۔</li>
+      <li><b>کھانا:</b> کھانے سے پہلے، بعد، ساتھ، خالی پیٹ یا سوتے وقت — جیسا ڈاکٹر یا پرچی کہے۔</li>
+      <li><b>کب تک:</b> بلڈ پریشر یا شوگر جیسی روز کی دوا کے لیے “مسلسل”؛ اینٹی بائیوٹک جیسے کورس کے لیے “کتنے دن” — آخری دن کے بعد خود ہٹ جاتی ہے اور بتاتی ہے کہ کورس ختم ہو رہا ہے۔</li>
+      <li><b>روزانہ:</b> خوراک کا وقت آئے تو ہر صفحے کے اوپر نیلی پٹی آتی ہے۔ آج والے صفحے پر ٹِک کریں یا پٹی میں <b>لے لی</b> دبائیں۔ کوئی خوراک نہیں لے رہے تو <b>چھوڑیں</b> دبائیں۔</li>
+      <li><b>خوراک بھول گئے؟</b> ایپ عام اصول بتاتی ہے: 2 گھنٹے سے کم دیر ہو تو لے لیں؛ اس سے زیادہ ہو تو یہ اس پر ہے کہ دوا دن میں کتنی بار لیتے ہیں اور اگلی کب ہے۔ کبھی دگنی خوراک نہ لیں۔ پرچی یا ڈاکٹر کی بات سب سے پہلے۔</li>
+      <li><b>ختم ہونے سے پہلے:</b> بتائیں کتنی ہیں تو ٹِک کرنے پر گنتی کم ہوتی جاتی ہے اور ختم ہونے سے چند دن پہلے خبردار کرتی ہے۔ نئی خریدیں تو <b>مزید خریدی</b> دبائیں۔</li>
+      <li><b>ایپ بند ہو تو:</b> فون آف لائن ویب ایپ کو خود سے بجنے نہیں دیتے، اس لیے کیلنڈر یاد دہانی بنائیں یا دوائیں والے حصے میں دیے گئے اوقات پر کلاک ایپ میں الارم لگائیں۔</li>
     </ul>
   </details>
 
@@ -915,6 +1019,7 @@ plate:`<svg viewBox="0 0 64 64"><circle cx="34" cy="34" r="22" fill="#FFFFFF" st
 rice:`<svg viewBox="0 0 64 64"><path d="M7 32h50a25 22 0 0 1-50 0z" fill="#3E6E8E"/><path d="M10 32c2-14 42-14 44 0z" fill="#FAF8F0"/><g stroke="#E6E1D0" stroke-width="1.6" stroke-linecap="round"><path d="M20 26l3-1"/><path d="M28 22l3 1"/><path d="M36 25l3-1"/><path d="M42 28l2 1"/><path d="M25 30l3-1"/><path d="M33 29l3 1"/></g></svg>`
 };
 const ICONS = {
+pill:`<svg viewBox="0 0 24 24"><g transform="rotate(-40 12 12)"><rect x="3.5" y="8" width="17" height="8" rx="4" fill="none" stroke="var(--wat)" stroke-width="2"/><path d="M12 8h4.5a4 4 0 0 1 0 8H12z" fill="var(--wat)"/></g></svg>`,
 fib:`<svg viewBox="0 0 24 24"><path d="M12 22V9" stroke="var(--good)" stroke-width="2" stroke-linecap="round"/><path d="M12 9c-3-1-4-4-3-7 3 1 4 4 3 7zM12 14c-3-1-5-3-5-6 3 0 5 3 5 6zM12 14c3-1 5-3 5-6-3 0-5 3-5 6zM12 19c-3-1-5-3-5-6 3 0 5 3 5 6zM12 19c3-1 5-3 5-6-3 0-5 3-5 6z" fill="var(--good)"/></svg>`,
 fat:`<svg viewBox="0 0 24 24"><path d="M12 3c3.5 5 6 8 6 11.5a6 6 0 0 1-12 0C6 11 8.5 8 12 3z" fill="var(--cal)"/><ellipse cx="10" cy="14" rx="1.6" ry="2.4" fill="#fff" opacity=".55"/></svg>`,
 cal:`<svg viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4 0-6 1-9z" fill="var(--cal)"/></svg>`,
@@ -1308,13 +1413,14 @@ function nutrTargets(){ const s=settings, k=s.kcal||2000;
 let customFoods = [];
 let MENU = [];
 let CARE = {sex:null, routine:[], log:{}, cond:{}, custom:[]};   // fixed daily menu: [{id,name,art,slot,qty,mode,base:{kcal,p,g,unit},kcal,protein}]
-function saveLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({settings, days, customFoods, habits:HABITS, menu:MENU, care:CARE})); }catch(e){} }
+function saveLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({settings, days, customFoods, habits:HABITS, menu:MENU, care:CARE, meds:MEDS})); }catch(e){} }
 function loadLocal(){ try{ const raw = localStorage.getItem(LS_KEY); if(!raw) return;
   const o = JSON.parse(raw); if(o.settings) settings = {...DEFAULT_SETTINGS, ...o.settings};
   if(Array.isArray(o.customFoods)) customFoods = o.customFoods;
   if(Array.isArray(o.habits)) HABITS = o.habits;
   if(Array.isArray(o.menu)) MENU = o.menu;
   if(o.care) CARE = {sex:null, routine:[], log:{}, cond:{}, custom:[], ...o.care};
+  if(o.meds) MEDS = {list:[], log:{}, ...o.meds};
   if(o.days) days = o.days; }catch(e){} }
 
 let savedTimer=null;
@@ -1866,11 +1972,12 @@ function renderFoodChart(){
       add.textContent= current===todayKey() ? "Add to today" : `Add to ${keyToDate(current).toLocaleDateString(LOC(),{day:"numeric",month:"short"})}`;
       add.onclick=()=>{ const r=upd(); const qty=num(qi.value)||0; if(!qty) return;
         addFoodEntry(f, qty, us.value, r.kcal, r.protein); fcOpen=null; changed(); renderFoodChart(); };
+      const mp=mealPicker();
       const addm=document.createElement("button"); addm.className="btn ghost"; addm.textContent="Add to daily menu";
       addm.onclick=()=>{ const r=upd(); const qty=num(qi.value)||0; if(!qty) return;
-        addMenuItem(menuItemFrom(f, qty, us.value, r.kcal, r.protein)); fcOpen=null; renderFoodChart(); renderAll(); };
+        mp.get().forEach(sl=>addMenuItem(menuItemFrom(f, qty, us.value, r.kcal, r.protein, sl))); fcOpen=null; renderFoodChart(); renderAll(); };
       const pb=portionBox(f, P=>{ us.value="unit"; qi.value = P.units ? Math.round(P.units*100)/100 : 1; upd(); });
-      upd(); ex.append(pb,qi,us,calc,add,addm); li.appendChild(ex);
+      upd(); ex.append(pb,qi,us,calc,add,mp.el,addm); li.appendChild(ex);
     }
     ul.appendChild(li); });
 }
@@ -2299,6 +2406,19 @@ function recalcMenuItem(it){ if(!it.base) return; const r=calcFood(it.base, it.q
 function menuTotals(){ return MENU.reduce((a,m)=>({kcal:a.kcal+m.kcal, protein:a.protein+m.protein, fat:a.fat+(+m.fat||0), fiber:a.fiber+(+m.fiber||0)}),{kcal:0,protein:0,fat:0,fiber:0}); }
 function qtyText(it){ const u = unitLabel(it.mode, it.base); return u==="g" ? `${fmtQty(it.qty)} g` : `${fmtQty(it.qty)} × ${u}`; }
 function addMenuItem(it){ MENU.push(it); MENU.sort((a,b)=>SLOTS.indexOf(a.slot)-SLOTS.indexOf(b.slot)); scheduleSave(); }
+// choose which meal(s) an item belongs to — one tap each, more than one allowed (e.g. roti at lunch and dinner)
+function mealPicker(initial){
+  const sel=new Set(initial && initial.length ? initial : [guessSlot()]);
+  const wrap=el2("div","mealpick");
+  wrap.appendChild(el2("span","fieldlbl","Which meal? Tap one or more"));
+  const row=el2("div","seg mealseg"); row.setAttribute("role","group"); row.setAttribute("aria-label","Which meal");
+  const paint=()=>row.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(sel.has(b.dataset.v))));
+  SLOTS.forEach(x=>{ const b=el2("button","",x); b.type="button"; b.dataset.v=x;
+    b.onclick=e=>{ e.stopPropagation(); if(sel.has(x)){ if(sel.size>1) sel.delete(x); } else sel.add(x); paint(); };
+    row.appendChild(b); });
+  paint(); wrap.appendChild(row);
+  return {el:wrap, get:()=>SLOTS.filter(x=>sel.has(x)), set:a=>{ sel.clear(); (a&&a.length?a:[guessSlot()]).forEach(x=>sel.add(x)); paint(); }};
+}
 
 function menuEntry(it){ return {name:it.name, kcal:it.kcal, protein:it.protein, art:it.art, qty:it.qty, unit: unitLabel(it.mode, it.base), menuId:it.id,
   fat:it.fat??null, carbs:it.carbs??null, fiber:it.fiber??null, sat:it.sat??null, fv:it.fv||0}; }
@@ -2640,6 +2760,7 @@ const TAB_ICONS = {
  today:`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
  foods:`<svg viewBox="0 0 24 24"><circle cx="13" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 3v18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
  care:`<svg viewBox="0 0 24 24"><path d="M12 2c4 6 7 9 7 13a7 7 0 0 1-14 0c0-4 3-7 7-13z" fill="currentColor"/></svg>`,
+ meds:`<svg viewBox="0 0 24 24"><g transform="rotate(-40 12 12)"><rect x="3.5" y="8" width="17" height="8" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 8h4.5a4 4 0 0 1 0 8H12z" fill="currentColor"/></g></svg>`,
  body:`<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10a5 5 0 0 1 8 0" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M12 10l2-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
  week:`<svg viewBox="0 0 24 24"><rect x="4" y="12" width="4" height="8" rx="1" fill="currentColor"/><rect x="10" y="7" width="4" height="13" rx="1" fill="currentColor"/><rect x="16" y="4" width="4" height="16" rx="1" fill="currentColor"/></svg>`,
  progress:`<svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 7h6v6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -3166,6 +3287,479 @@ function setupLang(){
 }
 
 /* ------------------------------------------------------------------
+   MEDICINES — add each medicine once; every time the app is opened it
+   shows what is due, on every tab. Nothing leaves the phone.
+   Missed-dose help follows the NHS Specialist Pharmacy Service general
+   advice (used only when the leaflet or the doctor says nothing else):
+   < 2 h late → take it; > 2 h late and taken 1–2× a day → take it unless the
+   next dose is due within a few hours; taken 3+× a day → skip it; never double.
+------------------------------------------------------------------ */
+function L(en, ur){ return LANG==="ur" ? ur : en; }
+const MED_FORMS = {
+  tablet:  {en:"Tablet",  ur:"گولی",   u1:"tablet",  un:"tablets",  uu:"گولی",    step:0.5},
+  capsule: {en:"Capsule", ur:"کیپسول", u1:"capsule", un:"capsules", uu:"کیپسول",  step:1},
+  syrup:   {en:"Syrup",   ur:"شربت",   u1:"ml",      un:"ml",       uu:"ملی لیٹر", step:2.5},
+  drops:   {en:"Drops",   ur:"قطرے",   u1:"drop",    un:"drops",    uu:"قطرے",    step:1},
+  injection:{en:"Injection",ur:"انجکشن",u1:"unit",   un:"units",    uu:"یونٹ",    step:1},
+  inhaler: {en:"Inhaler", ur:"انہیلر", u1:"puff",    un:"puffs",    uu:"پف",      step:1},
+  sachet:  {en:"Sachet",  ur:"ساشے",   u1:"sachet",  un:"sachets",  uu:"ساشے",    step:1},
+  cream:   {en:"Cream / ointment", ur:"کریم / مرہم", u1:"", un:"", uu:"", step:1},
+  other:   {en:"Other",   ur:"دیگر",   u1:"dose",    un:"doses",    uu:"خوراک",   step:1}
+};
+const MED_FOOD = {
+  before: ["Before food","کھانے سے پہلے"],
+  after:  ["After food","کھانے کے بعد"],
+  with:   ["With food","کھانے کے ساتھ"],
+  empty:  ["Empty stomach","خالی پیٹ"],
+  bedtime:["At bedtime","سوتے وقت"],
+  any:    ["Any time","کسی بھی وقت"]
+};
+const MED_SCHED = {daily:["Every day","روزانہ"], alt:["Every other day","ایک دن چھوڑ کر"], days:["Some days of the week","ہفتے کے کچھ دن"], prn:["Only when needed","صرف ضرورت کے وقت"]};
+// Pakistani prescriptions write the day as morning + afternoon + night, e.g. 1+0+1
+const MED_PATTERNS = [
+  ["1+0+0", "Morning", "صبح", ["08:00"]],
+  ["0+0+1", "Night", "رات", ["21:00"]],
+  ["1+0+1", "Morning & night", "صبح اور رات", ["08:00","21:00"]],
+  ["1+1+1", "3 times a day", "دن میں 3 بار", ["08:00","14:00","21:00"]],
+  ["1+1+1+1", "4 times a day", "دن میں 4 بار", ["08:00","12:00","16:00","20:00"]],
+  ["", "Bedtime", "سوتے وقت", ["22:30"], "bedtime"]
+];
+const MED_COLORS = ["var(--wat)","var(--stp)","var(--gym)","var(--cal)","var(--slp)","var(--pro)","var(--bad)"];
+const MED_NAMES = ["Panadol","Calpol","Brufen","Disprin","Augmentin","Amoxil","Flagyl","Risek","Nexum","Motilium","Gravinate",
+  "Glucophage (Metformin)","Getryl","Concor","Lowplat","Lipiget","Ventolin","Softin","Rigix","Arinac","Surbex Z","Neurobion",
+  "Vitamin D","Calcium","Iron","Folic acid","Omega 3","Multivitamin","ORS"];
+
+let MEDS = {list:[], log:{}};   // log: {"YYYY-MM-DD": {d:{"<id>|HH:MM":{s:"t"|"s", at:"HH:MM"}}, prn:[{id, at}]}}
+const MED_ICONS = {
+  pill:`<svg viewBox="0 0 24 24"><g transform="rotate(-40 12 12)"><rect x="4" y="8" width="16" height="8" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 8v8" stroke="currentColor" stroke-width="2"/><path d="M12 8h4a4 4 0 0 1 0 8h-4z" fill="currentColor"/></g></svg>`,
+  bottle:`<svg viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="3" rx="1" fill="currentColor"/><path d="M8 7h8v12a2.5 2.5 0 0 1-2.5 2.5h-3A2.5 2.5 0 0 1 8 19z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 13h8v6a2.5 2.5 0 0 1-2.5 2.5h-3A2.5 2.5 0 0 1 8 19z" fill="currentColor"/></svg>`,
+  drop:`<svg viewBox="0 0 24 24"><path d="M12 3c3.5 5 6 8 6 11.5a6 6 0 0 1-12 0C6 11 8.5 8 12 3z" fill="currentColor"/></svg>`,
+  needle:`<svg viewBox="0 0 24 24"><g transform="rotate(45 12 12)"><rect x="9" y="5" width="6" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 15v6M10 3h4M12 3v2M9 9h3M9 12h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g></svg>`
+};
+function medIcon(m){ const f=m.form; return MED_ICONS[f==="syrup"?"bottle":(f==="drops"||f==="cream")?"drop":f==="injection"?"needle":"pill"]; }
+function medById(id){ return MEDS.list.find(m=>m.id===id); }
+function tMin(t){ const [h,m]=t.split(":").map(Number); return h*60+m; }
+function nowHM(){ const d=new Date(); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+function fmtTime(t){ const [h,m]=t.split(":").map(Number); return new Date(2000,0,1,h,m).toLocaleTimeString(LOC(),{hour:"numeric",minute:"2-digit",hour12:true}); }
+function partOfDay(t){ const m=tMin(t); return m<11*60?L("Morning","صبح"):m<16*60?L("Afternoon","دوپہر"):m<19*60?L("Evening","شام"):L("Night","رات"); }
+function medUnit(m, q){ const F=MED_FORMS[m.form]||MED_FORMS.other; return LANG==="ur" ? F.uu : (q>1 || q<1 ? F.un : F.u1); }
+function medAmtText(m){ if(m.form==="cream") return L("Apply","لگائیں"); const q=m.amt||1; return `${fmtQty(q)} ${medUnit(m,q)}`; }
+function medFoodText(m){ const f=MED_FOOD[m.food]||MED_FOOD.any; return L(f[0], f[1]); }
+function medTitle(m){ return m.strength ? `${m.name} ${m.strength}` : m.name; }
+function medCountable(m){ return m.form!=="cream"; }
+function medActiveOn(m, k){
+  if(m.paused || m.sched==="prn") return false;
+  if(m.start && k<m.start) return false;
+  if(m.end && k>m.end) return false;
+  if(m.sched==="alt") return daysBetween(m.start||k, k)%2===0;
+  if(m.sched==="days") return (m.days||[]).includes(keyToDate(k).getDay());
+  return true;
+}
+function medFinished(m){ return m.end && todayKey()>m.end; }
+function medDayLog(k, make){ if(!MEDS.log[k]){ if(!make) return {d:{}, prn:[]}; MEDS.log[k]={d:{}, prn:[]}; } const o=MEDS.log[k]; o.d=o.d||{}; o.prn=o.prn||[]; return o; }
+function dosesOn(k){
+  const out=[];
+  MEDS.list.forEach(m=>{ if(!medActiveOn(m,k)) return; (m.times||[]).forEach(t=>out.push({m, t, key:m.id+"|"+t})); });
+  return out.sort((a,b)=>tMin(a.t)-tMin(b.t));
+}
+// status of one dose: taken / skipped / upcoming / soon / due / late / missed
+function doseStatus(k, dose){
+  const rec=medDayLog(k).d[dose.key];
+  if(rec && rec.s==="t") return {k:"taken", at:rec.at};
+  if(rec && rec.s==="s") return {k:"skipped"};
+  const today=todayKey();
+  if(k<today) return {k:"missed"};
+  if(k>today) return {k:"upcoming"};
+  const diff=tMin(nowHM())-tMin(dose.t);
+  if(diff < -30) return {k:"upcoming"};
+  if(diff < 0) return {k:"soon", mins:-diff};
+  if(diff <= 120) return {k:"due", mins:diff};
+  return {k:"late", mins:diff};
+}
+function perDay(m){ const n=(m.times||[]).length; return m.sched==="alt" ? n/2 : m.sched==="days" ? n*(m.days||[]).length/7 : n; }
+function medDaysLeft(m){ if(m.stock==null || !medCountable(m) || m.sched==="prn") return null; const use=(m.amt||1)*perDay(m); return use>0 ? Math.floor(m.stock/use) : null; }
+function stockChange(m, sign){ if(m.stock==null || !medCountable(m)) return; m.stock=Math.max(0, Math.round((m.stock + sign*(m.amt||1))*100)/100); }
+function setDose(k, dose, state){
+  const lg=medDayLog(k,true), prev=lg.d[dose.key];
+  if(prev && prev.s==="t") stockChange(dose.m, +1);
+  if(state){ lg.d[dose.key]={s:state, at:nowHM()}; if(state==="t") stockChange(dose.m, -1); }
+  else delete lg.d[dose.key];
+  medChanged();
+}
+function takePrn(m){ const lg=medDayLog(current,true); lg.prn.push({id:m.id, at:nowHM()}); stockChange(m,-1); medChanged(); }
+function undoPrn(m){ const lg=medDayLog(current,true); for(let i=lg.prn.length-1;i>=0;i--){ if(lg.prn[i].id===m.id){ lg.prn.splice(i,1); stockChange(m,+1); break; } } medChanged(); }
+function nextDoseAfter(m, t){ const ts=(m.times||[]).slice().sort((a,b)=>tMin(a)-tMin(b)); const later=ts.find(x=>tMin(x)>tMin(t));
+  if(later) return {t:later, mins:tMin(later)-tMin(t)}; return ts.length ? {t:ts[0], mins:24*60-tMin(t)+tMin(ts[0]), tomorrow:true} : null; }
+// what to do about a late dose, for this medicine's schedule
+function missedAdvice(dose, st){
+  const m=dose.m, n=(m.times||[]).length, late=st.mins||0, nowT=nowHM();
+  const nx=nextDoseAfter(m, dose.t), untilNext = nx ? (tMin(nx.t)-tMin(nowT)+(nx.tomorrow||tMin(nx.t)<=tMin(nowT)?24*60:0))%(24*60) : 999;
+  let a;
+  if(late < 120) a = L("Less than 2 hours late — take it now.", "2 گھنٹے سے کم دیر ہوئی ہے — ابھی لے لیں۔");
+  else if(n>=3) a = L(`More than 2 hours late, and you take it ${n} times a day — skip this one and take the next dose at ${fmtTime(nx.t)} as usual.`,
+                       `2 گھنٹے سے زیادہ دیر ہو گئی، اور یہ دن میں ${n} بار لینی ہے — یہ والی چھوڑ دیں اور اگلی خوراک ${fmtTime(nx.t)} پر معمول کے مطابق لیں۔`);
+  else if(untilNext <= 4*60) a = L(`Your next dose is due soon (${fmtTime(nx.t)}) — skip this one and take the next on time.`,
+                                   `اگلی خوراک جلد آنے والی ہے (${fmtTime(nx.t)}) — یہ والی چھوڑ دیں اور اگلی وقت پر لیں۔`);
+  else a = L(`Take it now, then take the next dose at ${fmtTime(nx.t)} as usual.`, `ابھی لے لیں، پھر اگلی خوراک ${fmtTime(nx.t)} پر معمول کے مطابق۔`);
+  return a + " " + L("Never take a double dose to make up. If the leaflet or your doctor says something different, follow that.",
+                     "کمی پوری کرنے کے لیے کبھی دگنی خوراک نہ لیں۔ اگر پرچی یا ڈاکٹر کچھ اور کہیں تو وہی مانیں۔");
+}
+function statusChip(st){
+  const map={taken:[st.at?L(`Taken ${fmtTime(st.at)}`,`لے لی ${fmtTime(st.at)}`):L("Taken","لے لی"),"ok"], skipped:[L("Skipped","چھوڑ دی"),"muted"],
+    upcoming:[L("Later","بعد میں"),"muted"], soon:[L(`In ${st.mins} min`,`${st.mins} منٹ میں`),"due"], due:[L("Take now","ابھی لیں"),"due"],
+    late:[L(`Late ${Math.floor(st.mins/60)} h`,`${Math.floor(st.mins/60)} گھنٹے دیر`),"late"], missed:[L("Missed","رہ گئی"),"late"]};
+  const [t,c]=map[st.k]; return el2("span","mchip "+c,t);
+}
+function courseText(m, k){
+  if(!m.end) return "";
+  const left=daysBetween(k, m.end), total=m.start?daysBetween(m.start,m.end)+1:null, dayN=m.start?daysBetween(m.start,k)+1:null;
+  if(left<0) return L("Course finished","کورس مکمل");
+  const part = total && dayN>0 ? L(`Day ${dayN} of ${total}`,`${total} میں سے دن ${dayN}`) : "";
+  const tail = left===0 ? L("last day today","آج آخری دن") : left===1 ? L("last day tomorrow","کل آخری دن") : L(`${left} days left`,`${left} دن باقی`);
+  return part ? `${part} · ${tail}` : tail;
+}
+function medWarnings(){
+  const w=[];
+  MEDS.list.forEach(m=>{ if(m.paused || medFinished(m)) return; const dl=medDaysLeft(m);
+    if(m.stock!=null && medCountable(m) && m.stock<=0) w.push(L(`${medTitle(m)}: none left — buy more before the next dose.`, `${medTitle(m)}: ختم ہو گئی — اگلی خوراک سے پہلے خرید لیں۔`));
+    else if(dl!=null && dl<=(m.lowDays??5)) w.push(L(`${medTitle(m)}: about ${dl} day${dl===1?"":"s"} left (${fmtQty(m.stock)} ${medUnit(m,m.stock)}) — buy more soon.`, `${medTitle(m)}: تقریباً ${dl} دن کی باقی (${fmtQty(m.stock)} ${medUnit(m,m.stock)}) — جلد خرید لیں۔`));
+    if(m.end){ const left=daysBetween(todayKey(), m.end); if(left===0) w.push(L(`${medTitle(m)}: last day of the course today — finish it even if you feel better, unless your doctor says otherwise.`, `${medTitle(m)}: آج کورس کا آخری دن ہے — طبیعت بہتر ہو تب بھی پورا کریں، جب تک ڈاکٹر کچھ اور نہ کہیں۔`)); }
+  });
+  return w;
+}
+
+/* ---------- the dose list — used on Today and at the top of the Medicine tab ---------- */
+function renderDoseList(box, k){
+  box.innerHTML="";
+  const sec=el2("div","menu-sec medsec");
+  const h=el2("h3"); h.append(el2("span","",L("Medicines","دوائیں")));
+  const doses=dosesOn(k), prn=MEDS.list.filter(m=>m.sched==="prn" && !m.paused && !medFinished(m));
+  const taken=doses.filter(x=>doseStatus(k,x).k==="taken").length;
+  h.append(el2("small","", doses.length ? L(`${taken} of ${doses.length} taken`,`${doses.length} میں سے ${taken} لے لیں`) : ""));
+  sec.appendChild(h);
+  if(!MEDS.list.length){
+    sec.appendChild(el2("p","hint",L("Taking a medicine or a supplement? Add it once — every time you open the app you'll see what's due.","کوئی دوا یا وٹامن لیتے ہیں؟ ایک بار شامل کریں — جب بھی ایپ کھولیں گے، پتا چل جائے گا کہ کون سی لینی ہے۔")));
+    const b=el2("button","btn ghost small",L("Add a medicine","دوا شامل کریں")); b.onclick=()=>openTab("meds"); sec.appendChild(b);
+    box.appendChild(sec); return;
+  }
+  if(!doses.length && !prn.length) sec.appendChild(el2("p","hint",L("No medicine scheduled for this day.","اس دن کوئی دوا نہیں۔")));
+  const ul=el2("ul","mlist dlist"); let lastT=null;
+  doses.forEach(dose=>{
+    const m=dose.m, st=doseStatus(k,dose);
+    if(dose.t!==lastT){ lastT=dose.t; const li0=el2("li"); li0.className="slotrow"; li0.appendChild(el2("div","slotlbl",`${fmtTime(dose.t)} · ${partOfDay(dose.t)}`)); ul.appendChild(li0); }
+    const li=el2("li"); li.classList.add("st-"+st.k); if(st.k==="taken") li.classList.add("on");
+    const cb=document.createElement("input"); cb.type="checkbox"; cb.className="mcheck"; cb.checked=st.k==="taken";
+    cb.setAttribute("aria-label",L(`Took ${m.name} at ${fmtTime(dose.t)}`,`${m.name} ${fmtTime(dose.t)} والی لے لی`));
+    cb.onchange=()=>setDose(k, dose, cb.checked?"t":null);
+    const ic=el2("span","ic"); ic.innerHTML=medIcon(m); ic.style.color=m.color||"var(--wat)";
+    const nm=el2("span","nm"); nm.append(el2("span","",medTitle(m)));
+    const sm=el2("small","",`${medAmtText(m)} · ${medFoodText(m)}${m.notes?` · ${m.notes}`:""}`); nm.appendChild(sm);
+    const ct=courseText(m,k); if(ct) nm.appendChild(el2("small","",ct));
+    const right=el2("span","dright"); right.appendChild(statusChip(st));
+    const sk=el2("button","skipbtn"+(st.k==="skipped"?" on":""), st.k==="skipped"?L("Undo","واپس"):L("Skip","چھوڑیں"));
+    sk.title=L("I'm not taking this dose","یہ خوراک نہیں لے رہا/رہی");
+    sk.onclick=()=>setDose(k, dose, st.k==="skipped"?null:"s");
+    if(st.k!=="taken") right.appendChild(sk);
+    li.append(cb,ic,nm,right); ul.appendChild(li);
+    if(st.k==="late" || (st.k==="missed" && k===todayKey())){
+      const help=el2("li","helprow"); help.appendChild(el2("p","hint",missedAdvice(dose,st))); ul.appendChild(help); }
+  });
+  prn.forEach(m=>{
+    const lg=medDayLog(k).prn.filter(p=>p.id===m.id);
+    const li=el2("li"); const sp=el2("span","mcheck-spacer");
+    const ic=el2("span","ic"); ic.innerHTML=medIcon(m); ic.style.color=m.color||"var(--wat)";
+    const nm=el2("span","nm"); nm.append(el2("span","",medTitle(m)));
+    nm.appendChild(el2("small","",`${L("Only when needed","صرف ضرورت کے وقت")} · ${medAmtText(m)} · ${medFoodText(m)}`));
+    nm.appendChild(el2("small","", lg.length ? L(`Taken ${lg.length}× today — last ${fmtTime(lg[lg.length-1].at)}`,`آج ${lg.length} بار — آخری ${fmtTime(lg[lg.length-1].at)}`) : L("Not taken today","آج نہیں لی")));
+    const right=el2("span","dright");
+    const tk=el2("button","donebtn",L("Took one","ایک لی")); tk.onclick=()=>takePrn(m); right.appendChild(tk);
+    if(lg.length){ const un=el2("button","skipbtn",L("Undo","واپس")); un.onclick=()=>undoPrn(m); right.appendChild(un); }
+    li.append(sp,ic,nm,right); ul.appendChild(li); });
+  if(doses.length || prn.length) sec.appendChild(ul);
+  const warn=medWarnings(); if(warn.length){ const wb=el2("div","medwarn"); warn.forEach(t=>wb.appendChild(el2("p","",t))); sec.appendChild(wb); }
+  const row=el2("div","row"); row.style.marginTop="8px";
+  const pending=doses.filter(x=>["due","soon"].includes(doseStatus(k,x).k));
+  if(pending.length){ const all=el2("button","btn small",L(`Took all due now (${pending.length})`,`ابھی والی سب لے لیں (${pending.length})`));
+    all.onclick=()=>{ const lg=medDayLog(k,true); pending.forEach(x=>{ if(!(lg.d[x.key]&&lg.d[x.key].s==="t")){ lg.d[x.key]={s:"t",at:nowHM()}; stockChange(x.m,-1); } }); medChanged(); };
+    row.appendChild(all); }
+  if(box.id!=="medTabToday"){ const ed=el2("button","btn ghost small",L("Medicines","دوائیں")); ed.onclick=()=>openTab("meds"); row.appendChild(ed); }
+  if(row.children.length) sec.appendChild(row);
+  box.appendChild(sec);
+}
+
+/* ---------- banner on every tab: what is due right now ---------- */
+function pendingNow(){ const k=todayKey(); return dosesOn(k).map(d=>({d, st:doseStatus(k,d)})).filter(x=>x.st.k==="due"||x.st.k==="late"); }
+function renderMedBanner(){
+  const box=document.getElementById("medBanner"); if(!box) return; box.innerHTML="";
+  const p=pendingNow(); medBadge(p.length);
+  if(!p.length){ box.hidden=true; return; }
+  box.hidden=false;
+  const ic=el2("span","ic"); ic.innerHTML=MED_ICONS.pill;
+  const tx=el2("div","tx");
+  tx.appendChild(el2("b","", p.length===1 ? L("Time for your medicine","دوا کا وقت ہو گیا") : L(`${p.length} medicine doses due`,`${p.length} خوراکیں لینی ہیں`)));
+  tx.appendChild(el2("span","", p.map(x=>`${medTitle(x.d.m)} — ${medAmtText(x.d.m)}, ${medFoodText(x.d.m).toLowerCase()} (${fmtTime(x.d.t)}${x.st.k==="late"?", "+L("late","دیر سے"):""})`).join(" · ")));
+  const onTime=p.filter(x=>x.st.k==="due"), late=p.filter(x=>x.st.k==="late");
+  if(late.length) tx.appendChild(el2("span","latehint", L("A late dose isn't always taken late — tap Open to see what to do. Never take two doses together.","دیر والی خوراک ہمیشہ دیر سے نہیں لی جاتی — کیا کرنا ہے دیکھنے کے لیے کھولیں دبائیں۔ کبھی دو خوراکیں اکٹھی نہ لیں۔")));
+  const btns=el2("div","bb");
+  const ok=el2("button","btn small", late.length&&onTime.length ? L(`Taken (${onTime.length} on time)`,`لے لی (${onTime.length} وقت پر)`) : L("Taken","لے لی"));
+  ok.onclick=()=>{ const k=todayKey(), lg=medDayLog(k,true); onTime.forEach(x=>{ lg.d[x.d.key]={s:"t",at:nowHM()}; stockChange(x.d.m,-1); }); medChanged(); };
+  if(!onTime.length) ok.hidden=true;
+  const op=el2("button","btn ghost small",L("Open","کھولیں")); op.onclick=()=>{ current=todayKey(); openTab("today"); renderAll(); document.getElementById("medToday").scrollIntoView({behavior:"smooth",block:"start"}); };
+  btns.append(ok,op);
+  box.append(ic,tx,btns);
+}
+function medBadge(n){ try{ if(navigator.setAppBadge){ n ? navigator.setAppBadge(n) : navigator.clearAppBadge(); } }catch(e){}
+  const tb=document.querySelector('nav.tabs button[data-tab="meds"]'); if(tb) tb.classList.toggle("hasdue", n>0); }
+
+/* ---------- notifications while the app is open or in the background ---------- */
+const MED_NOTE_KEY="cutlog.medNotified";
+function medNotifyCheck(){
+  if(!("Notification" in window) || Notification.permission!=="granted") return;
+  const k=todayKey(); let seen={}; try{ seen=JSON.parse(localStorage.getItem(MED_NOTE_KEY)||"{}"); }catch(e){}
+  if(seen.d!==k) seen={d:k, keys:[]};
+  const fresh=pendingNow().filter(x=>x.st.k==="due" && !seen.keys.includes(x.d.key));
+  if(!fresh.length) return;
+  fresh.forEach(x=>seen.keys.push(x.d.key));
+  try{ localStorage.setItem(MED_NOTE_KEY, JSON.stringify(seen)); }catch(e){}
+  const title=L("Time for your medicine","دوا کا وقت ہو گیا");
+  const body=fresh.map(x=>`${medTitle(x.d.m)} — ${medAmtText(x.d.m)}, ${medFoodText(x.d.m).toLowerCase()}`).join("\n");
+  const opts={body, tag:"cutlog-med-"+k+"-"+fresh[0].d.t, icon:"icon-192.png", badge:"icon-192.png", vibrate:[200,100,200], requireInteraction:true, renotify:true};
+  (navigator.serviceWorker ? navigator.serviceWorker.getRegistration() : Promise.resolve(null))
+    .then(reg=>{ if(reg && reg.showNotification) return reg.showNotification(title, opts); new Notification(title, opts); })
+    .catch(()=>{ try{ new Notification(title, opts); }catch(e){} });
+}
+function medTick(){
+  renderMedBanner(); medNotifyCheck();
+  const t=document.getElementById("medToday"); if(t && !document.getElementById("tab-today").hidden && current===todayKey()) renderDoseList(t, current);
+  const mt=document.getElementById("medTabToday"); if(mt && !document.getElementById("tab-meds").hidden) renderDoseList(mt, todayKey());
+}
+
+/* ---------- reminders for when the app is closed: phone calendar (.ics) ---------- */
+function icsEsc(s){ return String(s).replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\r?\n/g,"\\n"); }
+function icsFold(line){ const enc=new TextEncoder(); let out="", cur="", bytes=0;
+  for(const ch of line){ const b=enc.encode(ch).length; if(bytes+b>73){ out+=cur+"\r\n "; cur=""; bytes=1; } cur+=ch; bytes+=b; }
+  return out+cur; }
+function icsDate(k){ return k.replace(/-/g,""); }
+function buildICS(){
+  const DAYS=["SU","MO","TU","WE","TH","FR","SA"], today=todayKey(), stamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+Z$/,"Z");
+  const lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Sehat Log//Medicines//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH"];
+  let n=0;
+  MEDS.list.forEach(m=>{ if(m.paused || m.sched==="prn" || medFinished(m)) return;
+    let first = m.start && m.start>today ? m.start : today;
+    for(let i=0;i<14 && !medActiveOn(m,first);i++) first=addDays(first,1);
+    if(!medActiveOn(m,first)) return;
+    let rule = m.sched==="alt" ? "FREQ=DAILY;INTERVAL=2" : m.sched==="days" ? "FREQ=WEEKLY;BYDAY="+(m.days||[]).map(d=>DAYS[d]).join(",") : "FREQ=DAILY";
+    if(m.end) rule += ";UNTIL="+icsDate(m.end)+"T235959";
+    (m.times||[]).forEach(t=>{ n++;
+      const summary = L(`Medicine: ${medTitle(m)} — ${medAmtText(m)}, ${medFoodText(m).toLowerCase()}`, `دوا: ${medTitle(m)} — ${medAmtText(m)}، ${medFoodText(m)}`);
+      const desc = (m.notes? m.notes+"\n" : "") + L("Mark it taken in Sehat Log.","صحت لاگ میں ٹِک کریں۔");
+      ["BEGIN:VEVENT", `UID:${m.id}-${t.replace(":","")}@sehatlog`, `DTSTAMP:${stamp}`, `DTSTART:${icsDate(first)}T${t.replace(":","")}00`, "DURATION:PT10M",
+       `RRULE:${rule}`, `SUMMARY:${icsEsc(summary)}`, `DESCRIPTION:${icsEsc(desc)}`, "TRANSP:TRANSPARENT",
+       "BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${icsEsc(summary)}`,"TRIGGER:PT0M","END:VALARM","END:VEVENT"].forEach(x=>lines.push(icsFold(x))); });
+  });
+  lines.push("END:VCALENDAR");
+  return {text: lines.join("\r\n")+"\r\n", n};
+}
+async function exportICS(btn){
+  const {text, n}=buildICS();
+  if(!n){ alert(L("Add a medicine with set times first.","پہلے وقت کے ساتھ کوئی دوا شامل کریں۔")); return; }
+  const name=`sehat-log-medicines-${todayKey()}.ics`;
+  try{ const file=new File([text], name, {type:"text/calendar"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:L("Medicine reminders","دوا کی یاد دہانی")}); btn.textContent=L("Sent ✓","بھیج دیا ✓"); return; }
+  }catch(e){ if(e && e.name==="AbortError") return; }
+  downloadFile(name, text, "text/calendar"); btn.textContent=L("Downloaded ✓","ڈاؤن لوڈ ہو گیا ✓");
+}
+
+/* ---------- Medicine tab ---------- */
+let medEdit=null, medDraft=null;
+function blankMed(){ return {id:null, name:"", form:"tablet", strength:"", amt:1, sched:"daily", days:[1,2,3,4,5], times:["08:00","21:00"], food:"after",
+  len:"ongoing", lenDays:7, start:todayKey(), end:null, stock:null, lowDays:5, notes:"", paused:false}; }
+function renderMedTab(){ renderMedTabLists(); renderMedForm(); renderMedRemind(); }
+function renderMedTabLists(){
+  renderDoseList(document.getElementById("medTabToday"), todayKey());
+  const box=document.getElementById("medList"); box.innerHTML="";
+  const live=MEDS.list.filter(m=>!medFinished(m)), done=MEDS.list.filter(medFinished);
+  if(!MEDS.list.length){ box.appendChild(el2("p","hint",L("No medicines yet — add your first one below.","ابھی کوئی دوا نہیں — نیچے پہلی شامل کریں۔"))); }
+  const card=(m)=>{ const c=el2("div","medcard"+(m.paused?" paused":""));
+    const ic=el2("span","ic"); ic.innerHTML=medIcon(m); ic.style.color=m.color||"var(--wat)";
+    const tx=el2("div","tx"); tx.appendChild(el2("b","",medTitle(m)));
+    const F=MED_FORMS[m.form]||MED_FORMS.other;
+    const when = m.sched==="prn" ? L("Only when needed","صرف ضرورت کے وقت") :
+      `${m.sched==="days" ? (m.days||[]).map(d=>new Date(2024,0,7+d).toLocaleDateString(LOC(),{weekday:"short"})).join(", ") : L(MED_SCHED[m.sched][0],MED_SCHED[m.sched][1])} · ${(m.times||[]).map(fmtTime).join(", ")}`;
+    tx.appendChild(el2("small","",`${L(F.en,F.ur)} · ${medAmtText(m)} · ${medFoodText(m)}`));
+    tx.appendChild(el2("small","",when));
+    const extra=[]; const ct=courseText(m,todayKey()); if(ct) extra.push(ct); else if(!m.end) extra.push(L("Ongoing","مسلسل"));
+    if(m.stock!=null && medCountable(m)){ const dl=medDaysLeft(m); extra.push(L(`${fmtQty(m.stock)} ${medUnit(m,m.stock)} left`,`${fmtQty(m.stock)} ${medUnit(m,m.stock)} باقی`)+(dl!=null?L(` (~${dl} days)`,` (~${dl} دن)`):"")); }
+    if(m.paused) extra.push(L("Paused","روکی ہوئی"));
+    if(m.notes) extra.push(m.notes);
+    tx.appendChild(el2("small","",extra.join(" · ")));
+    const ctl=el2("div","ctl");
+    const ed=el2("button","btn ghost small",L("Edit","بدلیں")); ed.onclick=()=>{ medEdit=m.id; medDraft=JSON.parse(JSON.stringify(m)); medDraft.len=m.end?"until":"ongoing"; renderMedForm(); document.getElementById("medForm").scrollIntoView({behavior:"smooth"}); };
+    ctl.appendChild(ed);
+    if(medFinished(m)){ const rs=el2("button","btn ghost small",L("Start again","دوبارہ شروع")); rs.onclick=()=>{ const span=m.start&&m.end?daysBetween(m.start,m.end):6; m.start=todayKey(); m.end=addDays(m.start,span); medChanged(); }; ctl.appendChild(rs); }
+    else { const pa=el2("button","btn ghost small",m.paused?L("Resume","دوبارہ"):L("Pause","روکیں")); pa.onclick=()=>{ m.paused=!m.paused; medChanged(); }; ctl.appendChild(pa); }
+    if(m.stock!=null && medCountable(m)){ const rf=el2("button","btn ghost small",L("Bought more","مزید خریدی"));
+      rf.onclick=()=>{ const v=prompt(L(`How many ${medUnit(m,2)} did you buy?`,`کتنی ${medUnit(m,2)} خریدیں؟`),"10"); const q=num(v); if(q){ m.stock=Math.round((m.stock+q)*100)/100; medChanged(); } }; ctl.appendChild(rf); }
+    const del=el2("button","iconbtn","✕"); del.style.color="var(--bad)"; del.title=L("Delete","حذف کریں"); del.setAttribute("aria-label",L(`Delete ${m.name}`,`${m.name} حذف کریں`));
+    del.onclick=()=>{ if(confirm(L(`Delete ${m.name}? Its history is kept in your backups but disappears here.`,`${m.name} حذف کریں؟ یہاں سے اس کا ریکارڈ ہٹ جائے گا۔`))){ MEDS.list=MEDS.list.filter(x=>x.id!==m.id); medChanged(); } };
+    ctl.appendChild(del);
+    c.append(ic,tx,ctl); return c; };
+  live.forEach(m=>box.appendChild(card(m)));
+  if(done.length){ box.appendChild(el2("div","slotlbl",L("Finished courses","مکمل کورس"))); done.forEach(m=>box.appendChild(card(m))); }
+  renderMedHistory();
+}
+function renderMedHistory(){
+  const box=document.getElementById("medHistory"); box.innerHTML="";
+  const meds=MEDS.list.filter(m=>m.sched!=="prn");
+  if(!meds.length){ box.appendChild(el2("p","hint",L("Your record shows up here once you add a medicine with set times.","وقت والی دوا شامل کرنے کے بعد آپ کا ریکارڈ یہاں نظر آئے گا۔"))); return; }
+  const today=todayKey(), keys=[]; for(let i=13;i>=0;i--) keys.push(addDays(today,-i));
+  const tbl=el2("div","medhist");
+  meds.forEach(m=>{ let due=0, got=0; const dots=el2("div","dots");
+    keys.forEach(k=>{ let d=0, g=0;
+      if(medActiveOn(m,k)) (m.times||[]).forEach(t=>{ const st=doseStatus(k,{m,t,key:m.id+"|"+t}); if(st.k==="upcoming"||st.k==="soon") return; d++; if(st.k==="taken") g++; });
+      due+=d; got+=g;
+      const s=el2("span","hd "+(d===0?"none":g===d?"all":g>0?"some":"zero")); s.title=`${fmtShort(k)}: ${g}/${d}`; dots.appendChild(s); });
+    const row=el2("div","hrow"); const nm=el2("span","hn",medTitle(m));
+    const pc=el2("span","hp", due ? `${Math.round(100*got/due)}%` : "—"); pc.title=L(`${got} of ${due} doses taken`,`${due} میں سے ${got} خوراکیں لیں`);
+    row.append(nm,dots,pc); tbl.appendChild(row); });
+  box.appendChild(tbl);
+  box.appendChild(el2("p","hint",L("Last 14 days, oldest on the left. Green = all doses taken, amber = some, red = none, grey = nothing due.","پچھلے 14 دن، پرانا بائیں طرف۔ سبز = سب لیں، پیلا = کچھ، سرخ = کوئی نہیں، سرمئی = کچھ نہیں تھا۔")));
+}
+function segRow(opts, val, onPick, label){
+  const row=el2("div","seg"); if(label){ row.setAttribute("role","group"); row.setAttribute("aria-label",label); }
+  opts.forEach(([v,t])=>{ const b=el2("button","",t); b.type="button"; b.setAttribute("aria-pressed",String(v===val)); b.onclick=()=>onPick(v); row.appendChild(b); });
+  return row;
+}
+function fld(label, child, hint){ const w=el2("div","mfield"); w.appendChild(el2("span","fieldlbl",label)); w.appendChild(child); if(hint) w.appendChild(el2("p","hint",hint)); return w; }
+function renderMedForm(){
+  const box=document.getElementById("medForm"); box.innerHTML="";
+  if(!medDraft) medDraft=blankMed();
+  const D=medDraft, F=MED_FORMS[D.form]||MED_FORMS.other, redo=()=>renderMedForm();
+  box.appendChild(el2("h2","", medEdit ? L(`Edit ${D.name||"medicine"}`,`${D.name||"دوا"} میں تبدیلی`) : L("Add a medicine","دوا شامل کریں")));
+  // name
+  const nm=document.createElement("input"); nm.value=D.name; nm.placeholder=L("Name — e.g. Panadol, Metformin, Vitamin D","نام — مثلاً پیناڈول، میٹفارمن، وٹامن ڈی"); nm.setAttribute("list","medNames"); nm.id="mName";
+  nm.oninput=()=>{ D.name=nm.value; };
+  let dl=document.getElementById("medNames"); if(!dl){ dl=document.createElement("datalist"); dl.id="medNames"; MED_NAMES.forEach(x=>{ const o=document.createElement("option"); o.value=x; dl.appendChild(o); }); document.body.appendChild(dl); }
+  box.appendChild(fld(L("Medicine","دوا"), nm));
+  // form
+  box.appendChild(fld(L("What kind?","کس قسم کی؟"), segRow(Object.entries(MED_FORMS).map(([k,v])=>[k,L(v.en,v.ur)]), D.form, v=>{ D.form=v; if(v==="syrup" && D.amt<2.5) D.amt=5; if(v!=="syrup" && D.amt>=5 && D.amt%5===0 && D.form!=="injection") D.amt=1; redo(); })));
+  // strength + amount
+  const r1=el2("div","row");
+  const stI=document.createElement("input"); stI.value=D.strength||""; stI.placeholder=L("e.g. 500 mg","مثلاً 500 ملی گرام"); stI.style.width="150px"; stI.oninput=()=>{ D.strength=stI.value.trim(); };
+  r1.appendChild(fld(L("Strength (optional)","طاقت (اختیاری)"), stI));
+  if(D.form!=="cream"){ const am=document.createElement("input"); am.type="number"; am.inputMode="decimal"; am.min="0"; am.step=String(F.step); am.value=D.amt; am.style.width="90px";
+    const lab=el2("span","unitlbl", medUnit(D, D.amt)); am.oninput=()=>{ D.amt=num(am.value)||D.amt; lab.textContent=medUnit(D,D.amt); };
+    const w=el2("div","row"); w.style.gap="6px"; w.style.alignItems="center"; w.append(am,lab);
+    r1.appendChild(fld(L("How much each time","ہر بار کتنی"), w, D.form==="syrup"?L("1 teaspoon (chamach) = 5 ml","1 چائے کا چمچ = 5 ملی لیٹر"):null)); }
+  box.appendChild(r1);
+  // how often
+  box.appendChild(fld(L("How often?","کتنی بار؟"), segRow(Object.entries(MED_SCHED).map(([k,v])=>[k,L(v[0],v[1])]), D.sched, v=>{ D.sched=v; redo(); })));
+  if(D.sched==="days"){ const row=el2("div","seg");
+    for(let d=0; d<7; d++){ const b=el2("button","",new Date(2024,0,7+d).toLocaleDateString(LOC(),{weekday:"short"})); b.type="button"; b.setAttribute("aria-pressed",String(D.days.includes(d)));
+      b.onclick=()=>{ D.days=D.days.includes(d)?D.days.filter(x=>x!==d):D.days.concat(d).sort(); redo(); }; row.appendChild(b); }
+    box.appendChild(fld(L("Which days?","کون سے دن؟"), row)); }
+  // times
+  if(D.sched!=="prn"){
+    const qp=el2("div","seg patseg");
+    MED_PATTERNS.forEach(([code,en,ur,times,food])=>{ const b=el2("button",""); b.type="button";
+      if(code) b.appendChild(el2("b","",code+" ")); b.appendChild(document.createTextNode(L(en,ur)));
+      b.setAttribute("aria-pressed",String(JSON.stringify(D.times)===JSON.stringify(times)));
+      b.onclick=()=>{ D.times=times.slice(); if(food) D.food=food; else if(D.food==="bedtime") D.food="after"; redo(); }; qp.appendChild(b); });
+    box.appendChild(fld(L("When? Pick the prescription pattern, then fix the clock times","کب؟ پرچی والا طریقہ چنیں، پھر وقت ٹھیک کریں"), qp,
+      L("Doctors in Pakistan often write it as morning + afternoon + night: 1+0+1 means once in the morning and once at night.","پاکستان میں ڈاکٹر اکثر صبح + دوپہر + رات لکھتے ہیں: 1+0+1 کا مطلب صبح ایک اور رات ایک۔")));
+    const tl=el2("div","row timesrow");
+    D.times.forEach((t,i)=>{ const w=el2("span","timechip"); const ti=document.createElement("input"); ti.type="time"; ti.value=t; ti.setAttribute("aria-label",L("Time","وقت"));
+      ti.onchange=()=>{ if(ti.value){ D.times[i]=ti.value; D.times.sort((a,b)=>tMin(a)-tMin(b)); redo(); } };
+      const x=el2("button","iconbtn","✕"); x.type="button"; x.title=L("Remove this time","یہ وقت ہٹائیں"); x.onclick=()=>{ D.times.splice(i,1); redo(); };
+      w.append(ti, el2("small","",partOfDay(t)), x); tl.appendChild(w); });
+    const add=el2("button","btn ghost small",L("＋ Add a time","＋ وقت شامل کریں")); add.type="button";
+    add.onclick=()=>{ const last=D.times.length?tMin(D.times[D.times.length-1]):7*60; const n=Math.min(23*60, last+4*60); D.times.push(String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")); D.times.sort((a,b)=>tMin(a)-tMin(b)); redo(); };
+    tl.appendChild(add); box.appendChild(tl);
+  }
+  // food
+  box.appendChild(fld(L("With food?","کھانے کے حساب سے؟"), segRow(Object.entries(MED_FOOD).map(([k,v])=>[k,L(v[0],v[1])]), D.food, v=>{ D.food=v; redo(); }),
+    L("Follow the doctor's or the leaflet's instruction. “Before food” usually means about 30–60 minutes before you eat.","ڈاکٹر یا پرچی کی ہدایت مانیں۔ “کھانے سے پہلے” کا عام مطلب ہے کھانے سے تقریباً 30–60 منٹ پہلے۔")));
+  // how long
+  box.appendChild(fld(L("For how long?","کب تک؟"), segRow([["ongoing",L("Ongoing","مسلسل")],["days",L("Number of days","کتنے دن")],["until",L("Until a date","تاریخ تک")]], D.len, v=>{ D.len=v; redo(); })));
+  const r2=el2("div","row");
+  const sd=document.createElement("input"); sd.type="date"; sd.value=D.start||todayKey(); sd.onchange=()=>{ D.start=sd.value||todayKey(); };
+  r2.appendChild(fld(L("Starting","شروع"), sd));
+  if(D.len==="days"){ const nd=document.createElement("input"); nd.type="number"; nd.min="1"; nd.max="365"; nd.value=D.lenDays||7; nd.style.width="80px"; nd.oninput=()=>{ D.lenDays=Math.max(1,Math.round(num(nd.value)||7)); };
+    r2.appendChild(fld(L("Days","دن"), nd)); }
+  if(D.len==="until"){ const ed=document.createElement("input"); ed.type="date"; ed.value=D.end||addDays(D.start||todayKey(),6); D.end=ed.value; ed.onchange=()=>{ D.end=ed.value||null; };
+    r2.appendChild(fld(L("Last day","آخری دن"), ed)); }
+  box.appendChild(r2);
+  // stock
+  if(D.form!=="cream"){ const r3=el2("div","row");
+    const sk=document.createElement("input"); sk.type="number"; sk.min="0"; sk.inputMode="decimal"; sk.value=D.stock==null?"":D.stock; sk.placeholder="—"; sk.style.width="110px";
+    sk.oninput=()=>{ D.stock=num(sk.value); };
+    r3.appendChild(fld(L(`How many ${medUnit(D,2)} do you have now? (optional)`,`ابھی کتنی ${medUnit(D,2)} ہیں؟ (اختیاری)`), sk));
+    const lw=document.createElement("input"); lw.type="number"; lw.min="0"; lw.max="60"; lw.value=D.lowDays??5; lw.style.width="70px"; lw.oninput=()=>{ D.lowDays=Math.max(0,Math.round(num(lw.value)??5)); };
+    r3.appendChild(fld(L("Warn me … days before it runs out","ختم ہونے سے … دن پہلے بتائیں"), lw));
+    box.appendChild(r3); }
+  // notes
+  const nt=document.createElement("input"); nt.value=D.notes||""; nt.placeholder=L("e.g. for blood pressure · don't take with milk","مثلاً بلڈ پریشر کے لیے · دودھ کے ساتھ نہیں"); nt.style.width="100%"; nt.oninput=()=>{ D.notes=nt.value.trim(); };
+  box.appendChild(fld(L("Note (optional)","نوٹ (اختیاری)"), nt));
+  // save
+  const msg=el2("p","hint"); msg.id="medMsg";
+  const row=el2("div","row"); row.style.marginTop="10px";
+  const sv=el2("button","btn", medEdit?L("Save changes","تبدیلیاں محفوظ کریں"):L("Save medicine","دوا محفوظ کریں")); sv.type="button";
+  sv.onclick=()=>{
+    if(!D.name.trim()){ msg.textContent=L("Write the medicine's name first.","پہلے دوا کا نام لکھیں۔"); nm.focus(); return; }
+    if(D.sched!=="prn" && !D.times.length){ msg.textContent=L("Add at least one time.","کم از کم ایک وقت شامل کریں۔"); return; }
+    if(D.sched==="days" && !D.days.length){ msg.textContent=L("Pick at least one day.","کم از کم ایک دن چنیں۔"); return; }
+    const m={...D, name:D.name.trim()};
+    m.end = m.len==="days" ? addDays(m.start||todayKey(), (m.lenDays||7)-1) : m.len==="until" ? m.end : null;
+    if(m.end && m.end<(m.start||todayKey())){ msg.textContent=L("The last day is before the start.","آخری دن شروع سے پہلے ہے۔"); return; }
+    if(medEdit){ const i=MEDS.list.findIndex(x=>x.id===medEdit); if(i>=0) MEDS.list[i]={...MEDS.list[i], ...m, id:medEdit}; }
+    else { m.id="x"+Date.now().toString(36)+Math.random().toString(36).slice(2,5); m.color=MED_COLORS[MEDS.list.length%MED_COLORS.length]; MEDS.list.push(m); }
+    const saved=m.name; medEdit=null; medDraft=null; medChanged(); renderMedForm();
+    const mm=document.getElementById("medMsg"); if(mm) mm.textContent=L(`${saved} saved — it now shows on Today and in the banner when it's due.`,`${saved} محفوظ ہو گئی — اب وقت آنے پر آج والے صفحے اور اوپر والی پٹی میں نظر آئے گی۔`);
+  };
+  row.appendChild(sv);
+  if(medEdit){ const cn=el2("button","btn ghost",L("Cancel","منسوخ")); cn.type="button"; cn.onclick=()=>{ medEdit=null; medDraft=null; renderMedForm(); }; row.appendChild(cn); }
+  box.append(row,msg);
+}
+function renderMedRemind(){
+  const box=document.getElementById("medRemind"); box.innerHTML="";
+  box.appendChild(el2("h2","",L("Reminders on your phone","فون پر یاد دہانی")));
+  box.appendChild(el2("p","hint",L("Whenever Sehat Log is open you'll see a banner at the top when a dose is due, on every tab. Phones don't let an offline web app wake itself up at a set time, so for a reminder while the app is closed use one of the two options below.",
+    "جب بھی صحت لاگ کھلی ہو، خوراک کا وقت آنے پر ہر صفحے کے اوپر پٹی نظر آئے گی۔ فون آف لائن ویب ایپ کو خود سے مقررہ وقت پر جگانے نہیں دیتے، اس لیے ایپ بند ہو تو یاد دہانی کے لیے نیچے والے دو میں سے ایک طریقہ اپنائیں۔")));
+  // notifications
+  const n1=el2("div","remopt"); n1.appendChild(el2("b","",L("Notifications while the app is open","ایپ کھلی ہو تو نوٹیفیکیشن")));
+  const supported="Notification" in window, perm=supported?Notification.permission:"unsupported";
+  n1.appendChild(el2("p","hint", perm==="granted" ? L("On ✓ — you'll get a notification at each dose time while the app is open or in the background.","آن ✓ — ایپ کھلی یا پیچھے چل رہی ہو تو ہر خوراک کے وقت نوٹیفیکیشن آئے گا۔")
+    : perm==="denied" ? L("Blocked in this browser. Turn it on in the browser's site settings for this app.","اس براؤزر میں بند ہیں۔ براؤزر کی سائٹ سیٹنگز میں اس ایپ کے لیے آن کریں۔")
+    : perm==="unsupported" ? L("This browser doesn't support notifications. On iPhone, add the app to your Home Screen first.","یہ براؤزر نوٹیفیکیشن نہیں دیتا۔ آئی فون پر پہلے ایپ کو ہوم اسکرین پر شامل کریں۔")
+    : L("Off.","بند ہیں۔")));
+  if(perm==="default"){ const b=el2("button","btn small",L("Turn on notifications","نوٹیفیکیشن آن کریں")); b.onclick=()=>Notification.requestPermission().then(()=>{ renderMedRemind(); medNotifyCheck(); }); n1.appendChild(b); }
+  box.appendChild(n1);
+  // calendar
+  const n2=el2("div","remopt"); n2.appendChild(el2("b","",L("1 · Add to your phone's calendar","1 · فون کے کیلنڈر میں شامل کریں")));
+  n2.appendChild(el2("p","hint",L("Makes a calendar file with every dose as a repeating event that rings at the dose time, and stops on the course's last day. Open it with your calendar app (iPhone Calendar, Samsung Calendar, Outlook…). For Google Calendar, import it once at calendar.google.com → Settings → Import. Your calendar may sync to its online account. Make a new file whenever you change a medicine.",
+    "ہر خوراک کو دہرانے والے ایونٹ کی صورت کیلنڈر فائل بناتی ہے، جو خوراک کے وقت بجے گا اور کورس کے آخری دن رک جائے گا۔ اسے کیلنڈر ایپ (آئی فون، سام سنگ، آؤٹ لک…) سے کھولیں۔ گوگل کیلنڈر کے لیے calendar.google.com ← سیٹنگز ← امپورٹ سے ایک بار شامل کریں۔ کیلنڈر اپنے آن لائن اکاؤنٹ سے سنک ہو سکتا ہے۔ دوا بدلنے پر نئی فائل بنائیں۔")));
+  const cb=el2("button","btn small",L("Make calendar reminders","کیلنڈر یاد دہانی بنائیں")); cb.onclick=()=>exportICS(cb); n2.appendChild(cb);
+  box.appendChild(n2);
+  // alarms
+  const times=[...new Set(MEDS.list.filter(m=>!m.paused && m.sched!=="prn" && !medFinished(m)).flatMap(m=>m.times||[]))].sort((a,b)=>tMin(a)-tMin(b));
+  const n3=el2("div","remopt"); n3.appendChild(el2("b","",L("2 · Set alarms in your Clock app","2 · کلاک ایپ میں الارم لگائیں")));
+  n3.appendChild(el2("p","hint", times.length ? L(`Simplest and fully offline: set a repeating daily alarm for ${times.map(fmtTime).join(", ")} and label it “Medicine”. When it rings, open Sehat Log and tick the dose.`,
+    `سب سے آسان اور مکمل آف لائن: ${times.map(fmtTime).join("، ")} کے لیے روزانہ الارم لگائیں اور نام “دوا” رکھیں۔ الارم بجے تو صحت لاگ کھول کر خوراک ٹِک کریں۔`)
+    : L("Add a medicine with set times and the alarm times you need show up here.","وقت والی دوا شامل کریں تو یہاں الارم کے اوقات نظر آئیں گے۔")));
+  box.appendChild(n3);
+}
+function medChanged(){ scheduleSave(); renderAll(); if(!document.getElementById("tab-meds").hidden) renderMedTabLists(); renderMedRemindIfOpen(); }
+function renderMedRemindIfOpen(){ if(!document.getElementById("tab-meds").hidden) renderMedRemind(); }
+function openTab(t){ const b=document.querySelector(`nav.tabs button[data-tab="${t}"]`); if(b) b.click(); }
+
+Object.assign(UR_DICT, {
+"Medicine":"دوائیں","Medicines":"دوائیں","Your medicines":"آپ کی دوائیں","Last 14 days":"پچھلے 14 دن",
+"Add each medicine or supplement once — how much, when, before or after food, and for how long. Every time you open Sehat Log you'll see what's due, and you just tick it.":"ہر دوا یا وٹامن ایک بار شامل کریں — کتنی، کب، کھانے سے پہلے یا بعد، اور کب تک۔ جب بھی صحت لاگ کھولیں گے، پتا چل جائے گا کہ کون سی لینی ہے — بس ٹِک کر دیں۔",
+"Sehat Log only reminds you — it doesn't give medical advice. Don't start, stop or change a medicine without your doctor or pharmacist.":"صحت لاگ صرف یاد دلاتی ہے — یہ طبی مشورہ نہیں دیتی۔ ڈاکٹر یا فارماسسٹ سے پوچھے بغیر کوئی دوا شروع، بند یا تبدیل نہ کریں۔",
+"Which meal? Tap one or more":"کون سا کھانا؟ ایک یا زیادہ چنیں","Which meal":"کون سا کھانا",
+"For “＋ Daily menu” — which meal? Tap one or more":"“＋ روزانہ مینو” کے لیے — کون سا کھانا؟ ایک یا زیادہ چنیں"
+});
+/* ------------------------------------------------------------------
    RENDER: SETTINGS
 ------------------------------------------------------------------ */
 const SETTING_FIELDS = [
@@ -3214,6 +3808,7 @@ function renderHeader(){
   document.getElementById("goalLine").textContent = `${settings.startWeight} kg → ${settings.goalWeight} kg`;
 }
 function renderAll(){ renderHeader(); renderToday();
+  renderMedBanner(); const _mt=document.getElementById("medToday"); if(_mt) renderDoseList(_mt, current);
   if(!document.getElementById("tab-week").hidden) renderWeek();
   if(!document.getElementById("tab-progress").hidden) renderProgress();
   if(!document.getElementById("tab-foods").hidden) renderBudget(); }
@@ -3223,7 +3818,10 @@ function changed(){ scheduleSave(); renderAll(); }
 /* ------------------------------------------------------------------
    EVENTS
 ------------------------------------------------------------------ */
+let adderMeals=null;
 function bind(){
+  adderMeals=mealPicker(); adderMeals.el.querySelector(".fieldlbl").textContent="For “＋ Daily menu” — which meal? Tap one or more";
+  document.getElementById("fMeals").appendChild(adderMeals.el);
   const pre = document.getElementById("presets");
   PRESETS.forEach(p=>{ const b=document.createElement("button"); b.className="tile"; b.type="button";
     b.setAttribute("aria-label", `Add ${p.name}, ${p.kcal} kcal, ${p.protein} g protein`);
@@ -3270,12 +3868,13 @@ function bind(){
     if(!n.value.trim() || kcal===null){ n.focus(); n.placeholder="Pick a food or type a name and kcal"; return; }
     const f = pick && !manualVals ? pick : {name:n.value.trim(), kcal, p:pro, f:num(document.getElementById("fFat").value),
       c:num(document.getElementById("fCarb").value), fib:num(document.getElementById("fFib").value)};
-    const it = menuItemFrom(f, qty, mode, kcal, pro); if(pick && manualVals){ it.base=null; }
-    if(!pick){ it.base=null; it.qty=qty; }
-    addMenuItem(it);
+    const slots = adderMeals.get();
+    slots.forEach(sl=>{ const it = menuItemFrom(f, qty, mode, kcal, pro, sl); if(pick && manualVals){ it.base=null; }
+      if(!pick){ it.base=null; it.qty=qty; }
+      addMenuItem(it); });
     n.value=""; k.value=""; p.value=""; ["fCarb","fFat","fFib"].forEach(id=>document.getElementById(id).value="");
     document.getElementById("fQty").value=1; pick=null; manualVals=false; fillUnits(null);
-    document.getElementById("fInfo").textContent=`Added to your daily menu (${it.slot}). Tick it off on Today when you eat it.`; renderAll(); };
+    document.getElementById("fInfo").textContent = LANG==="ur" ? `روزانہ مینو میں شامل ہو گیا (${slots.map(x=>T(x)).join("، ")})۔ کھانے پر آج والے صفحے پر ٹِک کریں۔` : `Added to your daily menu (${slots.join(", ")}). Tick it off on Today when you eat it.`; renderAll(); };
   document.getElementById("fcSearch").addEventListener("input",()=>{ fcOpen=null; renderFoodChart(); });
   document.getElementById("cfAdd").onclick=()=>{
     const name=document.getElementById("cfName").value.trim(), unit=document.getElementById("cfUnit").value.trim()||"serving";
@@ -3303,8 +3902,9 @@ function bind(){
 
   document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{
     document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
-    ["today","foods","care","body","week","progress","settings","guide"].forEach(t=>document.getElementById("tab-"+t).hidden = t!==b.dataset.tab);
+    ["today","meds","foods","care","body","week","progress","settings","guide"].forEach(t=>document.getElementById("tab-"+t).hidden = t!==b.dataset.tab);
     if(b.dataset.tab==="care") renderCare();
+    if(b.dataset.tab==="meds") renderMedTab();
     if(b.dataset.tab==="body") renderBmi();
     if(b.dataset.tab==="foods") renderFoodChart();
     if(b.dataset.tab==="week") renderWeek();
@@ -3333,11 +3933,11 @@ function bind(){
     r.dataset.theme = dark ? "light" : "dark"; try{ localStorage.setItem("cutlog.theme", r.dataset.theme); }catch(e){} };
 
   document.getElementById("shareBtn").onclick=()=>{
-    const json=JSON.stringify({app:"cutlog",version:1,exported:new Date().toISOString(),settings,days,customFoods,habits:HABITS,menu:MENU,care:CARE},null,1);
+    const json=JSON.stringify({app:"cutlog",version:1,exported:new Date().toISOString(),settings,days,customFoods,habits:HABITS,menu:MENU,care:CARE,meds:MEDS},null,1);
     shareBackup(`sehat-log-backup-${todayKey()}.json`, json, "Sehat Log", document.getElementById("shareBtn"), ()=>{
       try{ localStorage.setItem("cutlog.lastBackup", new Date().toLocaleDateString(LOC(),{day:"numeric",month:"short",year:"numeric"})); }catch(e){} storageNote(); }); };
   document.getElementById("backupBtn").onclick=()=>{
-    downloadFile(`sehat-log-backup-${todayKey()}.json`, JSON.stringify({app:"cutlog",version:1,exported:new Date().toISOString(),settings,days,customFoods,habits:HABITS,menu:MENU,care:CARE},null,1), "application/json");
+    downloadFile(`sehat-log-backup-${todayKey()}.json`, JSON.stringify({app:"cutlog",version:1,exported:new Date().toISOString(),settings,days,customFoods,habits:HABITS,menu:MENU,care:CARE,meds:MEDS},null,1), "application/json");
     try{ localStorage.setItem("cutlog.lastBackup", new Date().toLocaleDateString(LOC(),{day:"numeric",month:"short",year:"numeric"})); }catch(e){}
     storageNote(); };
   document.getElementById("restoreFile").onchange=e=>{
@@ -3352,6 +3952,7 @@ function bind(){
         if(Array.isArray(o.habits) && o.habits.length) HABITS = o.habits;
         if(Array.isArray(o.menu)) MENU = o.menu;
         if(o.care) CARE = {sex:null, routine:[], log:{}, cond:{}, custom:[], ...o.care};
+        if(o.meds) MEDS = {list:[], log:{}, ...o.meds};
         if(Array.isArray(o.customFoods)){ const names=new Set(o.customFoods.map(f=>f.name.toLowerCase()));
           customFoods=customFoods.filter(f=>!names.has(f.name.toLowerCase())).concat(o.customFoods); }
         scheduleSave(); renderAll(); renderSettings(); alert("Backup restored.");
@@ -3385,12 +3986,19 @@ autoAdjust();
 renderAll();
 storageNote();
 setSync("Saved on this device");
+setInterval(medTick, 30000);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) medTick(); });
+medNotifyCheck();
 saveLocal();
 // ask the browser not to clear this storage under disk pressure
 try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
 // offline app shell when served over http(s) (e.g. GitHub Pages); file:// works without it
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
-  navigator.serviceWorker.register("sw.js").catch(()=>{});
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register("sw.js", {updateViaCache:"none"}).then(r=>{ try{ r.update(); }catch(e){} }).catch(()=>{});
+  // a new version took over: reload once so it shows straight away (your data is untouched)
+  let reloaded=false;
+  navigator.serviceWorker.addEventListener("controllerchange", ()=>{ if(hadController && !reloaded){ reloaded=true; location.reload(); } });
 }
 })();
 </script>
