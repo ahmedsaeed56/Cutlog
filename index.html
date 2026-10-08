@@ -157,6 +157,12 @@ section.block{transition:none}
 .portion button{margin-top:6px}
 .portion.warn{border-left-color:var(--cal);background:color-mix(in srgb, var(--cal) 9%, var(--surface))}
 .portion.warn b{color:var(--cal)}
+.frow small.hhline{color:var(--pro);font-weight:600}
+.hhgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+@media (min-width:640px){.hhgrid{grid-template-columns:repeat(6,1fr)}}
+.hhgrid div{border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center;background:var(--surface)}
+.hhgrid b{display:block;font-size:.9rem}
+.hhgrid span{font-size:.76rem;color:var(--muted)}
 /* daily menu */
 .menu-sec{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:12px 14px;margin:6px 0 14px}
 .menu-sec h3{margin:0;font-size:1rem;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -332,6 +338,7 @@ textarea{min-height:76px;resize:vertical}
       <div class="num"><b id="scoreNum">0</b><span>day score</span></div></div>
     <div><h1 id="heroLine">Start logging your day.</h1><p id="heroSub">Add your meals, water, steps, gym and sleep. The rings fill as you go.</p></div>
   </div>
+  <div id="autoNote"></div>
   <div id="healthNote"></div>
   <div class="rings" id="rings"></div>
 
@@ -591,7 +598,8 @@ textarea{min-height:76px;resize:vertical}
    DEFAULTS (from the weight-loss plan)
 ------------------------------------------------------------------ */
 const DEFAULT_SETTINGS = {kcal:1900, protein:140, water:12, steps:9000, sleep:7.5, gym:60,
-  floor:1600, startWeight:114, goalWeight:80, startDate:"", heightCm:175};
+  floor:1600, startWeight:114, goalWeight:80, startDate:"", heightCm:175,
+  sex:"m", age:null, act:1.375, autoTarget:true, anchorW:null, anchorKcal:null, lastAutoW:null, autoNote:null};
 const PRESETS = [
   {name:"Breakfast: oats + eggs", short:"Oats + eggs", kcal:520, protein:33, art:"breakfast"},
   {name:"Lunch: eggs, chana, dahi, salad", short:"Chana lunch plate", kcal:550, protein:41, art:"lunch"},
@@ -692,9 +700,9 @@ const FOOD_ROWS = [
 ["Rusk","Bread","piece",10,40,1,"rusk"],
 // ---- Rice ----
 ["Plain boiled rice","Rice","cup",160,205,4.3,"chawal white rice"],
-["Chicken biryani","Rice","plate",300,500,22,"biryani"],
-["Beef biryani","Rice","plate",300,550,24,"biryani beef"],
-["Chicken pulao","Rice","plate",300,450,20,"pulao yakhni"],
+["Chicken biryani","Rice","plate",350,583,25.7,"biryani"],
+["Beef biryani","Rice","plate",350,642,28.0,"biryani beef"],
+["Chicken pulao","Rice","plate",350,525,23.3,"pulao yakhni"],
 ["Matar pulao","Rice","cup",200,280,6,"peas pulao"],
 ["Khichdi","Rice","bowl",250,280,10,"khichri"],
 ["Daal chawal","Rice","plate",350,450,16,"dal chawal"],
@@ -716,6 +724,9 @@ const FOOD_ROWS = [
 ["Chicken handi","Chicken","bowl",200,400,28,"handi"],
 ["Chicken jalfrezi","Chicken","bowl",200,300,27,"jalfrezi"],
 ["Chicken tikka (leg piece)","Chicken","piece",150,250,30,"tikka"],
+["Chicken leg piece (in salan)","Chicken","piece",160,300,28,"chicken leg ran tang leg piece"],
+["Roast / grilled chicken leg","Chicken","piece",150,260,30,"chicken leg roast leg piece"],
+["Mutton leg piece (bone-in)","Meat","piece",130,280,24,"mutton leg ran raan gosht"],
 ["Chicken boti (6 pieces)","Chicken","serving",120,220,30,"boti bbq"],
 ["Chicken breast (grilled)","Chicken","100 g",100,165,31,"grilled chicken"],
 ["Chicken broast (1 piece)","Chicken","piece",130,400,25,"broast fried chicken"],
@@ -872,18 +883,18 @@ const FOOD_ROWS = [
 ["Flax seeds","Healthy","tbsp",10,55,1.9,"alsi flax"],
 ["Banana-oats smoothie","Healthy","glass",350,350,12,"smoothie"],
 // ---- Chinese ----
-["Chicken fried rice","Chinese","plate",300,520,20,"fried rice"],
-["Egg fried rice","Chinese","plate",300,480,13,"egg fried rice"],
-["Chicken chow mein","Chinese","plate",300,450,22,"chowmein noodles"],
+["Chicken fried rice","Chinese","plate",350,607,23.3,"fried rice"],
+["Egg fried rice","Chinese","plate",350,560,15.2,"egg fried rice"],
+["Chicken chow mein","Chinese","plate",350,525,25.7,"chowmein noodles"],
 ["Chicken manchurian","Chinese","bowl",200,330,20,"manchurian"],
 ["Chicken chilli dry","Chinese","bowl",200,360,26,"chilli chicken"],
 ["Sweet and sour chicken","Chinese","bowl",200,420,20,"sweet sour"],
 ["Chicken with vegetables","Chinese","bowl",200,250,25,"chicken vegetable chinese"],
 ["Hot and sour soup","Chinese","bowl",250,120,7,"hot sour soup"],
 // ---- Continental & Italian ----
-["Pasta in white sauce","Continental","plate",300,600,20,"alfredo pasta"],
-["Pasta in red sauce","Continental","plate",300,420,14,"arrabbiata pasta"],
-["Spaghetti bolognese","Continental","plate",300,500,26,"spaghetti"],
+["Pasta in white sauce","Continental","plate",350,700,23.3,"alfredo pasta"],
+["Pasta in red sauce","Continental","plate",350,490,16.3,"arrabbiata pasta"],
+["Spaghetti bolognese","Continental","plate",350,583,30.3,"spaghetti"],
 ["Lasagna","Continental","piece",250,450,25,"lasagne"],
 ["Mac and cheese","Continental","cup",200,400,15,"macaroni"],
 ["Grilled chicken steak + veg","Continental","plate",350,450,45,"steak chicken"],
@@ -1083,7 +1094,7 @@ function ringSVG(svg, frac, color, size, stroke, centerText){
 /* ------------------------------------------------------------------
    RENDER: TODAY
 ------------------------------------------------------------------ */
-function renderHealthNote(){
+function renderHealthNote(){ renderAutoNote();
   const box=document.getElementById("healthNote"); box.innerHTML="";
   const hcm=settings.heightCm, w=latestOf("weight")||settings.startWeight, waist=latestOf("waist");
   if(!hcm||!w) return;
@@ -1395,21 +1406,68 @@ function searchFoods(q, limit){
       scored.push({f, s:(nm.startsWith(toks[0])?0:1) + (f.cat==="Ingredient"?0.5:0) + nm.length/200}); } });
   return scored.sort((a,b)=>a.s-b.s).slice(0,limit||8).map(x=>x.f);
 }
-function unitsFor(f, qty, mode){ if(!f) return 0; return mode==="g" ? qty/(f.g||100) : qty; }
+
+/* ------------------------------------------------------------------
+   PAKISTANI PLATES & BOWLS — how most people actually measure food
+   (cooked food, typical home crockery)
+------------------------------------------------------------------ */
+const HH = {
+  chamach:  {label:"eating spoon (chamach)", short:"eating spoon", g:15},
+  spoon:    {label:"serving spoon (doi)", short:"serving spoon", g:50},
+  katori:   {label:"katori (small bowl)", short:"katori", g:150},
+  bowl:     {label:"big bowl (pyala)", short:"big bowl", g:250},
+  halfplate:{label:"half plate", short:"half plate", g:175},
+  plate:    {label:"normal plate", short:"normal plate", g:350},
+  fullplate:{label:"full plate (heaped)", short:"full plate", g:600}
+};
+const RICE_LIKE=/rice|pulao|biryani|khichdi|chawal|fried rice|chow ?mein|noodle|pasta|spaghetti|macaroni|mac and|mandi|quinoa|zarda|daliya/i;
+function hhFor(f){
+  if(!f || !f.g) return [];
+  const n=f.name.toLowerCase();
+  if(RICE_LIKE.test(n) && f.cat!=="Ingredient") return ["chamach","spoon","katori","halfplate","plate","fullplate"];
+  if(f.unit==="bowl" || ["Daal","Vegetable"].includes(f.cat) || /raita|dahi|yogurt|salad|chaat|kheer|custard|haleem|nihari|halwa|soup|qorma|karahi|salan|curry|keema/.test(n))
+    return f.cat==="Ingredient" ? [] : ["chamach","spoon","katori","bowl"];
+  return [];
+}
+function isHH(mode){ return typeof mode==="string" && mode.startsWith("hh:"); }
+function hhKey(mode){ return mode.slice(3); }
+function unitLabel(mode, base){ if(mode==="g") return "g"; if(isHH(mode)) return HH[hhKey(mode)].short; return base ? base.unit : "serving"; }
+// "8 eating spoons ≈ 120 g ≈ ¾ katori"
+function convText(f, qty, mode){
+  if(!f || !f.g || !qty) return "";
+  const grams=Math.round(unitsFor(f,qty,mode)*f.g);
+  const keys=hhFor(f); const parts=[`≈ ${grams} g`];
+  if(keys.length){ const kat=grams/HH.katori.g;
+    if(mode!=="hh:katori") parts.push(`≈ ${niceUnits(Math.max(0.25,Math.round(kat*4)/4))} katori`);
+    if(keys.includes("plate") && !/plate/.test(mode)) parts.push(`≈ ${niceUnits(Math.max(0.25,Math.round(grams/HH.plate.g*4)/4))} normal plate`);
+    if(keys.includes("bowl") && mode!=="hh:bowl" && grams>=HH.bowl.g*0.5) parts.push(`≈ ${niceUnits(Math.max(0.25,Math.round(grams/HH.bowl.g*4)/4))} big bowl`); }
+  return parts.join(" · ");
+}
+function hhSummary(f){
+  const keys=hhFor(f); if(!keys.length) return "";
+  const pick = keys.includes("fullplate") ? ["katori","plate","fullplate"] : ["katori","bowl"];
+  return pick.map(k=>`${HH[k].short} ≈ ${Math.round(f.kcal*HH[k].g/f.g)} kcal`).join(" · ");
+}
+function unitsFor(f, qty, mode){ if(!f) return 0;
+  if(mode==="g") return qty/(f.g||100);
+  if(isHH(mode)) return qty*HH[hhKey(mode)].g/(f.g||100);
+  return qty; }
 function calcFood(f, qty, mode){ const u=unitsFor(f,qty,mode);
   return {kcal:Math.round(f.kcal*u), protein:Math.round(f.p*u*10)/10, grams:Math.round((f.g||0)*u)}; }
 
 let pick=null, manualVals=false, sugIndex=-1, sugItems=[];
 function fillUnits(f){ const sel=document.getElementById("fUnit"); sel.innerHTML="";
   const o1=document.createElement("option"); o1.value="unit"; o1.textContent=f? f.unit : "serving"; sel.appendChild(o1);
-  if(f && f.g){ const o2=document.createElement("option"); o2.value="g"; o2.textContent="grams"; sel.appendChild(o2); } }
+  if(f && f.g){ hhFor(f).forEach(k=>{ const o=document.createElement("option"); o.value="hh:"+k; o.textContent=`${HH[k].label} ≈ ${HH[k].g} g`; sel.appendChild(o); });
+    const o2=document.createElement("option"); o2.value="g"; o2.textContent="grams"; sel.appendChild(o2); } }
 function recalcAdder(){
   if(!pick || manualVals) return;
   const qty=num(document.getElementById("fQty").value)||0, mode=document.getElementById("fUnit").value;
   const r=calcFood(pick, qty, mode);
   document.getElementById("fKcal").value=r.kcal; document.getElementById("fPro").value=r.protein;
   const info=document.getElementById("fInfo");
-  info.textContent = `${pick.name}: 1 ${pick.unit}${pick.g && pick.unit!=="100 g"?` (${pick.g} g)`:""} = ${pick.kcal} kcal, ${pick.p} g protein` + (r.grams?` · this entry ≈ ${r.grams} g`:"");
+  const cv=convText(pick, qty, mode);
+  info.textContent = `${pick.name}: 1 ${pick.unit}${pick.g && pick.unit!=="100 g"?` (${pick.g} g)`:""} = ${pick.kcal} kcal, ${pick.p} g protein` + (cv?` · this entry ${cv}`:"");
   info.appendChild(portionBox(pick, P=>{ document.getElementById("fUnit").value="unit"; document.getElementById("fQty").value = P.units ? Math.round(P.units*100)/100 : 1; recalcAdder(); }));
 }
 function choose(f){ pick=f; manualVals=false; document.getElementById("fName").value=f.name;
@@ -1429,7 +1487,7 @@ function showSug(q){
   box.hidden=false;
 }
 function addFoodEntry(f, qty, mode, kcal, protein, dayKey){
-  day(dayKey||current).foods.push({name:f.name, kcal, protein, art:guessArt(f.name), qty, unit: mode==="g"?"g":f.unit});
+  day(dayKey||current).foods.push({name:f.name, kcal, protein, art:guessArt(f.name), qty, unit: unitLabel(mode, f)});
 }
 
 let fcCat="All", fcOpen=null;
@@ -1459,6 +1517,7 @@ function renderFoodChart(){
     const ic=document.createElement("span"); ic.className="ic"; ic.innerHTML=ART[guessArt(f.name)]||ART.plate;
     const nm=document.createElement("span"); nm.textContent=f.name;
     const sm=document.createElement("small"); sm.textContent=`per ${f.unit}${f.g && f.unit!=="100 g"?` (${f.g} g)`:""} · ${f.cat}`; nm.appendChild(sm);
+    const hs=hhSummary(f); if(hs){ const s2=document.createElement("small"); s2.className="hhline"; s2.textContent=hs; nm.appendChild(s2); }
     const v=document.createElement("span"); v.className="vals"; v.innerHTML=`<b>${f.kcal} kcal</b>${f.p} g protein`;
     li.append(ic,nm,v);
     li.onclick=e=>{ if(e.target.closest(".fexp")) return; fcOpen = fcOpen===f.name?null:f.name; renderFoodChart(); };
@@ -1467,9 +1526,11 @@ function renderFoodChart(){
       const qi=document.createElement("input"); qi.type="number"; qi.step="0.25"; qi.min="0"; qi.value="1"; qi.style.width="72px"; qi.setAttribute("aria-label","Quantity");
       const us=document.createElement("select"); us.setAttribute("aria-label","Unit");
       const ou=document.createElement("option"); ou.value="unit"; ou.textContent=f.unit; us.appendChild(ou);
+      hhFor(f).forEach(k=>{ const o=document.createElement("option"); o.value="hh:"+k; o.textContent=`${HH[k].label} ≈ ${HH[k].g} g`; us.appendChild(o); });
       if(f.g){ const og=document.createElement("option"); og.value="g"; og.textContent="grams"; us.appendChild(og); }
       const calc=document.createElement("span"); calc.className="calc";
-      const upd=()=>{ const r=calcFood(f, num(qi.value)||0, us.value); calc.textContent=`= ${r.kcal} kcal · ${r.protein} g protein`; return r; };
+      const upd=()=>{ const q=num(qi.value)||0, r=calcFood(f, q, us.value); const cv=convText(f,q,us.value);
+        calc.textContent=`= ${r.kcal} kcal · ${r.protein} g protein${cv?` (${cv})`:""}`; return r; };
       qi.oninput=upd; us.onchange=()=>{ qi.value = us.value==="g" ? (f.g||100) : 1; upd(); };
       const add=document.createElement("button"); add.className="btn";
       add.textContent= current===todayKey() ? "Add to today" : `Add to ${keyToDate(current).toLocaleDateString("en-GB",{day:"numeric",month:"short"})}`;
@@ -1845,6 +1906,7 @@ function renderPlan(){
   if(B.mine){ const row=el2("div","row"); row.style.marginTop="14px";
     const btn=el2("button","btn","Use this plan as my daily targets");
     btn.onclick=()=>{ settings.kcal=mid; settings.protein=Math.round((pLo+pHi)/2); settings.steps=stepTarget; settings.floor=floor;
+      settings.sex=B.sex||settings.sex; if(B.age) settings.age=B.age; settings.act=+(B.act||settings.act); setAnchor(w);
       if(mode==="lose") settings.goalWeight=goalW;
       scheduleSave(); renderAll(); btn.textContent=`Targets set: ${mid.toLocaleString()} kcal · ${settings.protein} g protein · ${stepTarget.toLocaleString()} steps · goal ${goalW} kg`; };
     row.appendChild(btn); sec.appendChild(row); }
@@ -1897,12 +1959,12 @@ function menuItemFrom(f, qty, mode, kcal, protein, slot){
 function recalcMenuItem(it){ if(!it.base) return; const r=calcFood(it.base, it.qty, it.mode);
   it.kcal=r.kcal; it.protein=r.protein; }
 function menuTotals(){ return MENU.reduce((a,m)=>({kcal:a.kcal+m.kcal, protein:a.protein+m.protein}),{kcal:0,protein:0}); }
-function qtyText(it){ const u = it.mode==="g" ? "g" : (it.base?it.base.unit:"serving"); return u==="g" ? `${fmtQty(it.qty)} g` : `${fmtQty(it.qty)} × ${u}`; }
+function qtyText(it){ const u = unitLabel(it.mode, it.base); return u==="g" ? `${fmtQty(it.qty)} g` : `${fmtQty(it.qty)} × ${u}`; }
 function addMenuItem(it){ MENU.push(it); MENU.sort((a,b)=>SLOTS.indexOf(a.slot)-SLOTS.indexOf(b.slot)); scheduleSave(); }
 
-function menuEntry(it){ return {name:it.name, kcal:it.kcal, protein:it.protein, art:it.art, qty:it.qty, unit: it.mode==="g"?"g":(it.base?it.base.unit:"serving"), menuId:it.id}; }
+function menuEntry(it){ return {name:it.name, kcal:it.kcal, protein:it.protein, art:it.art, qty:it.qty, unit: unitLabel(it.mode, it.base), menuId:it.id}; }
 function foodForMenuItem(it){ return FOOD_DB.concat(customFoods.map(f=>({...f,cat:"My foods"}))).find(f=>f.name===it.name) || {name:it.name, cat:"", kcal:it.kcal, p:it.protein, g:0, unit:"serving"}; }
-const PL_UNITS={piece:"pieces",bowl:"bowls",cup:"cups",plate:"plates",glass:"glasses",slice:"slices",scoop:"scoops",handful:"handfuls",roll:"rolls",bar:"bars",can:"cans",serving:"servings",skewer:"skewers",jar:"jars"};
+const PL_UNITS={"eating spoon":"eating spoons",katori:"katoris","half plate":"half plates","normal plate":"normal plates","full plate":"full plates","big bowl":"big bowls","serving spoon":"serving spoons",piece:"pieces",bowl:"bowls",cup:"cups",plate:"plates",glass:"glasses",slice:"slices",scoop:"scoops",handful:"handfuls",roll:"rolls",bar:"bars",can:"cans",serving:"servings",skewer:"skewers",jar:"jars"};
 function plu(unit,q){ return q>1 && PL_UNITS[unit] ? PL_UNITS[unit] : unit; }
 function roundStep(u){ const step=u<2?0.25:0.5; return Math.max(step, Math.round(u/step)*step); }
 // suggestions to replace what was skipped
@@ -1913,11 +1975,13 @@ function swapIdeas(skipped, d){
   // 1) more of what's already on your menu (scalable items you are eating)
   MENU.filter(it=>!skipped.includes(it) && it.base).forEach(it=>{
     const f=foodForMenuItem(it), role=roleOf(f); if(["treat","sugar","sweetdrink","fat"].includes(role)) return;
-    const extraUnits = it.mode==="g" ? freeK/it.base.kcal*(it.base.g||100) : freeK/it.base.kcal;
+    const per1 = Math.max(1, calcFood(it.base, 1, it.mode).kcal);
+    const extraUnits = freeK/per1;
     const add = it.mode==="g" ? Math.max(10, Math.round(extraUnits/10)*10) : roundStep(extraUnits);
     const r = calcFood(it.base, add, it.mode);
-    ideas.push({kind:"more", score:roles.has(role)?0:0.5, name:it.name, art:it.art, qty:add, unit: it.mode==="g"?"g":it.base.unit, kcal:r.kcal, protein:r.protein,
-      label:`More ${it.name.toLowerCase()}: +${it.mode==="g"?add+" g":niceUnits(add)+" "+plu(it.base.unit,add)}`});
+    const ul=unitLabel(it.mode, it.base);
+    ideas.push({kind:"more", score:roles.has(role)?0:0.5, name:it.name, art:it.art, qty:add, unit: ul, kcal:r.kcal, protein:r.protein,
+      label:`More ${it.name.toLowerCase()}: +${it.mode==="g"?add+" g":niceUnits(add)+" "+plu(ul,add)}`});
   });
   // 2) same-type foods from the chart
   const wantRole = [...roles][0];
@@ -2350,6 +2414,12 @@ function portionBox(f, onUse){
   const T=settings.kcal||2000;
   const head = warnRoles.includes(P.role) ? "If you have it" : "Right amount for you";
   d.innerHTML = `<b>${head}:</b> ${P.amount} → ${P.kcal} kcal, ${P.protein} g protein`;
+  const keys=hhFor(f);
+  if(keys.length && P.units){ const grams=P.units*(f.g||100);
+    const kat=grams/HH.katori.g, pl=grams/HH.plate.g;
+    const txt = keys.includes("plate") ? `In plates: about ${niceUnits(Math.max(0.25,Math.round(pl*4)/4))} of a normal plate, or ${niceUnits(Math.max(0.25,Math.round(kat*4)/4))} katori.`
+                                       : `In bowls: about ${niceUnits(Math.max(0.25,Math.round(kat*4)/4))} katori.`;
+    const hh=document.createElement("span"); hh.className="hand"; hh.style.fontWeight="600"; hh.style.color="var(--ink)"; hh.textContent=txt; d.appendChild(hh); }
   const h=document.createElement("span"); h.className="hand"; h.textContent=`Hand guide: ${P.R.hand}. Based on your ${T.toLocaleString()} kcal a day.`;
   d.appendChild(h);
   if(onUse){ const b=document.createElement("button"); b.className="btn small"; b.textContent="Use this amount"; b.onclick=()=>onUse(P); d.appendChild(b); }
@@ -2366,6 +2436,58 @@ function renderPortionGuide(){
   ["Roti or rice: a cupped hand or your fist (¼ plate).","Chicken, fish, eggs, daal: your palm (¼ plate).","Sabzi and salad: two fists (½ plate).","Oil, ghee, nuts: your thumb."]
     .forEach(t=>{ const li=document.createElement("li"); li.textContent=t; ul.appendChild(li); });
   box.appendChild(ul);
+  const t=document.createElement("p"); t.className="hint"; t.style.margin="10px 0 0";
+  t.textContent="Pakistani plates and bowls used in this app (cooked food):"; box.appendChild(t);
+  const g=document.createElement("div"); g.className="hhgrid";
+  Object.values(HH).forEach(h=>{ const c=document.createElement("div"); const b=document.createElement("b"); b.textContent=h.short; const sp=document.createElement("span"); sp.textContent=`≈ ${h.g} g`; c.append(b,sp); g.appendChild(c); });
+  box.appendChild(g);
+  const t2=document.createElement("p"); t2.className="hint"; t2.style.margin="0";
+  t2.textContent="Rice, biryani and pulao can be logged in serving spoons, katoris, or half / normal / full plates; daal, salan, sabzi, raita and dahi in serving spoons, katoris or big bowls. Pick it from the Unit list.";
+  box.appendChild(t2);
+}
+
+
+/* ------------------------------------------------------------------
+   AUTO-ADJUSTING CALORIE TARGET
+   As weight drops the body burns less, so the same intake slowly stops
+   working. Every time a new weigh-in is at least 2 kg away from the last
+   adjustment, the target is recalculated (Mifflin–St Jeor × activity) and
+   the SAME daily deficit you chose is kept. Your last manual change is the
+   anchor: changing the target yourself resets the anchor to it.
+------------------------------------------------------------------ */
+const AUTO_STEP_KG = 2;
+function personAge(){ return settings.age || (typeof B!=="undefined" && B.age) || 30; }
+function personSex(){ return settings.sex || (typeof B!=="undefined" && B.sex) || "m"; }
+function tdeeAt(w){ return mifflin(personSex(), w, settings.heightCm||170, personAge()) * (+settings.act||1.375); }
+function latestWeight(){ const ks=Object.keys(days).sort().reverse(); for(const k of ks){ const v=days[k]&&days[k].weight; if(v>=30 && v<=350) return +v; } return null; }
+function setAnchor(w){ settings.anchorW = w || latestWeight() || settings.startWeight; settings.anchorKcal = settings.kcal; settings.lastAutoW = settings.anchorW; }
+function autoAdjust(){
+  if(!settings.autoTarget) return false;
+  const w=latestWeight(); if(!w) return false;
+  if(!settings.anchorW || !settings.anchorKcal){ setAnchor(settings.startWeight||w); }
+  const ref = settings.lastAutoW || settings.anchorW;
+  if(Math.abs(w-ref) < AUTO_STEP_KG) return false;
+  const deficit = tdeeAt(settings.anchorW) - settings.anchorKcal;
+  const floor = Math.max(settings.floor||0, personSex()==="m"?1500:1200);
+  const next = Math.max(floor, Math.round((tdeeAt(w)-deficit)/50)*50);
+  settings.lastAutoW = w;
+  if(next===settings.kcal) return false;
+  settings.autoNote = {from:settings.kcal, to:next, w, ref, date:todayKey(), seen:false};
+  settings.kcal = next; saveLocal(); return true;
+}
+function renderAutoNote(){
+  const n=settings.autoNote, box=document.getElementById("autoNote"); if(!box) return; box.innerHTML="";
+  if(!n || n.seen) return;
+  const v=document.createElement("div"); v.className="verdict ok"; v.style.marginTop="6px";
+  const h=document.createElement("h3"); h.textContent=`Calorie target updated: ${n.from.toLocaleString()} → ${n.to.toLocaleString()} kcal`;
+  const p=document.createElement("p"); p.className="hint"; p.style.margin="0";
+  p.textContent = n.to<n.from ? `You've gone from ${n.ref} kg to ${n.w} kg — a lighter body burns less, so your target moves down to keep you losing at the same pace.`
+                              : `Your weight went from ${n.ref} kg to ${n.w} kg, so your target moved up to keep the same pace.`;
+  const row=document.createElement("div"); row.className="row"; row.style.marginTop="8px";
+  const ok=document.createElement("button"); ok.className="btn small"; ok.textContent="OK"; ok.onclick=()=>{ n.seen=true; scheduleSave(); renderAll(); };
+  const undo=document.createElement("button"); undo.className="btn ghost small"; undo.textContent="Undo";
+  undo.onclick=()=>{ settings.kcal=n.from; settings.lastAutoW=n.ref; n.seen=true; scheduleSave(); renderAll(); };
+  row.append(ok,undo); v.append(h,p,row); box.appendChild(v);
 }
 
 /* ------------------------------------------------------------------
@@ -2374,7 +2496,7 @@ function renderPortionGuide(){
 const SETTING_FIELDS = [
   ["kcal","Daily calories (kcal)",1], ["floor","Never below (kcal)",1], ["protein","Protein (g)",1],
   ["water","Water (glasses of 250 ml)",1], ["steps","Steps",100], ["sleep","Sleep (hours)",0.25],
-  ["gym","Workout (minutes)",5], ["heightCm","Height (cm)",0.5], ["startWeight","Start weight (kg)",0.1], ["goalWeight","Goal weight (kg)",0.1],
+  ["gym","Workout (minutes)",5], ["heightCm","Height (cm)",0.5], ["age","Age (years)",1], ["sex","Sex","sex"], ["act","Activity before the plan","act"], ["startWeight","Start weight (kg)",0.1], ["goalWeight","Goal weight (kg)",0.1],
   ["startDate","Start date",null]
 ];
 function renderHabitEditor(){
@@ -2395,9 +2517,21 @@ function renderSettings(){
   const f = document.getElementById("settingsForm"); f.innerHTML="";
   SETTING_FIELDS.forEach(([k,l,step])=>{ const w=document.createElement("div"); w.className="field";
     const lab=document.createElement("label"); lab.textContent=l; lab.htmlFor="set-"+k;
-    const inp=document.createElement("input"); inp.id="set-"+k;
-    if(step===null){ inp.type="date"; inp.value=settings[k]||""; } else { inp.type="number"; inp.step=step; inp.value=settings[k]; }
+    let inp;
+    if(step==="sex"||step==="act"){ inp=document.createElement("select"); inp.id="set-"+k;
+      const opts = step==="sex" ? [["m","Male"],["f","Female"]] : [["1.2","Mostly sitting"],["1.375","Lightly active"],["1.55","Moderately active"],["1.725","Very active"]];
+      opts.forEach(([v,t])=>{ const o=document.createElement("option"); o.value=v; o.textContent=t; inp.appendChild(o); });
+      inp.value=String(settings[k]); }
+    else { inp=document.createElement("input"); inp.id="set-"+k;
+      if(step===null){ inp.type="date"; inp.value=settings[k]||""; } else { inp.type="number"; inp.step=step; inp.value=settings[k]==null?"":settings[k]; } }
     w.append(lab,inp); f.appendChild(w); });
+  const aw=document.createElement("div"); aw.className="field"; aw.style.gridColumn="1/-1";
+  const lab=document.createElement("label"); lab.className="switch"; lab.style.cursor="pointer";
+  const cb=document.createElement("input"); cb.type="checkbox"; cb.id="set-autoTarget"; cb.checked=!!settings.autoTarget;
+  lab.append(cb, document.createTextNode(" Adjust my calorie target automatically as my weight changes (every 2 kg)"));
+  const hint=document.createElement("p"); hint.className="hint"; hint.style.margin="4px 0 0";
+  hint.textContent = settings.anchorW ? `Keeps the deficit you chose at ${settings.anchorW} kg (${(settings.anchorKcal||settings.kcal).toLocaleString()} kcal). Changing the calorie target yourself makes that the new starting point.` : "Uses your sex, age, height and activity above. Changing the calorie target yourself makes that the new starting point.";
+  aw.append(lab,hint); f.appendChild(aw);
 }
 
 function renderHeader(){
@@ -2436,14 +2570,14 @@ function bind(){
   fName.addEventListener("blur",()=>setTimeout(hideSug,150));
   document.getElementById("fQty").addEventListener("input",recalcAdder);
   document.getElementById("fUnit").addEventListener("change",()=>{
-    if(pick){ document.getElementById("fQty").value = document.getElementById("fUnit").value==="g" ? (pick.g||100) : 1; }
+    if(pick){ document.getElementById("fQty").value = document.getElementById("fUnit").value==="g" ? (pick.g||100) : 1; manualVals=false; }
     recalcAdder(); });
   ["fKcal","fPro"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{ manualVals=true; }));
   document.getElementById("addFood").onclick=()=>{
     const n=document.getElementById("fName"), k=document.getElementById("fKcal"), p=document.getElementById("fPro");
     const kcal=num(k.value), pro=num(p.value)||0, qty=num(document.getElementById("fQty").value)||1, mode=document.getElementById("fUnit").value;
     if(!n.value.trim() || kcal===null){ n.focus(); n.placeholder="Pick a food or type a name and kcal"; return; }
-    const unit = pick ? (mode==="g" ? "g" : pick.unit) : "serving";
+    const unit = pick ? unitLabel(mode, pick) : "serving";
     day().foods.push({name:n.value.trim(), kcal, protein:pro, art:guessArt(n.value), qty, unit});
     n.value=""; k.value=""; p.value=""; document.getElementById("fQty").value=1; pick=null; manualVals=false; fillUnits(null);
     document.getElementById("fInfo").textContent=""; changed(); };
@@ -2470,6 +2604,7 @@ function bind(){
   document.getElementById("waterMinus").onclick=()=>{ const d=day(); d.water=Math.max(0,(d.water||0)-1); changed(); };
   [["steps","steps"],["gymMin","gymMin"],["sleep","sleep"],["weight","weight"],["waist","waist"]].forEach(([id,key])=>{
     document.getElementById(id).addEventListener("input", e=>{ day()[key] = num(e.target.value); scheduleSave(); renderToday(); }); });
+  document.getElementById("weight").addEventListener("change", ()=>{ if(autoAdjust()) { scheduleSave(); renderAll(); } });
   document.getElementById("gymType").onchange=e=>{ const d=day(); d.gymType=e.target.value;
     if(e.target.value==="rest") d.gymMin=0; changed(); };
   document.getElementById("notes").addEventListener("input", e=>{ day().notes=e.target.value; scheduleSave(); });
@@ -2497,8 +2632,12 @@ function bind(){
   document.getElementById("resetHabits").onclick=()=>{ if(!confirm("Put the original five habits back? Your custom ones will be removed.")) return;
     HABITS=DEFAULT_HABITS.map(h=>({...h})); scheduleSave(); renderHabitEditor(); renderAll(); };
   document.getElementById("saveSettings").onclick=()=>{
-    SETTING_FIELDS.forEach(([k,,step])=>{ const v=document.getElementById("set-"+k).value;
-      settings[k] = step===null ? v : (num(v) ?? DEFAULT_SETTINGS[k]); });
+    const before=settings.kcal;
+    SETTING_FIELDS.forEach(([k,,step])=>{ const el=document.getElementById("set-"+k); if(!el) return; const v=el.value;
+      settings[k] = step===null ? v : (step==="sex" ? v : (num(v) ?? DEFAULT_SETTINGS[k])); });
+    const at=document.getElementById("set-autoTarget"); if(at) settings.autoTarget=at.checked;
+    settings.act=+settings.act||1.375;
+    if(settings.kcal!==before || !settings.anchorW) setAnchor();
     scheduleSave(); renderAll();
     const b=document.getElementById("saveSettings"); b.textContent="Targets saved"; setTimeout(()=>b.textContent="Save targets",1500); };
 
@@ -2548,6 +2687,8 @@ document.querySelectorAll(".secthead").forEach(h=>{ const i=document.createEleme
   i.innerHTML=ICONS[h.dataset.icon]||""; i.setAttribute("aria-hidden","true"); i.style.display="inline-flex"; h.prepend(i); });
 bind();
 loadBmi(); bindBmi(); bindCare();
+if(!settings.anchorW) { setAnchor(settings.startWeight); saveLocal(); }
+autoAdjust();
 renderAll();
 storageNote();
 setSync("Saved on this device");
