@@ -68,10 +68,10 @@ nav.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
 .score .num span{font-size:.78rem;color:var(--muted)}
 .hero h1{font-size:clamp(1.5rem,4.6vw,2.2rem);line-height:1.1;margin:0 0 6px;font-weight:600;letter-spacing:-.015em}
 .hero p{margin:0;color:var(--muted);max-width:52ch}
-.rings{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 8px;padding:14px 0 6px}
-@media (min-width:720px){.rings{grid-template-columns:repeat(6,1fr)}}
+.rings{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 6px;padding:14px 0 6px}
+@media (min-width:720px){.rings{grid-template-columns:repeat(8,1fr)}}
 .ring{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
-.ring svg{width:92px;height:92px}
+.ring svg{width:100%;max-width:92px;height:auto;aspect-ratio:1}
 .ring .lbl{font-weight:600;font-size:.92rem}
 .ring .val{font-size:.8rem;color:var(--muted)}
 .ring .center{font-weight:700;font-size:15px}
@@ -163,6 +163,38 @@ section.block{transition:none}
 .hhgrid div{border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center;background:var(--surface)}
 .hhgrid b{display:block;font-size:.9rem}
 .hhgrid span{font-size:.76rem;color:var(--muted)}
+/* guide */
+details.gd{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:10px 14px;margin:10px 0}
+details.gd summary{cursor:pointer;font-weight:600;font-size:1rem;list-style-position:outside}
+details.gd[open] summary{margin-bottom:8px}
+details.gd li{margin:5px 0;line-height:1.45}
+details.gd ol,details.gd ul{padding-left:20px;margin:6px 0}
+details.gd .ptable{margin:6px 0}
+/* daily menu nutrients */
+.chips2{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.chip2{font-size:.72rem;padding:1px 7px;border-radius:999px;background:var(--plate);color:var(--muted);white-space:nowrap}
+.medit li.mitem{grid-template-columns:auto minmax(0,1fr) auto}
+.mexp{grid-column:1/-1;padding:4px 0 2px 40px}
+.mini-t td{padding:4px 6px;font-size:.84rem}
+.msum{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:12px;background:color-mix(in srgb, var(--pro) 5%, var(--surface))}
+.msum h3{margin:0 0 6px;font-size:1rem;display:flex;justify-content:space-between;align-items:baseline}
+.msum h3 small{font-weight:400;color:var(--muted);font-size:.8rem}
+.nmsg{font-size:.8rem;color:var(--good);margin-top:2px}
+.nmsg.warn{color:var(--cal)}
+@media (max-width:640px){ .medit li.mitem .ctl{grid-column:2/-1;justify-content:flex-start;margin-top:4px} .medit li.mitem{grid-template-columns:auto minmax(0,1fr)} }
+.medit li.mitem .ctl{flex-wrap:nowrap}
+.medit li.mitem .ctl select{max-width:118px}
+/* nutrition card */
+.ncard{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:12px 14px;margin-top:10px}
+.ncard h3{margin:0 0 8px;font-size:1rem}
+.split{display:flex;height:12px;border-radius:999px;overflow:hidden;background:var(--track)}
+.split span{display:block;height:100%}
+.nrow{margin:7px 0}
+.ntop{display:flex;justify-content:space-between;gap:8px;font-size:.84rem}
+.ntop span:last-child{color:var(--muted);text-align:right}
+.nbar{height:8px;border-radius:999px;background:var(--track);overflow:hidden;margin-top:3px}
+.nbar i{display:block;height:100%;border-radius:999px}
+.frow .vals .mac{display:block;font-size:.74rem;color:var(--muted)}
 /* daily menu */
 .menu-sec{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:12px 14px;margin:6px 0 14px}
 .menu-sec h3{margin:0;font-size:1rem;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -326,6 +358,7 @@ textarea{min-height:76px;resize:vertical}
     <button role="tab" data-tab="week" aria-selected="false">This week</button>
     <button role="tab" data-tab="progress" aria-selected="false">Progress</button>
     <button role="tab" data-tab="settings" aria-selected="false">Targets</button>
+    <button role="tab" data-tab="guide" aria-selected="false">Guide</button>
   </nav>
 </header>
 
@@ -357,7 +390,10 @@ textarea{min-height:76px;resize:vertical}
             <label class="mini"><span class="fieldlbl">Qty</span><input id="fQty" type="number" inputmode="decimal" step="0.25" min="0" value="1" style="width:72px" aria-label="Quantity"></label>
             <label class="mini"><span class="fieldlbl">Unit</span><select id="fUnit" aria-label="Unit"><option value="unit">serving</option></select></label>
             <label class="mini"><span class="fieldlbl">kcal</span><input id="fKcal" type="number" inputmode="numeric" style="width:78px" aria-label="Calories"></label>
-            <label class="mini"><span class="fieldlbl">Protein g</span><input id="fPro" type="number" inputmode="decimal" step="0.1" style="width:84px" aria-label="Protein grams"></label>
+            <label class="mini"><span class="fieldlbl">Protein g</span><input id="fPro" type="number" inputmode="decimal" step="0.1" style="width:76px" aria-label="Protein grams"></label>
+            <label class="mini"><span class="fieldlbl">Carbs g</span><input id="fCarb" type="number" inputmode="decimal" step="0.1" style="width:70px" aria-label="Carbohydrate grams"></label>
+            <label class="mini"><span class="fieldlbl">Fat g</span><input id="fFat" type="number" inputmode="decimal" step="0.1" style="width:64px" aria-label="Fat grams"></label>
+            <label class="mini"><span class="fieldlbl">Fiber g</span><input id="fFib" type="number" inputmode="decimal" step="0.1" style="width:64px" aria-label="Fiber grams"></label>
             <button class="btn" id="addFood">Add</button>
             <button class="btn ghost" id="addToMenu" title="Add this food to your fixed daily menu">＋ Daily menu</button>
           </div>
@@ -365,6 +401,7 @@ textarea{min-height:76px;resize:vertical}
         </div>
         <ul class="food" id="foodList"></ul>
         <div class="totals"><span>Total</span><span id="foodTotals">0 kcal · 0 g protein</span></div>
+        <div id="nutriCard"></div>
       </section>
 
       <section class="block">
@@ -444,6 +481,9 @@ textarea{min-height:76px;resize:vertical}
       <input id="cfG" type="number" inputmode="numeric" placeholder="grams" style="width:80px" aria-label="Grams per unit">
       <input id="cfKcal" type="number" inputmode="numeric" placeholder="kcal" style="width:76px" aria-label="Calories per unit">
       <input id="cfPro" type="number" inputmode="decimal" step="0.1" placeholder="protein g" style="width:92px" aria-label="Protein per unit">
+      <input id="cfCarb" type="number" inputmode="decimal" step="0.1" placeholder="carbs g" style="width:84px" aria-label="Carbs per unit">
+      <input id="cfFat" type="number" inputmode="decimal" step="0.1" placeholder="fat g" style="width:72px" aria-label="Fat per unit">
+      <input id="cfFib" type="number" inputmode="decimal" step="0.1" placeholder="fiber g" style="width:76px" aria-label="Fiber per unit">
       <button class="btn" id="cfAdd">Save food</button>
     </div>
   </section>
@@ -533,6 +573,102 @@ textarea{min-height:76px;resize:vertical}
   </section>
 </div>
 
+<!-- =========================== GUIDE =========================== -->
+<div id="tab-guide" hidden>
+  <div class="hero" style="grid-template-columns:1fr"><div><h1>Guide</h1>
+    <p class="hint">Everything a new person needs to use Cut Log well — what to do first, how to measure, what every number means, and what the latest research says to keep an eye on. Tap a section to open it.</p></div></div>
+
+  <details class="gd" open><summary>1 · Start here — your first 10 minutes</summary>
+    <ol>
+      <li><b>BMI tab:</b> enter your sex, age, height, weight and waist. Add your target weight and how many months you want, and choose how active you are. Read the plan it builds.</li>
+      <li>Tap <b>“Use my data”</b> first, then <b>“Use this plan as my daily targets”</b> — your calories, protein, steps and goal fill in everywhere. Set your age, sex and activity in <b>Targets</b> too.</li>
+      <li><b>Food chart → My daily menu:</b> add the foods you eat on a normal day (or use the plan's timetable). From then on you just tick them off.</li>
+      <li><b>Care tab:</b> choose men or women and tap the recommended routine.</li>
+      <li><b>Every day:</b> on Today, tick your menu, skip what you didn't eat (the app suggests swaps), add any extras, and fill water, steps, sleep and habits.</li>
+      <li><b>Once a week:</b> weigh in and measure your waist (same morning, same way). Tap <b>Back up all data</b> or <b>Send to phone / laptop</b>.</li>
+    </ol>
+  </details>
+
+  <details class="gd"><summary>2 · How to measure food</summary>
+    <p><b>Use the measure you already eat from.</b> Pick it in the Unit list and the app works out grams and nutrients.</p>
+    <table class="ptable"><tr><th>Measure</th><th>About</th><th>Good for</th></tr>
+      <tr><td>Eating spoon (chamach)</td><td>15 g</td><td>raita, dahi, chutney, oil</td></tr>
+      <tr><td>Serving spoon (doi)</td><td>50 g</td><td>rice, salan, daal from the pot</td></tr>
+      <tr><td>Katori</td><td>150 g</td><td>daal, sabzi, salan, dahi, rice</td></tr>
+      <tr><td>Big bowl (pyala)</td><td>250 g</td><td>soup, haleem, fruit chaat</td></tr>
+      <tr><td>Half / normal / full plate</td><td>175 / 350 / 600 g</td><td>rice, biryani, pulao</td></tr>
+      <tr><td>Roti, egg, fruit, kebab</td><td>by the piece</td><td>count them</td></tr></table>
+    <ul>
+      <li><b>Weigh once, then eyeball.</b> Put your usual katori or plate on a kitchen scale one time; after that you'll judge by eye.</li>
+      <li><b>Hand guide:</b> roti or rice = your fist · chicken, fish, daal = your palm · sabzi and salad = two fists · oil, ghee, nuts = your thumb.</li>
+      <li><b>Count the oil.</b> Most extra calories in home food come from oil and ghee. 1 tablespoon = 120 kcal. If you know how much went in the pot, divide by the people eating.</li>
+      <li><b>Eating out:</b> restaurant food usually has 30–50% more oil than the same dish at home — log a bit more.</li>
+      <li><b>Packaged food:</b> read the label “per 100 g”, weigh or estimate your portion, and save it under “Add your own food”.</li>
+      <li><b>Cooked vs raw:</b> chart values are for cooked food unless it says “raw” or “dry”. 100 g of dry rice becomes about 300 g cooked.</li>
+    </ul>
+  </details>
+
+  <details class="gd"><summary>3 · How to measure your body</summary>
+    <ul>
+      <li><b>Weight:</b> once a week, in the morning, after the toilet, before eating, same scale, light clothes. Daily weight jumps 1–2 kg with water and salt — that's normal, look at the trend.</li>
+      <li><b>Waist:</b> tape level around the belly at the belly button, after a normal breath out, snug not tight. Measure twice and use the average. Waist often keeps shrinking when the scale is stuck.</li>
+      <li><b>Height:</b> no shoes, back against a wall.</li>
+      <li>Your calorie target updates itself every 2 kg you lose (switch it off in Targets if you want).</li>
+    </ul>
+  </details>
+
+  <details class="gd"><summary>4 · What each number means — and the target</summary>
+    <table class="ptable"><tr><th>Number</th><th>What it is</th><th>Target</th></tr>
+      <tr><td>Calories (kcal)</td><td>energy in food — the main lever for weight</td><td>your plan (BMI tab)</td></tr>
+      <tr><td>Protein</td><td>builds and protects muscle, keeps you full</td><td>1.2–1.6 g per kg of a healthy weight; some at every meal</td></tr>
+      <tr><td>Carbs</td><td>main fuel — roti, rice, fruit, daal</td><td>the rest of your calories; choose whole-wheat roti, brown rice, daal</td></tr>
+      <tr><td>Fat</td><td>needed, but 9 kcal per gram (more than double protein and carbs)</td><td>no more than 30% of calories</td></tr>
+      <tr><td>Saturated fat</td><td>ghee, butter, malai, fatty meat, banaspati — raises LDL cholesterol</td><td>under 10% of calories (doctors often advise lower if your cholesterol is high)</td></tr>
+      <tr><td>Fiber</td><td>from daal, chana, sabzi, fruit, whole wheat — fullness, digestion, cholesterol and blood sugar</td><td>at least 25 g (the app aims for 30 g)</td></tr>
+      <tr><td>Fruit & vegetables</td><td>vitamins, minerals, fiber</td><td>at least 400 g a day (about 5 portions)</td></tr>
+      <tr><td>Salt</td><td>raises blood pressure (not tracked — watch namak, achar, nimko, packaged food)</td><td>under 5 g a day = one level teaspoon in total</td></tr>
+      <tr><td>Added sugar</td><td>sugar in chai, mithai, cold drinks, juice</td><td>as little as possible — under 5% of calories is the healthier goal</td></tr>
+      <tr><td>Water</td><td>energy, digestion, less false hunger</td><td>8–12 glasses, more in heat or after the gym</td></tr>
+    </table>
+    <p class="hint">Fat, fiber and saturated fat for each food are estimates from typical Pakistani home cooking. They're good for spotting patterns across a week, not exact to the gram.</p>
+  </details>
+
+  <details class="gd"><summary>5 · What the latest research says to check for a balanced life</summary>
+    <ul>
+      <li><b>Eat mostly real, whole foods.</b> The newest guidelines (WHO and the 2025–2030 US Dietary Guidelines, January 2026) put more weight on limiting highly processed and packaged foods, sugary drinks and refined flour.</li>
+      <li><b>Fat quality matters more than fat amount.</b> Replace ghee, butter and banaspati with canola, sunflower or olive oil; choose chicken, fish, eggs and daal over fatty red meat most days.</li>
+      <li><b>Fiber and whole grains:</b> whole-wheat atta, brown rice, oats, daal, chana and lobia. Most people eat half the fiber they need.</li>
+      <li><b>Fruit and vegetables every meal:</b> half the plate sabzi or salad.</li>
+      <li><b>Protein at every meal</b>, especially while losing weight, plus strength training — so you lose fat, not muscle.</li>
+      <li><b>Move:</b> 150–300 minutes of moderate activity a week plus strength training 2+ days (WHO). Most of the health benefit of walking comes by about 7,000 steps a day.</li>
+      <li><b>Sleep 7–9 hours.</b> Short sleep raises hunger and cravings the next day.</li>
+      <li><b>Check your numbers yearly:</b> blood pressure, blood sugar (HbA1c), cholesterol, and waist-to-height under 0.5. More often if you're overweight or have a family history.</li>
+      <li><b>No smoking, naswar or gutka.</b> Keep caffeine before 2 pm.</li>
+      <li><b>Mind and people:</b> stress, loneliness and poor mood affect eating and sleep — time with family and friends, daylight and walks help.</li>
+    </ul>
+  </details>
+
+  <details class="gd"><summary>6 · Reading the app</summary>
+    <ul>
+      <li><b>Rings:</b> fill as you go. Calories and fat turn red when you're over; fiber, protein, water and steps are “reach at least” targets.</li>
+      <li><b>Nutrition balance</b> (under your food list): how your calories split between protein, carbs and fat, and bars for fiber, fruit & veg, fat and saturated fat.</li>
+      <li><b>Day score:</b> calories 22% · protein 17% · fiber 8% · water 8% · steps, sleep and habits 15% each.</li>
+      <li><b>This week:</b> charts and a plain list of what went right and what needs work.</li>
+      <li><b>Progress:</b> weight trend against a 1 kg/week line and a yearly calendar of your days.</li>
+    </ul>
+  </details>
+
+  <details class="gd"><summary>7 · Your data</summary>
+    <ul>
+      <li>Everything stays on this device, in this browser. Nothing is uploaded.</li>
+      <li>Each phone or laptop has its own separate data. To move it: <b>Send to phone / laptop</b> on one, <b>Restore from backup</b> on the other.</li>
+      <li>Clearing the browser's site data deletes your log — back up once a week.</li>
+    </ul>
+  </details>
+
+  <p class="hint" style="margin-top:14px">Cut Log is a tracking and education tool, not medical advice. If you have diabetes, high blood pressure, heart or kidney disease, take medicines, or are pregnant, plan your diet with a doctor or dietitian.</p>
+</div>
+
 <!-- =========================== WEEK =========================== -->
 <div id="tab-week" hidden>
   <div class="hero" style="grid-template-columns:1fr"><div><h1 id="weekTitle">Last 7 days</h1><p id="weekSub" class="hint"></p></div></div>
@@ -544,6 +680,8 @@ textarea{min-height:76px;resize:vertical}
     <div class="legend"><span><i style="background:var(--cal)"></i>within target</span><span><i style="background:var(--bad)"></i>over target or under the 1,600 floor</span><span>dashed line = target</span></div>
     <div class="chart" id="chCal"></div></section>
   <section class="block"><h2>Protein (g)</h2><div class="chart" id="chPro"></div></section>
+  <section class="block"><h2>Fiber (g)</h2><div class="chart" id="chFib"></div></section>
+  <section class="block"><h2>Fat (g)</h2><div class="legend"><span>dashed line = your fat limit</span></div><div class="chart" id="chFat"></div></section>
   <section class="block"><h2>Steps</h2><div class="chart" id="chStp"></div></section>
   <section class="block"><h2>Sleep and energy</h2>
     <div class="legend"><span><i style="background:var(--slp)"></i>sleep hours</span><span><i style="background:var(--cal)"></i>energy (1–5, right scale)</span></div>
@@ -570,6 +708,7 @@ textarea{min-height:76px;resize:vertical}
   <div class="row" style="margin-top:16px">
     <button class="btn" id="saveSettings">Save targets</button>
     <button class="btn ghost" id="exportCsv">Export CSV</button>
+    <button class="btn" id="shareBtn">Send to phone / laptop</button>
     <button class="btn ghost" id="backupBtn">Back up all data</button>
     <label class="btn ghost" for="restoreFile" style="display:inline-block">Restore from backup</label>
     <input type="file" id="restoreFile" accept="application/json,.json" hidden>
@@ -598,21 +737,22 @@ textarea{min-height:76px;resize:vertical}
    DEFAULTS (from the weight-loss plan)
 ------------------------------------------------------------------ */
 const DEFAULT_SETTINGS = {kcal:1900, protein:140, water:12, steps:9000, sleep:7.5, gym:60,
+  fiber:30, fatPct:30, satPct:10, fvTarget:400,
   floor:1600, startWeight:114, goalWeight:80, startDate:"", heightCm:175,
   sex:"m", age:null, act:1.375, autoTarget:true, anchorW:null, anchorKcal:null, lastAutoW:null, autoNote:null};
 const PRESETS = [
-  {name:"Breakfast: oats + eggs", short:"Oats + eggs", kcal:520, protein:33, art:"breakfast"},
-  {name:"Lunch: eggs, chana, dahi, salad", short:"Chana lunch plate", kcal:550, protein:41, art:"lunch"},
-  {name:"Dinner: 2 roti + chicken + salad", short:"Roti + chicken", kcal:580, protein:53, art:"dinner"},
-  {name:"Whey isolate", short:"Whey shake", kcal:110, protein:25, art:"whey"},
-  {name:"1 roti", short:"1 roti", kcal:120, protein:4, art:"roti"},
-  {name:"Boiled chana (1 cup)", short:"Boiled chana", kcal:270, protein:14, art:"chana"},
-  {name:"Low-fat dahi 200 g", short:"Low-fat dahi", kcal:110, protein:10, art:"dahi"},
-  {name:"Boiled egg", short:"Boiled egg", kcal:70, protein:6, art:"egg"},
-  {name:"Egg white", short:"Egg white", kcal:17, protein:4, art:"eggwhite"},
-  {name:"Chicken breast 150 g", short:"Chicken breast", kcal:250, protein:46, art:"chicken"},
-  {name:"Bowl of daal", short:"Bowl of daal", kcal:200, protein:12, art:"daal"},
-  {name:"Fruit", short:"Fruit", kcal:80, protein:0, art:"fruit"}
+  {fat:10, fiber:9, sat:3, fv:0, name:"Breakfast: oats + eggs", short:"Oats + eggs", kcal:520, protein:33, art:"breakfast"},
+  {fat:11.7, fiber:14.5, sat:3, fv:150, name:"Lunch: eggs, chana, dahi, salad", short:"Chana lunch plate", kcal:550, protein:41, art:"lunch"},
+  {fat:12, fiber:9, sat:2.5, fv:150, name:"Dinner: 2 roti + chicken + salad", short:"Roti + chicken", kcal:580, protein:53, art:"dinner"},
+  {fat:0.5, fiber:0, sat:0.3, fv:0, name:"Whey isolate", short:"Whey shake", kcal:110, protein:25, art:"whey"},
+  {fat:1, fiber:3.5, sat:0.2, fv:0, name:"1 roti", short:"1 roti", kcal:120, protein:4, art:"roti"},
+  {fat:4.2, fiber:12.5, sat:0.4, fv:0, name:"Boiled chana (1 cup)", short:"Boiled chana", kcal:270, protein:14, art:"chana"},
+  {fat:2, fiber:0, sat:1.2, fv:0, name:"Low-fat dahi 200 g", short:"Low-fat dahi", kcal:110, protein:10, art:"dahi"},
+  {fat:5, fiber:0, sat:1.6, fv:0, name:"Boiled egg", short:"Boiled egg", kcal:70, protein:6, art:"egg"},
+  {fat:0.1, fiber:0, sat:0, fv:0, name:"Egg white", short:"Egg white", kcal:17, protein:4, art:"eggwhite"},
+  {fat:5.4, fiber:0, sat:1.5, fv:0, name:"Chicken breast 150 g", short:"Chicken breast", kcal:250, protein:46, art:"chicken"},
+  {fat:8, fiber:6, sat:2.4, fv:0, name:"Bowl of daal", short:"Bowl of daal", kcal:200, protein:12, art:"daal"},
+  {fat:0.3, fiber:3, sat:0, fv:130, name:"Fruit", short:"Fruit", kcal:80, protein:0, art:"fruit"}
 ];
 const DEFAULT_HABITS = [
   {key:"closed7", label:"Kitchen closed after 7 pm"},
@@ -644,6 +784,8 @@ plate:`<svg viewBox="0 0 64 64"><circle cx="34" cy="34" r="22" fill="#FFFFFF" st
 rice:`<svg viewBox="0 0 64 64"><path d="M7 32h50a25 22 0 0 1-50 0z" fill="#3E6E8E"/><path d="M10 32c2-14 42-14 44 0z" fill="#FAF8F0"/><g stroke="#E6E1D0" stroke-width="1.6" stroke-linecap="round"><path d="M20 26l3-1"/><path d="M28 22l3 1"/><path d="M36 25l3-1"/><path d="M42 28l2 1"/><path d="M25 30l3-1"/><path d="M33 29l3 1"/></g></svg>`
 };
 const ICONS = {
+fib:`<svg viewBox="0 0 24 24"><path d="M12 22V9" stroke="var(--good)" stroke-width="2" stroke-linecap="round"/><path d="M12 9c-3-1-4-4-3-7 3 1 4 4 3 7zM12 14c-3-1-5-3-5-6 3 0 5 3 5 6zM12 14c3-1 5-3 5-6-3 0-5 3-5 6zM12 19c-3-1-5-3-5-6 3 0 5 3 5 6zM12 19c3-1 5-3 5-6-3 0-5 3-5 6z" fill="var(--good)"/></svg>`,
+fat:`<svg viewBox="0 0 24 24"><path d="M12 3c3.5 5 6 8 6 11.5a6 6 0 0 1-12 0C6 11 8.5 8 12 3z" fill="var(--cal)"/><ellipse cx="10" cy="14" rx="1.6" ry="2.4" fill="#fff" opacity=".55"/></svg>`,
 cal:`<svg viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4 0-6 1-9z" fill="var(--cal)"/></svg>`,
 pro:`<svg viewBox="0 0 24 24"><ellipse cx="12" cy="13" rx="7" ry="9" fill="var(--pro)"/><circle cx="12" cy="15" r="3.2" fill="var(--surface)"/></svg>`,
 wat:`<svg viewBox="0 0 24 24"><path d="M12 2c4 6 7 9 7 13a7 7 0 0 1-14 0c0-4 3-7 7-13z" fill="var(--wat)"/></svg>`,
@@ -991,7 +1133,15 @@ const FOOD_ROWS = [
 ["Almonds","Ingredient","100 g",100,579,21,"badam"],
 ["Peanuts","Ingredient","100 g",100,567,26,"moongphali"]
 ];
-const FOOD_DB = FOOD_ROWS.map(([name,cat,unit,g,kcal,p,alias])=>({name,cat,unit,g,kcal,p,alias:alias||""}));
+const MACROS={"Roti / chapati (medium)|piece":[1,3.5,0.2,0],"Phulka (small roti)|piece":[0.4,2.5,0.1,0],"Tandoori roti|piece":[1,3,0.2,0],"Naan (plain)|piece":[5,2,1.8,0],"Roghni naan|piece":[10,2,4.5,0],"Paratha (plain, ghee)|piece":[12,3,6.6,0],"Aloo paratha|piece":[12,4,6.0,0],"Anda paratha|piece":[22,3,9.9,0],"Puri|piece":[5,0.8,1.5,0],"Kulcha|piece":[5,2,2.0,0],"Bread slice (white)|slice":[1,0.7,0.2,0],"Bread slice (brown)|slice":[1,1.8,0.2,0],"Bun|piece":[3,1,0.9,0],"Rusk|piece":[1,0.3,0.4,0],"Plain boiled rice|cup":[0.4,0.6,0.1,0],"Chicken biryani|plate":[22,2.5,6.6,0],"Beef biryani|plate":[25,2.5,10.0,0],"Chicken pulao|plate":[17,2,5.1,0],"Matar pulao|cup":[8,3,2.4,40],"Khichdi|bowl":[7,4,2.8,0],"Daal chawal|plate":[10,7,3.0,0],"Daal mash|bowl":[9,6,2.7,0],"Daal chana|bowl":[9,8,2.7,0],"Daal masoor|bowl":[7,6,2.1,0],"Daal moong|bowl":[6,6,1.8,0],"Mix daal|bowl":[8,6,2.4,0],"Daal palak|bowl":[8,7,2.4,60],"Cholay / chana masala|bowl":[10,9,2.5,0],"Boiled chana (white)|cup":[4.2,12.5,0.4,0],"Boiled kala chana|cup":[4,12,0.4,0],"Lobia|bowl":[8,9,2.0,0],"Rajma|bowl":[8,10,2.0,0],"Chicken karahi|bowl":[25,2,7.5,0],"Chicken salan (curry)|bowl":[18,2,5.4,0],"Chicken handi|bowl":[28,1.5,12.6,0],"Chicken jalfrezi|bowl":[17,3,4.2,80],"Chicken tikka (leg piece)|piece":[13,0.5,3.9,0],"Chicken leg piece (in salan)|piece":[18,1,5.4,0],"Roast / grilled chicken leg|piece":[15,0,4.5,0],"Mutton leg piece (bone-in)|piece":[20,0,9.0,0],"Chicken boti (6 pieces)|serving":[10,0.5,3.0,0],"Chicken breast (grilled)|100 g":[3.6,0,1.0,0],"Chicken broast (1 piece)|piece":[25,1,7.5,0],"Chicken shawarma|roll":[20,3,6.0,40],"Chicken roll paratha|roll":[22,3,8.8,0],"Chicken corn soup|bowl":[4,1,1.2,30],"Beef nihari|bowl":[35,1.5,15.8,0],"Haleem|bowl":[18,6,7.2,0],"Beef qorma|bowl":[33,1.5,14.8,0],"Mutton karahi|bowl":[34,2,15.3,0],"Aloo gosht|bowl":[25,3,10.0,70],"Keema (beef)|bowl":[28,2,11.8,0],"Keema matar|bowl":[24,5,9.6,50],"Paye|bowl":[35,0.5,15.8,0],"Seekh kebab|piece":[10,0.3,4.2,0],"Chapli kebab|piece":[22,1,9.2,0],"Shami kebab|piece":[7,1.5,2.4,0],"Fried fish|piece":[15,0.5,3.0,0],"Fish curry|bowl":[17,1.5,3.4,0],"Grilled fish|serving":[7,0,1.8,0],"Aloo palak|bowl":[11,5,2.8,140],"Sarson ka saag|bowl":[15,6,7.5,140],"Bhindi masala|bowl":[12,6,2.4,140],"Aloo gobi|bowl":[11,5,2.8,140],"Mix sabzi|bowl":[10,5,2.5,140],"Karela|bowl":[12,5,2.4,140],"Aloo matar|bowl":[11,6,2.8,140],"Palak paneer|bowl":[22,5,11.0,140],"Baingan bharta|bowl":[10,6,2.5,140],"Lauki / tinda|bowl":[8,3,2.0,140],"Aloo bhujia|bowl":[14,4,3.5,140],"Egg curry (2 eggs)|bowl":[22,2,6.6,154],"Salad (cucumber, tomato, onion)|bowl":[0.2,2,0.0,150.0],"Boiled egg|piece":[5,0,1.6,0],"Egg white|piece":[0.1,0,0.0,0],"Fried egg|piece":[9,0,2.7,0],"Omelette (2 eggs)|serving":[15,0.5,4.5,0],"Oats (cooked in water)|40 g dry":[2.7,4,0.5,0],"Daliya|bowl":[1,4,0.2,0],"Halwa puri plate|plate":[45,8,20.2,0],"Bread with jam (2 slices)|serving":[2,1.5,0.5,0],"Cornflakes with milk|bowl":[5,1,2.8,0],"Milk (full-cream)|glass":[8.5,0,5.3,0],"Milk (low-fat)|glass":[4,0,2.5,0],"Milk (skimmed)|glass":[0.3,0,0.2,0],"Dahi (homemade)|200 g":[7,0,4.3,0],"Low-fat dahi|200 g":[2,0,1.2,0],"Raita|bowl":[4.5,0.5,2.7,0],"Lassi (sweet)|glass":[7,0,4.3,0],"Lassi (salted)|glass":[7,0,4.3,0],"Paneer|100 g":[20,0,12.4,0],"Cheese slice|slice":[5.5,0,3.3,0],"Chai (milk + sugar)|cup":[3,0,1.9,0],"Chai (no sugar)|cup":[3,0,1.9,0],"Doodh patti|cup":[5.5,0,3.4,0],"Green tea|cup":[0,0,0,0],"Coffee with milk (no sugar)|cup":[2,0,1.2,0],"Soft drink|can":[0,0,0,0],"Fresh orange juice|glass":[0.5,0.5,0.1,0],"Mango shake|glass":[8,2,4.8,0],"Banana shake|glass":[7,2.5,4.2,0],"Sugarcane juice|glass":[0,0,0,0],"Whey isolate|scoop":[0.5,0,0.2,0],"Apple|piece":[0.3,4.4,0.0,180.0],"Banana|piece":[0.4,3.1,0.0,120.0],"Guava|piece":[1,5.4,0.1,100.0],"Orange / kinnow|piece":[0.2,3,0.0,130.0],"Mango|piece":[0.8,3.2,0.2,200.0],"Grapes|cup":[0.2,1.4,0.0,150.0],"Watermelon|cup":[0.2,0.6,0.0,150.0],"Melon|cup":[0.3,1.4,0.0,160.0],"Pomegranate seeds|cup":[2,7,0.2,175.0],"Papaya|cup":[0.4,2.5,0.0,145.0],"Peach|piece":[0.4,2.3,0.0,150.0],"Pear|piece":[0.2,5.5,0.0,180.0],"Dates|piece":[0,0.6,0,8.0],"Apricot|piece":[0.1,0.7,0.0,35.0],"Strawberries|cup":[0.5,3,0.1,150.0],"Fruit chaat|bowl":[0.8,5,0.1,200],"Almonds|handful":[14,3.5,1.1,0],"Peanuts|handful":[14,2.4,2.0,0],"Walnuts|handful":[18.5,1.9,1.7,0],"Pistachios|handful":[13,3,1.6,0],"Cashews|handful":[12,1,2.2,0],"Roasted chana|handful":[1.8,5,0.2,0],"Peanut butter|tbsp":[8,1,1.6,0],"Samosa (aloo)|piece":[17,2,5.9,0],"Pakoras|plate":[20,3,6.0,0],"Spring roll|piece":[8,1,2.4,0],"Dahi bhalla|plate":[10,4,4.0,0],"Chana chaat|bowl":[5,9,1.0,60],"Gol gappay (6)|serving":[8,3,2.4,0],"Nimko|handful":[10,2,3.0,0],"Biscuit|piece":[2.2,0.2,1.1,0],"Potato chips (small pack)|pack":[10,1.2,3.0,0],"French fries (regular)|serving":[17,4,3.4,0],"Bun kebab|piece":[16,3,5.6,0],"Zinger burger|piece":[28,3,7.0,0],"Chicken burger|piece":[18,2,4.5,0],"Beef burger|piece":[26,2,10.4,0],"Pizza (medium slice)|slice":[11,2,5.0,0],"Club sandwich|serving":[22,3,7.7,0],"Gulab jamun|piece":[7,0.3,3.5,0],"Jalebi|piece":[5,0.2,2.2,0],"Kheer|bowl":[7,0.5,4.2,0],"Gajar halwa|bowl":[17,3,10.2,0],"Suji halwa|bowl":[16,1,9.6,0],"Barfi|piece":[6,0.2,3.6,0],"Ladoo|piece":[9,1,5.0,0],"Ice cream|scoop":[7.5,0,4.5,0],"Kulfi|piece":[10,0,6.0,0],"Zarda|plate":[9,1,4.5,0],"Sheer khurma|bowl":[16,2,8.8,0],"Custard|bowl":[5,0,3.0,0],"Oats with full-cream milk|bowl":[11,4,5.0,0],"Oats with low-fat milk|bowl":[6.5,4,2.6,0],"Oats with skimmed milk|bowl":[3,4,0.6,0],"Oats with milk + banana|bowl":[11.4,7,5.1,120],"Oats with milk + honey|bowl":[11,4,5.0,0],"Overnight oats with dahi|jar":[6.5,4.2,2.9,0],"Granola|50 g":[9,3.5,2.7,0],"Muesli|50 g":[3,4,0.6,0],"Peanut butter toast (brown)|slice":[9,2.8,1.8,0],"Avocado toast|slice":[15,7,2.2,60],"Pancakes with syrup (2)|serving":[10,1.5,4.0,0],"French toast (2 slices)|serving":[12,1.5,4.8,0],"Egg sandwich|piece":[14,2,4.2,0],"Greek yogurt (plain, non-fat)|170 g":[0.7,0,0.4,0],"Cottage cheese|100 g":[4.3,0,2.6,0],"Tofu|100 g":[4.8,0.3,0.7,0],"Quinoa (cooked)|cup":[3.6,5.2,0.4,0],"Brown rice (cooked)|cup":[1.8,3.5,0.4,0],"Vegetable brown rice|cup":[5,4.5,1.0,60],"Vegetable pulao (white rice)|cup":[8,2.5,2.4,50],"Chicken brown rice|cup":[8,3,2.0,0],"Avocado|half":[15,6.7,2.1,100],"Protein bar|bar":[8,5,3.2,0],"Protein shake with low-fat milk|glass":[4.5,0,2.7,0],"Tuna (canned in water)|100 g":[0.8,0,0.2,0],"Sweet corn|cup":[1.8,3.6,0.3,150],"Chia seeds|tbsp":[3.7,4.1,0.4,0],"Flax seeds|tbsp":[4.3,2.8,0.4,0],"Banana-oats smoothie|glass":[7,6,3.1,120],"Chicken fried rice|plate":[22,2.5,4.4,0],"Egg fried rice|plate":[20,2,4.0,0],"Chicken chow mein|plate":[18,3.5,3.6,0],"Chicken manchurian|bowl":[18,1.5,3.6,0],"Chicken chilli dry|bowl":[20,2,4.0,0],"Sweet and sour chicken|bowl":[18,1.5,3.6,0],"Chicken with vegetables|bowl":[11,3,2.2,90],"Hot and sour soup|bowl":[4,1.5,1.0,60],"Pasta in white sauce|plate":[35,4,19.2,0],"Pasta in red sauce|plate":[12,6,2.4,80],"Spaghetti bolognese|plate":[20,6,8.0,60],"Lasagna|piece":[22,3,11.0,0],"Mac and cheese|cup":[20,2,11.0,0],"Grilled chicken steak + veg|plate":[20,5,6.0,120],"Mashed potatoes|cup":[9,3,5.4,0],"Caesar salad with chicken|bowl":[28,3,7.0,120],"Greek salad|bowl":[17,3,5.9,170],"Garden salad with olive oil|bowl":[10,3,1.5,180],"Grilled chicken sandwich|piece":[10,4,3.0,0],"Chicken wrap|piece":[16,3,4.8,0],"Tuna sandwich|piece":[14,3,2.8,0],"Chicken nuggets (6)|serving":[17,1,3.4,0],"Chicken wings (6)|serving":[34,0.5,10.2,0],"Hot dog|piece":[18,1,6.8,0],"Fish and chips|plate":[42,6,8.4,0],"Chicken mandi|plate":[28,2,9.8,0],"Doner kebab / gyro wrap|piece":[25,3,8.8,50],"Shish tawook|skewer":[10,0.5,2.0,0],"Falafel (4 pieces)|serving":[12,5,1.4,0],"Hummus|2 tbsp":[5,1.8,0.7,0],"Pita bread|piece":[1,1.3,0.2,0],"Black coffee|cup":[0,0,0,0],"Cappuccino|cup":[6,0,3.7,0],"Latte / iced coffee|glass":[7,0,4.3,0],"Diet soda|can":[0,0,0,0],"Energy drink|can":[0,0,0,0],"Coconut water|glass":[0.5,1,0.4,0],"Lemonade (with sugar)|glass":[0,0,0,0],"Chocolate bar|bar":[13,1,7.8,0],"Dark chocolate (2 squares)|serving":[8,2,4.8,0],"Brownie|piece":[12,1,4.8,0],"Donut (glazed)|piece":[14,1,6.3,0],"Cheesecake|slice":[23,0.3,13.8,0],"Atta (whole-wheat flour)|100 g":[1.9,11,0.3,0],"Maida (white flour)|100 g":[1,2.7,0.2,0],"Besan (gram flour)|100 g":[6.7,10.8,0.7,0],"Suji (semolina)|100 g":[1,3.9,0.1,0],"Oats (dry)|100 g":[6.9,10.6,1.2,0],"White rice (raw)|100 g":[0.6,1.3,0.1,0],"Basmati rice (raw)|100 g":[0.6,1.5,0.1,0],"Brown rice (raw)|100 g":[2.9,3.5,0.6,0],"Masoor daal (raw)|100 g":[1.1,10.7,0.2,0],"Moong daal (raw)|100 g":[1.2,16,0.2,0],"Mash daal (raw)|100 g":[1.6,18,0.2,0],"Chana daal (raw)|100 g":[5,12,0.5,0],"White chana (dry)|100 g":[6,17,0.6,0],"Kala chana (dry)|100 g":[5,18,0.5,0],"Lobia (dry)|100 g":[1.3,11,0.3,0],"Rajma (dry)|100 g":[0.8,15,0.1,0],"Soya chunks (dry)|100 g":[0.5,13,0.1,0],"Chicken breast (raw, boneless)|100 g":[2.6,0,0.7,0],"Chicken thigh (raw, skinless)|100 g":[4.1,0,1.1,0],"Chicken with skin (raw)|100 g":[15,0,4.3,0],"Chicken liver (raw)|100 g":[4.8,0,1.5,0],"Beef (lean, raw)|100 g":[8,0,3.4,0],"Beef mince (raw)|100 g":[20,0,8.4,0],"Mutton / goat (raw)|100 g":[2.3,0,0.7,0],"Fish (rohu, raw)|100 g":[1.4,0,0.3,0],"Prawns (raw)|100 g":[0.5,0,0.1,0],"Egg (whole)|piece":[5,0,1.6,0],"Milk full-cream|100 ml":[3.5,0,2.2,0],"Buffalo milk|100 ml":[6.9,0,4.5,0],"Skimmed milk|100 ml":[0.1,0,0.1,0],"Dahi|100 g":[3.3,0,2.0,0],"Cooking oil|tbsp":[13.6,0,4.1,0],"Desi ghee|tbsp":[13,0,8.1,0],"Butter|tbsp":[11.5,0,7.2,0],"Malai (cream)|tbsp":[5,0,3.1,0],"Sugar|tsp":[0,0,0,0],"Gur (jaggery)|10 g":[0,0,0,0],"Honey|tbsp":[0,0,0,0],"Potato|100 g":[0.1,2.2,0.0,0],"Sweet potato|100 g":[0.1,3,0.0,0],"Onion|100 g":[0.1,1.7,0.0,100.0],"Tomato|100 g":[0.2,1.2,0.0,100.0],"Spinach|100 g":[0.4,2.2,0.0,100.0],"Cauliflower|100 g":[0.3,2,0.0,100.0],"Cabbage|100 g":[0.1,2.5,0.0,100.0],"Okra|100 g":[0.2,3.2,0.0,100.0],"Peas|100 g":[0.4,5.7,0.0,100.0],"Carrot|100 g":[0.2,2.8,0.0,100.0],"Cucumber|100 g":[0.1,0.5,0.0,100.0],"Bitter gourd|100 g":[0.2,2.8,0.0,100.0],"Bottle gourd|100 g":[0,0.5,0,100.0],"Eggplant|100 g":[0.2,3,0.0,100.0],"Capsicum|100 g":[0.2,1.7,0.0,100.0],"Mushrooms|100 g":[0.3,1,0.0,100.0],"Lettuce|100 g":[0.2,1.3,0.0,100.0],"Corn on the cob|piece":[1.4,2.4,0.2,100.0],"Almonds|100 g":[50,12.5,4.0,0],"Peanuts|100 g":[49,8.5,6.9,0]};
+// per-unit: f = fat g, c = carbs g (derived so kcal add up), fib = fiber g, sf = saturated fat g (estimate), fv = fruit/veg g
+const FOOD_DB = FOOD_ROWS.map(([name,cat,unit,g,kcal,p,alias])=>{
+  const m = MACROS[name+"|"+unit];
+  const f = m ? m[0] : null;
+  return {name,cat,unit,g,kcal,p,alias:alias||"",
+    f, fib: m?m[1]:null, sf: m?m[2]:null, fv: m?m[3]:0,
+    c: f==null ? null : Math.max(0, Math.round((kcal - 4*p - 9*f)/4*10)/10)};
+});
 const FOOD_CATS = ["All","Breakfast","Bread","Rice","Daal","Chicken","Meat","Fish","Vegetable","Eggs","Healthy","Chinese","Continental","Middle Eastern","Dairy","Drinks","Fruit","Nuts","Snacks","Sweets","Ingredient","My foods"];
 
 /* ------------------------------------------------------------------
@@ -1014,7 +1164,12 @@ function isLogged(d){ return d && (d.foods.length || d.water || d.steps || d.gym
   d.energy || Object.values(d.habits||{}).some(Boolean)); }
 function num(v){ const n = parseFloat(v); return isFinite(n) ? n : null; }
 function fmt(n){ return Math.round(n).toLocaleString("en-US"); }
-function sumFood(d){ return d.foods.reduce((a,f)=>({kcal:a.kcal+(+f.kcal||0), protein:a.protein+(+f.protein||0)}),{kcal:0,protein:0}); }
+function sumFood(d){ return d.foods.reduce((a,f)=>({kcal:a.kcal+(+f.kcal||0), protein:a.protein+(+f.protein||0),
+    fat:a.fat+(+f.fat||0), carbs:a.carbs+(+f.carbs||0), fiber:a.fiber+(+f.fiber||0), sat:a.sat+(+f.sat||0), fv:a.fv+(+f.fv||0),
+    unknown:a.unknown+(f.fat==null?1:0)}),{kcal:0,protein:0,fat:0,carbs:0,fiber:0,sat:0,fv:0,unknown:0}); }
+function nutrTargets(){ const s=settings, k=s.kcal||2000;
+  return {fat:Math.round(k*(s.fatPct||30)/100/9), sat:Math.round(k*(s.satPct||10)/100/9), fiber:s.fiber||30, fv:s.fvTarget||400,
+    carbs:Math.max(0,Math.round((k - 4*(s.protein||0) - 9*Math.round(k*(s.fatPct||30)/100/9))/4))}; }
 
 /* ------------------------------------------------------------------
    PERSISTENCE: local cache always, cloud db when the viewer grants it
@@ -1047,6 +1202,22 @@ function storageNote(){
     "To move your log between phone and laptop, back up on one and restore on the other. " +
     (last ? "Last backup: " + last + "." : "No backup made yet.");
 }
+// Share a backup straight to WhatsApp, email, Drive… (falls back to a normal download)
+async function shareBackup(filename, json, appName, btn, after){
+  const file = new File([json], filename, {type:"application/json"});
+  const note = `${appName} backup — open ${appName} → Restore from backup on the other device and pick this file.`;
+  const reset = t=>{ if(btn){ btn.textContent=t; setTimeout(()=>btn.textContent="Send to phone / laptop",2200); } };
+  try{
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:`${appName} backup`, text:note});
+      reset("Sent ✓"); if(after) after(); return;
+    }
+  }catch(e){ if(e && e.name==="AbortError"){ reset("Cancelled"); return; } }
+  downloadFile(filename, json, "application/json");
+  if(after) after();
+  alert("This browser can't share files directly, so the backup was downloaded instead. Send that file to your other device (WhatsApp Web, email or a USB cable), then use Restore from backup there.");
+  reset("Downloaded");
+}
 function downloadFile(name, text, type){
   const blob = new Blob([text], {type});
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
@@ -1065,6 +1236,7 @@ function parts(d){
   return {
     kcal:kcalScore,
     protein:Math.min(1,(f.protein)/s.protein),
+    fiber:Math.min(1,(f.fiber)/(s.fiber||30)),
     water:Math.min(1,(d.water||0)/s.water),
     steps:Math.min(1,(d.steps||0)/s.steps),
     sleep:Math.min(1,(d.sleep||0)/s.sleep),
@@ -1073,7 +1245,7 @@ function parts(d){
 }
 function dayScore(d){ if(!isLogged(d)) return null;
   const p = parts(d);
-  return Math.round(100*(p.kcal*0.25 + p.protein*0.2 + p.water*0.1 + p.steps*0.15 + p.sleep*0.15 + p.habits*0.15)); }
+  return Math.round(100*(p.kcal*0.22 + p.protein*0.17 + p.fiber*0.08 + p.water*0.08 + p.steps*0.15 + p.sleep*0.15 + p.habits*0.15)); }
 
 /* ------------------------------------------------------------------
    SVG helpers
@@ -1141,6 +1313,8 @@ function renderToday(){
   const R = [
     {lbl:"Calories", icon:"cal", frac:f.kcal/s.kcal, color: over?"var(--bad)":"var(--cal)", c:fmt(f.kcal), v:`of ${fmt(s.kcal)} kcal`},
     {lbl:"Protein", icon:"pro", frac:f.protein/s.protein, color:"var(--pro)", c:fmt(f.protein)+"g", v:`of ${s.protein} g`},
+    {lbl:"Fiber", icon:"fib", frac:f.fiber/(s.fiber||30), color:"var(--good)", c:fmt(f.fiber)+"g", v:`of ${s.fiber||30} g`},
+    {lbl:"Fat", icon:"fat", frac:f.fat/nutrTargets().fat, color: f.fat>nutrTargets().fat?"var(--bad)":"var(--cal)", c:fmt(f.fat)+"g", v:`limit ${nutrTargets().fat} g`},
     {lbl:"Water", icon:"wat", frac:(d.water||0)/s.water, color:"var(--wat)", c:String(d.water||0), v:`of ${s.water} glasses`},
     {lbl:"Steps", icon:"stp", frac:(d.steps||0)/s.steps, color:"var(--stp)", c:d.steps?((d.steps/1000).toFixed(1)+"k"):"0", v:`of ${fmt(s.steps)}`},
     {lbl:"Sleep", icon:"slp", frac:(d.sleep||0)/s.sleep, color:"var(--slp)", c:(d.sleep||0)+"h", v:`of ${s.sleep} h`},
@@ -1164,13 +1338,15 @@ function renderToday(){
     const ic=document.createElement("span"); ic.className="ic"; ic.innerHTML=ART[fd.art||guessArt(fd.name)]||ART.plate;
     const tx=document.createElement("span"); tx.className="n"; tx.textContent=fd.name;
     if(fd.qty){ const mt=document.createElement("span"); mt.className="meta"; mt.textContent=(fd.unit==="g" ? `${fmtQty(fd.qty)} g` : `${fmtQty(fd.qty)} × ${fd.unit}`) + (fd.menuId?" · from menu": fd.swapFor?" · swap for a skipped item":" · extra"); tx.appendChild(mt); }
+    if(fd.fat!=null){ const mm=document.createElement("span"); mm.className="meta"; mm.textContent=`carbs ${fd.carbs??"–"} g · fat ${fd.fat} g · fiber ${fd.fiber??"–"} g`; tx.appendChild(mm); }
     n.append(ic,tx);
     const k=document.createElement("span"); k.className="k"; k.textContent=fmt(fd.kcal)+" kcal";
     const p=document.createElement("span"); p.className="p"; p.textContent=fmt(fd.protein)+" g";
     const x=document.createElement("button"); x.setAttribute("aria-label","Remove "+fd.name); x.textContent="×";
     x.onclick=()=>{ d.foods.splice(i,1); changed(); };
     li.append(n,k,p,x); ul.appendChild(li); });
-  document.getElementById("foodTotals").textContent = `${fmt(f.kcal)} kcal · ${fmt(f.protein)} g protein`;
+  document.getElementById("foodTotals").textContent = `${fmt(f.kcal)} kcal · ${fmt(f.protein)} g protein · ${fmt(f.fat)} g fat · ${fmt(f.fiber)} g fiber`;
+  renderNutriCard(f);
 
   document.getElementById("waterNum").textContent = d.water||0;
   const gl = document.getElementById("glasses"); gl.innerHTML="";
@@ -1235,6 +1411,11 @@ function renderWeek(){
     color:v=> (v>s.kcal*1.05 || v<s.floor) ? "var(--bad)" : "var(--cal)"});
   barChart(document.getElementById("chPro"), keys, pr, {label:"Protein per day", target:s.protein, fmt:fmt,
     color:v=> v>=s.protein*0.9 ? "var(--pro)" : "var(--track)"});
+  const NT=nutrTargets();
+  barChart(document.getElementById("chFib"), keys, ds.map(d=>sumFood(d).fiber||null), {label:"Fiber per day", target:NT.fiber, fmt:fmt,
+    color:v=> v>=NT.fiber ? "var(--good)" : "var(--track)"});
+  barChart(document.getElementById("chFat"), keys, ds.map(d=>sumFood(d).fat||null), {label:"Fat per day", target:NT.fat, fmt:fmt,
+    color:v=> v>NT.fat ? "var(--bad)" : "var(--cal)"});
   barChart(document.getElementById("chStp"), keys, ds.map(d=>d.steps||null), {label:"Steps per day", target:s.steps,
     fmt:v=> v>=1000 ? (v/1000).toFixed(v>=10000?0:1)+"k" : fmt(v), color:v=> v>=s.steps ? "var(--stp)" : "var(--track)"});
   barChart(document.getElementById("chSlp"), keys, ds.map(d=>d.sleep||null), {label:"Sleep hours and energy", target:s.sleep,
@@ -1268,6 +1449,15 @@ function renderWeek(){
       if(underF) wrong.push(`Under the ${fmt(s.floor)} kcal floor on ${underF} day${underF>1?"s":""} — too little hurts energy and muscle.`);
       const proHit = withFood.filter(d=>sumFood(d).protein>=s.protein*0.9).length;
       (proHit>=Math.ceil(withFood.length*0.7) ? right : wrong).push(`Protein target hit ${proHit} of ${plural(withFood.length,"day")}.`);
+      const NT2=nutrTargets(), sums=withFood.map(d=>sumFood(d));
+      const fibAvg=sums.reduce((a,x)=>a+x.fiber,0)/sums.length;
+      (fibAvg>=NT2.fiber*0.9?right:wrong).push(`Fiber averaged ${Math.round(fibAvg)} g a day (aim for ${NT2.fiber} g)${fibAvg<NT2.fiber*0.9?" — add daal, chana, sabzi, fruit or whole-wheat roti":""}.`);
+      const fatPct=sums.reduce((a,x)=>a+(x.kcal?x.fat*9/x.kcal*100:0),0)/sums.length;
+      (fatPct<=s.fatPct?right:wrong).push(`Fat was ${Math.round(fatPct)}% of your calories (limit ${s.fatPct}%)${fatPct>s.fatPct?" — less oil and ghee is the quickest fix":""}.`);
+      const satPct=sums.reduce((a,x)=>a+(x.kcal?x.sat*9/x.kcal*100:0),0)/sums.length;
+      if(satPct>s.satPct) wrong.push(`Saturated fat was about ${Math.round(satPct)}% of calories (limit ${s.satPct}%) — swap ghee, butter and fatty meat for oil, chicken, fish or daal.`);
+      const fvAvg=sums.reduce((a,x)=>a+x.fv,0)/sums.length;
+      (fvAvg>=NT2.fv*0.9?right:wrong).push(`Fruit and vegetables averaged ${Math.round(fvAvg)} g a day (aim for ${NT2.fv} g).`);
     }
     const sl = logged2.filter(d=>d.sleep); if(sl.length){ const avg = sl.reduce((a,d)=>a+d.sleep,0)/sl.length;
       (avg>=s.sleep-0.25 ? right : wrong).push(`Average sleep ${avg.toFixed(1)} h (target ${s.sleep} h).`);
@@ -1452,8 +1642,11 @@ function unitsFor(f, qty, mode){ if(!f) return 0;
   if(mode==="g") return qty/(f.g||100);
   if(isHH(mode)) return qty*HH[hhKey(mode)].g/(f.g||100);
   return qty; }
+const r1=v=> v==null || isNaN(v) ? null : Math.round(v*10)/10;
 function calcFood(f, qty, mode){ const u=unitsFor(f,qty,mode);
-  return {kcal:Math.round(f.kcal*u), protein:Math.round(f.p*u*10)/10, grams:Math.round((f.g||0)*u)}; }
+  return {kcal:Math.round(f.kcal*u), protein:Math.round(f.p*u*10)/10, grams:Math.round((f.g||0)*u),
+    fat: f.f==null?null:r1(f.f*u), carbs: f.c==null?null:r1(f.c*u), fiber: f.fib==null?null:r1(f.fib*u),
+    sat: f.sf==null?null:r1(f.sf*u), fv: Math.round((f.fv||0)*u)}; }
 
 let pick=null, manualVals=false, sugIndex=-1, sugItems=[];
 function fillUnits(f){ const sel=document.getElementById("fUnit"); sel.innerHTML="";
@@ -1465,6 +1658,8 @@ function recalcAdder(){
   const qty=num(document.getElementById("fQty").value)||0, mode=document.getElementById("fUnit").value;
   const r=calcFood(pick, qty, mode);
   document.getElementById("fKcal").value=r.kcal; document.getElementById("fPro").value=r.protein;
+  document.getElementById("fCarb").value = r.carbs==null?"":r.carbs; document.getElementById("fFat").value = r.fat==null?"":r.fat;
+  document.getElementById("fFib").value = r.fiber==null?"":r.fiber;
   const info=document.getElementById("fInfo");
   const cv=convText(pick, qty, mode);
   info.textContent = `${pick.name}: 1 ${pick.unit}${pick.g && pick.unit!=="100 g"?` (${pick.g} g)`:""} = ${pick.kcal} kcal, ${pick.p} g protein` + (cv?` · this entry ${cv}`:"");
@@ -1487,7 +1682,9 @@ function showSug(q){
   box.hidden=false;
 }
 function addFoodEntry(f, qty, mode, kcal, protein, dayKey){
-  day(dayKey||current).foods.push({name:f.name, kcal, protein, art:guessArt(f.name), qty, unit: unitLabel(mode, f)});
+  const r=calcFood(f, qty, mode);
+  day(dayKey||current).foods.push({name:f.name, kcal, protein, art:guessArt(f.name), qty, unit: unitLabel(mode, f),
+    fat:r.fat, carbs:r.carbs, fiber:r.fiber, sat:r.sat, fv:r.fv});
 }
 
 let fcCat="All", fcOpen=null;
@@ -1518,7 +1715,8 @@ function renderFoodChart(){
     const nm=document.createElement("span"); nm.textContent=f.name;
     const sm=document.createElement("small"); sm.textContent=`per ${f.unit}${f.g && f.unit!=="100 g"?` (${f.g} g)`:""} · ${f.cat}`; nm.appendChild(sm);
     const hs=hhSummary(f); if(hs){ const s2=document.createElement("small"); s2.className="hhline"; s2.textContent=hs; nm.appendChild(s2); }
-    const v=document.createElement("span"); v.className="vals"; v.innerHTML=`<b>${f.kcal} kcal</b>${f.p} g protein`;
+    const v=document.createElement("span"); v.className="vals";
+    v.innerHTML=`<b>${f.kcal} kcal</b>${f.p} g protein` + (f.f!=null?`<span class="mac">fat ${f.f} · fiber ${f.fib} g</span>`:"");
     li.append(ic,nm,v);
     li.onclick=e=>{ if(e.target.closest(".fexp")) return; fcOpen = fcOpen===f.name?null:f.name; renderFoodChart(); };
     if(fcOpen===f.name){
@@ -1530,7 +1728,7 @@ function renderFoodChart(){
       if(f.g){ const og=document.createElement("option"); og.value="g"; og.textContent="grams"; us.appendChild(og); }
       const calc=document.createElement("span"); calc.className="calc";
       const upd=()=>{ const q=num(qi.value)||0, r=calcFood(f, q, us.value); const cv=convText(f,q,us.value);
-        calc.textContent=`= ${r.kcal} kcal · ${r.protein} g protein${cv?` (${cv})`:""}`; return r; };
+        calc.textContent=`= ${r.kcal} kcal · ${r.protein} g protein${r.fat!=null?` · ${r.carbs} g carbs · ${r.fat} g fat · ${r.fiber} g fiber`:""}${cv?` (${cv})`:""}`; return r; };
       qi.oninput=upd; us.onchange=()=>{ qi.value = us.value==="g" ? (f.g||100) : 1; upd(); };
       const add=document.createElement("button"); add.className="btn";
       add.textContent= current===todayKey() ? "Add to today" : `Add to ${keyToDate(current).toLocaleDateString("en-GB",{day:"numeric",month:"short"})}`;
@@ -1703,29 +1901,29 @@ function renderBmi(){
 ------------------------------------------------------------------ */
 const MEAL_LEVELS = [
  {kcal:1450, rows:[
-  ["7:30","Breakfast","Oats (40 g) in skimmed milk + 1 boiled egg",305,20],
-  ["11:00","Mid-morning","1 guava or apple",70,1],
-  ["1:30","Lunch","1 roti + 1 bowl daal + salad + low-fat dahi (200 g)",485,27],
-  ["5:00","Evening","Chai without sugar + small handful roasted chana",160,8],
-  ["8:00","Dinner","1 roti + 1 bowl chicken salan (little oil) + salad",455,31]]},
+  ["7:30","Breakfast","Oats (40 g) in skimmed milk + 1 boiled egg",305,20,8,4,0],
+  ["11:00","Mid-morning","1 guava or apple",70,1,0.6,5,140],
+  ["1:30","Lunch","1 roti + 1 bowl daal + salad + low-fat dahi (200 g)",485,27,11,11.5,150],
+  ["5:00","Evening","Chai without sugar + small handful roasted chana",160,8,5,5,0],
+  ["8:00","Dinner","1 roti + 1 bowl chicken salan (little oil) + salad",455,31,19,7.5,150]]},
  {kcal:1650, rows:[
-  ["7:30","Breakfast","Oats (40 g) in skimmed milk + 2 boiled eggs",375,26],
-  ["11:00","Mid-morning","1 guava or apple",70,1],
-  ["1:30","Lunch","1 roti + 1 bowl daal + salad + low-fat dahi (200 g)",485,27],
-  ["5:00","Evening","Chai without sugar + small handful roasted chana",160,8],
-  ["8:00","Dinner","2 roti + 1 bowl chicken salan (little oil) + salad",575,34]]},
+  ["7:30","Breakfast","Oats (40 g) in skimmed milk + 2 boiled eggs",375,26,13,4,0],
+  ["11:00","Mid-morning","1 guava or apple",70,1,0.6,5,140],
+  ["1:30","Lunch","1 roti + 1 bowl daal + salad + low-fat dahi (200 g)",485,27,11,11.5,150],
+  ["5:00","Evening","Chai without sugar + small handful roasted chana",160,8,5,5,0],
+  ["8:00","Dinner","2 roti + 1 bowl chicken salan (little oil) + salad",575,34,20,11,150]]},
  {kcal:2050, rows:[
-  ["7:30","Breakfast","Oats (40 g) in low-fat milk + 2 boiled eggs",405,25],
-  ["11:00","Mid-morning","1 fruit + handful of almonds",235,7],
-  ["1:30","Lunch","2 roti + 1 bowl daal + salad + low-fat dahi (200 g)",605,31],
-  ["5:00","Evening","Chai without sugar + small handful roasted chana",160,8],
-  ["8:00","Dinner","2 roti + 1 bowl chicken karahi (little oil) + salad",655,34]]},
+  ["7:30","Breakfast","Oats (40 g) in low-fat milk + 2 boiled eggs",405,25,16.5,4,0],
+  ["11:00","Mid-morning","1 fruit + handful of almonds",235,7,14.6,8.5,140],
+  ["1:30","Lunch","2 roti + 1 bowl daal + salad + low-fat dahi (200 g)",605,31,12,15,150],
+  ["5:00","Evening","Chai without sugar + small handful roasted chana",160,8,5,5,0],
+  ["8:00","Dinner","2 roti + 1 bowl chicken karahi (little oil) + salad",655,34,27,11,150]]},
  {kcal:2350, rows:[
-  ["7:30","Breakfast","Oats (40 g) in low-fat milk + 2 boiled eggs",405,25],
-  ["11:00","Mid-morning","1 banana + handful of almonds",270,7],
-  ["1:30","Lunch","2½ roti + 1 bowl daal + salad + low-fat dahi (200 g)",665,33],
-  ["5:00","Evening","Chai without sugar + roasted chana, or whey shake after gym",270,33],
-  ["8:00","Dinner","2 roti + 1 bowl chicken karahi (little oil) + salad",655,34]]}
+  ["7:30","Breakfast","Oats (40 g) in low-fat milk + 2 boiled eggs",405,25,16.5,4,0],
+  ["11:00","Mid-morning","1 banana + handful of almonds",270,7,14.4,6.6,120],
+  ["1:30","Lunch","2½ roti + 1 bowl daal + salad + low-fat dahi (200 g)",665,33,12.5,16.8,150],
+  ["5:00","Evening","Chai without sugar + roasted chana, or whey shake after gym",270,33,5,5,0],
+  ["8:00","Dinner","2 roti + 1 bowl chicken karahi (little oil) + salad",655,34,27,11,150]]}
 ];
 function mifflin(sex, w, h, age){ return 10*w + 6.25*h - 5*age + (sex==="m"?5:-161); }
 function el2(tag, cls, text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!==undefined) e.textContent=text; return e; }
@@ -1814,6 +2012,8 @@ function renderPlan(){
    [mode==="lose"?`${fmt1(planRate)} kg`:`${waterL} L`, mode==="lose"?"planned loss a week":"water a day"]]
    .forEach(([b,sp])=>{ const d=el2("div","kpi"); d.append(el2("b","",b), el2("span","",sp)); k.appendChild(d); });
   sec.appendChild(k);
+  { const fatG=Math.round(mid*(settings.fatPct||30)/100/9), satG=Math.round(mid*(settings.satPct||10)/100/9);
+    sec.appendChild(el2("p","hint",`Also aim for: fiber at least ${settings.fiber||30} g a day · fat no more than ${fatG} g (${settings.fatPct||30}% of calories) · saturated fat under ${satG} g (${settings.satPct||10}%) · about 400 g of fruit and vegetables · salt under 5 g (one level teaspoon).`)); }
   if(mode==="lose"){
     const split = exerciseNeed>0
       ? `Your goal needs a deficit of about ${Math.round(needDeficit)} kcal a day. Food can safely cover ${Math.round(dietDeficit)} (eating below ${floor.toLocaleString()} kcal costs muscle), so the other ${Math.round(exerciseNeed)} has to come from moving more: about ${stepTarget.toLocaleString()} steps a day plus 4 gym sessions a week (≈${gymKcal} kcal each).`
@@ -1878,7 +2078,8 @@ function renderPlan(){
     const bm=el2("button","btn ghost small","Use this timetable as my daily menu");
     bm.onclick=()=>{ if(MENU.length && !confirm("Replace your current daily menu with this timetable?")) return;
       const slotMap={"Breakfast":"Breakfast","Mid-morning":"Mid-morning","Lunch":"Lunch","Evening":"Evening","Dinner":"Dinner"};
-      MENU = level.rows.map((r,i)=>({id:"m"+Date.now().toString(36)+i, name:r[2], art:guessArt(r[2]), slot:slotMap[r[1]]||"Other", qty:1, mode:"unit", base:null, kcal:r[3], protein:r[4]}));
+      MENU = level.rows.map((r,i)=>({id:"m"+Date.now().toString(36)+i, name:r[2], art:guessArt(r[2]), slot:slotMap[r[1]]||"Other", qty:1, mode:"unit", base:null, kcal:r[3], protein:r[4],
+        fat:r[5], fiber:r[6], fv:r[7], sat:Math.round(r[5]*0.3*10)/10, carbs:Math.max(0,Math.round((r[3]-4*r[4]-9*r[5])/4))}));
       scheduleSave(); renderAll(); bm.textContent="Daily menu set ✓ — tick it off on Today"; };
     rowm.appendChild(bm); sec.appendChild(rowm); }
   const diff=mid-tk;
@@ -1953,16 +2154,22 @@ function bindBmi(){
 const SLOTS = ["Breakfast","Mid-morning","Lunch","Evening","Dinner","Other"];
 function guessSlot(){ const hr=new Date().getHours(); return hr<10?"Breakfast":hr<12?"Mid-morning":hr<16?"Lunch":hr<19?"Evening":"Dinner"; }
 function menuItemFrom(f, qty, mode, kcal, protein, slot){
+  const hasBase = f.g!==undefined;
+  const r = hasBase ? calcFood(f, qty, mode) : null;
   return {id:"m"+Date.now().toString(36)+Math.random().toString(36).slice(2,5), name:f.name, art:guessArt(f.name),
-    slot:slot||guessSlot(), qty, mode, base: f.g!==undefined ? {kcal:f.kcal, p:f.p, g:f.g, unit:f.unit} : null, kcal, protein};
+    slot:slot||guessSlot(), qty, mode,
+    base: hasBase ? {kcal:f.kcal, p:f.p, g:f.g, unit:f.unit, f:f.f, c:f.c, fib:f.fib, sf:f.sf, fv:f.fv} : null, kcal, protein,
+    fat: r ? r.fat : (f.f ?? null), carbs: r ? r.carbs : (f.c ?? null), fiber: r ? r.fiber : (f.fib ?? null),
+    sat: r ? r.sat : (f.sf ?? null), fv: r ? r.fv : 0};
 }
 function recalcMenuItem(it){ if(!it.base) return; const r=calcFood(it.base, it.qty, it.mode);
-  it.kcal=r.kcal; it.protein=r.protein; }
-function menuTotals(){ return MENU.reduce((a,m)=>({kcal:a.kcal+m.kcal, protein:a.protein+m.protein}),{kcal:0,protein:0}); }
+  it.kcal=r.kcal; it.protein=r.protein; it.fat=r.fat; it.carbs=r.carbs; it.fiber=r.fiber; it.sat=r.sat; it.fv=r.fv; }
+function menuTotals(){ return MENU.reduce((a,m)=>({kcal:a.kcal+m.kcal, protein:a.protein+m.protein, fat:a.fat+(+m.fat||0), fiber:a.fiber+(+m.fiber||0)}),{kcal:0,protein:0,fat:0,fiber:0}); }
 function qtyText(it){ const u = unitLabel(it.mode, it.base); return u==="g" ? `${fmtQty(it.qty)} g` : `${fmtQty(it.qty)} × ${u}`; }
 function addMenuItem(it){ MENU.push(it); MENU.sort((a,b)=>SLOTS.indexOf(a.slot)-SLOTS.indexOf(b.slot)); scheduleSave(); }
 
-function menuEntry(it){ return {name:it.name, kcal:it.kcal, protein:it.protein, art:it.art, qty:it.qty, unit: unitLabel(it.mode, it.base), menuId:it.id}; }
+function menuEntry(it){ return {name:it.name, kcal:it.kcal, protein:it.protein, art:it.art, qty:it.qty, unit: unitLabel(it.mode, it.base), menuId:it.id,
+  fat:it.fat??null, carbs:it.carbs??null, fiber:it.fiber??null, sat:it.sat??null, fv:it.fv||0}; }
 function foodForMenuItem(it){ return FOOD_DB.concat(customFoods.map(f=>({...f,cat:"My foods"}))).find(f=>f.name===it.name) || {name:it.name, cat:"", kcal:it.kcal, p:it.protein, g:0, unit:"serving"}; }
 const PL_UNITS={"eating spoon":"eating spoons",katori:"katoris","half plate":"half plates","normal plate":"normal plates","full plate":"full plates","big bowl":"big bowls","serving spoon":"serving spoons",piece:"pieces",bowl:"bowls",cup:"cups",plate:"plates",glass:"glasses",slice:"slices",scoop:"scoops",handful:"handfuls",roll:"rolls",bar:"bars",can:"cans",serving:"servings",skewer:"skewers",jar:"jars"};
 function plu(unit,q){ return q>1 && PL_UNITS[unit] ? PL_UNITS[unit] : unit; }
@@ -1981,6 +2188,7 @@ function swapIdeas(skipped, d){
     const r = calcFood(it.base, add, it.mode);
     const ul=unitLabel(it.mode, it.base);
     ideas.push({kind:"more", score:roles.has(role)?0:0.5, name:it.name, art:it.art, qty:add, unit: ul, kcal:r.kcal, protein:r.protein,
+      fat:r.fat, carbs:r.carbs, fiber:r.fiber, sat:r.sat, fv:r.fv,
       label:`More ${it.name.toLowerCase()}: +${it.mode==="g"?add+" g":niceUnits(add)+" "+plu(ul,add)}`});
   });
   // 2) same-type foods from the chart
@@ -1994,6 +2202,7 @@ function swapIdeas(skipped, d){
     return proteinFirst ? ((b.p/b.kcal)-(a.p/a.kcal))*400 + (da-db)*20 : da-db; });
   pool.slice(0,3).forEach(f=>{ const u=roundStep(freeK/f.kcal); const r=calcFood(f,u,"unit");
     ideas.push({kind:"swap", score:0, name:f.name, art:guessArt(f.name), qty:u, unit:f.unit, kcal:r.kcal, protein:r.protein,
+      fat:r.fat, carbs:r.carbs, fiber:r.fiber, sat:r.sat, fv:r.fv,
       label:`${f.name}: ${niceUnits(u)} ${plu(f.unit,u)}`}); });
   ideas.sort((a,b)=>a.score-b.score);
   return {freeK, freeP, wantRole, ideas:ideas.slice(0,5)};
@@ -2021,7 +2230,7 @@ function renderTodayMenu(){
     const cb=document.createElement("input"); cb.type="checkbox"; cb.className="mcheck"; cb.checked=on; cb.setAttribute("aria-label",`Ate ${it.name}`);
     cb.onchange=()=>{ if(cb.checked){ d.foods.push(menuEntry(it)); delete d.menuSkip[it.id]; } else { d.foods=d.foods.filter(f=>f.menuId!==it.id); } changed(); };
     const ic=el2("span","ic"); ic.innerHTML=ART[it.art]||ART.plate;
-    const nm=el2("span","nm"); nm.append(el2("span","",it.name), el2("small","", skip?`${qtyText(it)} · skipped`:qtyText(it)));
+    const nm=el2("span","nm"); nm.append(el2("span","",it.name), el2("small","", skip?`${qtyText(it)} · skipped`:qtyText(it)), nutrChips(it));
     const kv=el2("span","kv"); kv.innerHTML=`${it.kcal} kcal<br>${it.protein} g`;
     const sk=el2("button","skipbtn"+(skip?" on":""), skip?"Skipped":"Skip"); sk.title= skip?"Undo skip":"I didn't eat this — suggest a swap";
     sk.onclick=()=>{ if(skip) delete d.menuSkip[it.id]; else { d.menuSkip[it.id]=true; d.foods=d.foods.filter(f=>f.menuId!==it.id); } changed(); };
@@ -2045,7 +2254,8 @@ function renderTodayMenu(){
         const ic=el2("span","ic"); ic.innerHTML=ART[idea.art]||ART.plate;
         const tx=el2("span","tx"); tx.append(el2("b","",idea.label), el2("small","",`${idea.kcal} kcal · ${idea.protein} g protein${S.freeP>=12 && idea.protein < S.freeP*0.5 ? " · less protein — add an egg or dahi":""}`));
         b.append(ic,tx);
-        b.onclick=()=>{ d.foods.push({name:idea.name, kcal:idea.kcal, protein:idea.protein, art:idea.art, qty:idea.qty, unit:idea.unit, swapFor:skipped.map(s=>s.id)}); changed(); };
+        b.onclick=()=>{ d.foods.push({name:idea.name, kcal:idea.kcal, protein:idea.protein, art:idea.art, qty:idea.qty, unit:idea.unit, swapFor:skipped.map(s=>s.id),
+          fat:idea.fat, carbs:idea.carbs, fiber:idea.fiber, sat:idea.sat, fv:idea.fv}); changed(); };
         list.appendChild(b); });
       v.appendChild(list);
       v.appendChild(el2("p","hint","Tapping a swap adds it to today's food log as “instead of” the skipped item. You can still search any other food below."));
@@ -2061,39 +2271,139 @@ function renderTodayMenu(){
   box.appendChild(sec);
 }
 
+/* ---------- nutrients for one item: chips + expandable table ---------- */
+const NUTR_ROWS=[["kcal","Calories","kcal"],["protein","Protein","g"],["carbs","Carbs","g"],["fat","Fat","g"],["sat","Saturated fat (est.)","g"],["fiber","Fiber","g"],["fv","Fruit & veg","g"]];
+function nutrChips(it){
+  const wrap=el2("div","chips2");
+  [["P",it.protein,"g"],["C",it.carbs,"g"],["F",it.fat,"g"],["Fib",it.fiber,"g"]].forEach(([l,v,u])=>{
+    const c=el2("span","chip2", v==null?`${l} –`:`${l} ${fmt(v)}${u}`); wrap.appendChild(c); });
+  return wrap;
+}
+function nutrTable(it){
+  const t=el2("table","ptable mini-t");
+  NUTR_ROWS.forEach(([k,l,u])=>{ const tr=el2("tr"); tr.append(el2("td","",l), el2("td","n", it[k]==null?"–":`${fmt(it[k])} ${u}`)); t.appendChild(tr); });
+  return t;
+}
+function menuAllTotals(){
+  return MENU.reduce((a,m)=>{ NUTR_ROWS.forEach(([k])=>{ a[k]+= (+m[k]||0); }); if(m.fat==null) a.unknown++; return a; },
+    {kcal:0,protein:0,carbs:0,fat:0,sat:0,fiber:0,fv:0,unknown:0});
+}
+function proteinFix(gap){
+  if(gap<=12) return `${fmt(gap)} g short — add 3 egg whites or a bowl of low-fat dahi (10 g)`;
+  if(gap<=25) return `${fmt(gap)} g short — add 100 g grilled chicken (31 g), or 2 boiled eggs + a bowl of low-fat dahi`;
+  const ch=Math.min(200, Math.max(100, Math.round(gap/0.31/50)*50)); const left=Math.round(gap-ch*0.31);
+  return `${fmt(gap)} g short — add ${ch} g grilled chicken or fish (${Math.round(ch*0.31)} g)` + (left>5?` plus a bowl of low-fat dahi or 3 egg whites (${Math.min(left,12)} g)`:"");
+}
+// "your menu gives X, you need Y" with a plain fix for each gap
+function menuVerdicts(t){
+  const s=settings, T=nutrTargets(), out=[];
+  const dk=t.kcal-s.kcal;
+  out.push({k:"kcal", l:"Calories", have:t.kcal, need:s.kcal, unit:"kcal", kind:"target",
+    ok:Math.abs(dk)<=100, msg: Math.abs(dk)<=100 ? "on target" : dk<0 ? `${fmt(-dk)} kcal short — add a roti (120), a fruit (80–100) or a bowl of daal (200)` : `${fmt(dk)} kcal over — drop a roti (120) or 1 tbsp oil (120)`});
+  const dp=t.protein-s.protein;
+  out.push({k:"protein", l:"Protein", have:t.protein, need:s.protein, unit:"g", kind:"min",
+    ok:dp>=-10, msg: dp>=-10 ? "enough" : proteinFix(-dp)});
+  const df=t.fiber-T.fiber;
+  out.push({k:"fiber", l:"Fiber", have:t.fiber, need:T.fiber, unit:"g", kind:"min",
+    ok:df>=-2, msg: df>=-2 ? "enough" : `${fmt(-df)} g short — a cup of boiled chana (12 g), a guava (5 g), a bowl of daal (6 g) or swap white rice for brown`});
+  const dv=t.fv-T.fv;
+  out.push({k:"fv", l:"Fruit & veg", have:t.fv, need:T.fv, unit:"g", kind:"min",
+    ok:dv>=-40, msg: dv>=-40 ? "enough" : `${fmt(-dv)} g short — a bowl of salad (150 g), a fruit (100–180 g) or a katori of sabzi`});
+  out.push({k:"carbs", l:"Carbs", have:t.carbs, need:T.carbs, unit:"g", kind:"info",
+    ok:true, msg: t.carbs>T.carbs*1.25 ? "on the high side — fine if fat is low; prefer whole-wheat roti, brown rice, daal" : "fine"});
+  const dfat=t.fat-T.fat;
+  out.push({k:"fat", l:"Fat", have:t.fat, need:T.fat, unit:"g", kind:"max",
+    ok:dfat<=0, msg: dfat<=0 ? "within limit" : `${fmt(dfat)} g over — about ${Math.ceil(dfat/4.5)} tsp less oil or ghee, or swap a fried item`});
+  const ds=t.sat-T.sat;
+  out.push({k:"sat", l:"Saturated fat (est.)", have:t.sat, need:T.sat, unit:"g", kind:"max",
+    ok:ds<=0, msg: ds<=0 ? "within limit" : `${fmt(ds)} g over — less ghee, butter, malai, full-cream milk and fatty meat`});
+  return out;
+}
+function renderMenuSummary(box){
+  if(!MENU.length) return;
+  const t=menuAllTotals(), V=menuVerdicts(t);
+  const card=el2("div","msum");
+  const head=el2("h3"); head.append(el2("span","","Your menu vs what you need"));
+  const good=V.filter(v=>v.ok).length;
+  head.append(el2("small","",`${good}/${V.length} on track`));
+  card.appendChild(head);
+  V.forEach(v=>{
+    const frac = v.need ? v.have/v.need : 0;
+    const color = v.ok ? "var(--good)" : (v.kind==="max"||(v.kind==="target"&&v.have>v.need)) ? "var(--bad)" : "var(--cal)";
+    const row=el2("div","nrow");
+    const top=el2("div","ntop"); top.append(el2("span","",v.l), el2("span","",`${fmt(v.have)} / ${fmt(v.need)} ${v.unit}`));
+    const bar=el2("div","nbar"); const fill=el2("i"); fill.style.width=Math.min(100,frac*100)+"%"; fill.style.background=color; bar.appendChild(fill);
+    const note=el2("div","nmsg"+(v.ok?"":" warn"), (v.ok?"✓ ":"→ ")+v.msg);
+    row.append(top,bar,note); card.appendChild(row); });
+  if(t.unknown) card.appendChild(el2("p","hint",`${t.unknown} item${t.unknown>1?"s have":" has"} no fat/fiber data, so those totals are a little low.`));
+  box.appendChild(card);
+}
+
+let menuOpen=null;
 function renderMenuEditor(){
   const box=document.getElementById("menuEditor"); box.innerHTML="";
   const t=menuTotals(), s=settings;
-  const h=el2("h3"); h.append(el2("span","","My daily menu"), el2("small","", MENU.length?`${fmt(t.kcal)} of ${fmt(s.kcal)} kcal · ${fmt(t.protein)} of ${s.protein} g protein`:""));
+  const h=el2("h3"); h.append(el2("span","","My daily menu"), el2("small","", MENU.length?`${MENU.length} items · ${fmt(t.kcal)} of ${fmt(s.kcal)} kcal`:""));
   box.appendChild(h);
   if(!MENU.length){ box.appendChild(el2("p","hint","Your fixed daily foods. Open any food below and tap “Add to daily menu”, or save your own recipe at the bottom and add it. Then on the Today page you just tick what you ate.")); return; }
-  const diff=s.kcal-t.kcal;
-  box.appendChild(el2("p","hint", Math.abs(diff)<=100 ? "Your menu matches your calorie target." :
-    diff>300 ? `Your menu is ${fmt(diff)} kcal under your target — keep adding your usual meals until it's close.` :
-    diff>0 ? `Your menu is ${fmt(diff)} kcal under your target — room for a fruit, a roti or an extra egg.` : `Your menu is ${fmt(-diff)} kcal over your target — trim a roti or the oil.`));
+  box.appendChild(el2("p","hint","Tap an item to see all its nutrients. Change the amount, the meal, or remove it — the totals below update straight away."));
   const ul=el2("ul","mlist medit");
+  let lastSlot=null;
   MENU.forEach((it,i)=>{
-    const li=el2("li");
+    if(it.slot!==lastSlot){ lastSlot=it.slot; const li0=el2("li"); li0.style.display="block"; li0.style.borderBottom="0"; li0.style.padding="0"; li0.appendChild(el2("div","slotlbl",it.slot)); ul.appendChild(li0); }
+    const li=el2("li"); li.classList.add("mitem");
     const ic=el2("span","ic"); ic.innerHTML=ART[it.art]||ART.plate;
-    const nm=el2("span","nm"); nm.append(el2("span","",it.name), el2("small","",`${qtyText(it)} · ${it.kcal} kcal · ${it.protein} g protein`));
+    const nm=el2("span","nm"); const title=el2("span","",it.name); title.style.cursor="pointer";
+    title.onclick=()=>{ menuOpen = menuOpen===it.id?null:it.id; renderMenuEditor(); };
+    nm.append(title, el2("small","",`${qtyText(it)} · ${it.kcal} kcal`), nutrChips(it));
     const ctl=el2("div","ctl");
     const sl=document.createElement("select"); sl.setAttribute("aria-label","When");
     SLOTS.forEach(x=>{ const o=document.createElement("option"); o.value=x; o.textContent=x; if(x===it.slot) o.selected=true; sl.appendChild(o); });
     sl.onchange=()=>{ it.slot=sl.value; MENU.sort((a,b)=>SLOTS.indexOf(a.slot)-SLOTS.indexOf(b.slot)); scheduleSave(); renderMenuEditor(); renderAll(); };
     ctl.appendChild(sl);
-    if(it.base){ const q=document.createElement("input"); q.type="number"; q.step="0.25"; q.min="0"; q.value=it.qty; q.setAttribute("aria-label","Quantity");
+    if(it.base){ const q=document.createElement("input"); q.type="number"; q.step="0.25"; q.min="0"; q.value=it.qty; q.setAttribute("aria-label","Quantity"); q.title=`Amount (${unitLabel(it.mode,it.base)})`;
       q.onchange=()=>{ const v=num(q.value); if(!v) { q.value=it.qty; return; } it.qty=v; recalcMenuItem(it); scheduleSave(); renderMenuEditor(); renderAll(); };
       ctl.appendChild(q); }
     else { const k=document.createElement("input"); k.type="number"; k.value=it.kcal; k.setAttribute("aria-label","kcal"); k.title="kcal";
       k.onchange=()=>{ const v=num(k.value); if(v!==null){ it.kcal=v; scheduleSave(); renderMenuEditor(); renderAll(); } }; ctl.appendChild(k); }
+    const more=el2("button","iconbtn", menuOpen===it.id?"▴":"▾"); more.title="All nutrients"; more.setAttribute("aria-label","Show all nutrients for "+it.name);
+    more.onclick=()=>{ menuOpen = menuOpen===it.id?null:it.id; renderMenuEditor(); };
     const del=el2("button","iconbtn","✕"); del.style.color="var(--bad)"; del.title="Remove"; del.setAttribute("aria-label","Remove "+it.name);
     del.onclick=()=>{ MENU.splice(i,1); scheduleSave(); renderMenuEditor(); renderAll(); };
-    ctl.appendChild(del);
-    li.append(ic,nm,ctl); ul.appendChild(li); });
+    ctl.append(more,del);
+    li.append(ic,nm,ctl);
+    if(menuOpen===it.id){ const ex=el2("div","mexp"); ex.appendChild(nutrTable(it)); li.appendChild(ex); }
+    ul.appendChild(li); });
   box.appendChild(ul);
+  renderMenuSummary(box);
   const row=el2("div","row"); row.style.marginTop="8px";
   const clr=el2("button","btn ghost small","Clear menu"); clr.onclick=()=>{ if(confirm("Remove every item from your daily menu?")){ MENU=[]; scheduleSave(); renderMenuEditor(); renderAll(); } };
   row.appendChild(clr); box.appendChild(row);
+}
+
+/* ---------- fill in nutrients for menu items and log entries saved before the nutrient update ---------- */
+function foodByName(name){ return FOOD_DB.concat(customFoods.map(f=>({...f,cat:"My foods"}))).find(f=>f.name===name); }
+function modeFromUnit(f, unit){
+  if(unit==="g") return "g";
+  const hk=Object.keys(HH).find(k=>HH[k].short===unit); if(hk) return "hh:"+hk;
+  return unit===f.unit ? "unit" : null;
+}
+function hydrateNutrients(){
+  let changedAny=false;
+  MENU.forEach(it=>{
+    if(it.fat!=null) return;
+    const f=foodByName(it.name); if(!f || f.f==null) return;
+    if(it.base){ it.base={...it.base, f:f.f, c:f.c, fib:f.fib, sf:f.sf, fv:f.fv}; recalcMenuItem(it); changedAny=true; }
+  });
+  Object.values(days).forEach(d=>(d.foods||[]).forEach(e=>{
+    if(e.fat!=null) return;
+    const f=foodByName(e.name); if(!f || f.f==null) return;
+    const mode=modeFromUnit(f, e.unit||f.unit); if(!mode) return;
+    const r=calcFood(f, e.qty||1, mode); if(!r.kcal) return;
+    const k=(+e.kcal||r.kcal)/r.kcal;           // respect kcal the user may have edited
+    e.fat=r1(r.fat*k); e.carbs=r1(r.carbs*k); e.fiber=r1(r.fiber*k); e.sat=r1(r.sat*k); e.fv=Math.round(r.fv*k); changedAny=true;
+  }));
+  if(changedAny) saveLocal();
 }
 
 /* ------------------------------------------------------------------
@@ -2201,6 +2511,7 @@ const TAB_ICONS = {
  body:`<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10a5 5 0 0 1 8 0" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M12 10l2-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
  week:`<svg viewBox="0 0 24 24"><rect x="4" y="12" width="4" height="8" rx="1" fill="currentColor"/><rect x="10" y="7" width="4" height="13" rx="1" fill="currentColor"/><rect x="16" y="4" width="4" height="16" rx="1" fill="currentColor"/></svg>`,
  progress:`<svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 7h6v6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+ guide:`<svg viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`,
  settings:`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>`
 };
 function careAll(){ return CARE_DB.concat((CARE.custom||[]).map(c=>({...c, cat:"My items", who:"all", tip:c.tip||""}))); }
@@ -2494,12 +2805,59 @@ function renderAutoNote(){
   row.append(ok,undo); v.append(h,p,row); box.appendChild(v);
 }
 
+
+/* ------------------------------------------------------------------
+   NUTRITION BALANCE — WHO: fat ≤30% of calories, saturated fat <10%,
+   fiber ≥25 g, fruit & vegetables ≥400 g a day
+------------------------------------------------------------------ */
+function renderNutriCard(f){
+  const box=document.getElementById("nutriCard"); if(!box) return; box.innerHTML="";
+  if(!f.kcal) return;
+  const T=nutrTargets(), s=settings;
+  const card=document.createElement("div"); card.className="ncard";
+  const h=document.createElement("h3"); h.textContent="Nutrition balance"; card.appendChild(h);
+  // calorie split
+  const pk=f.protein*4, ck=f.carbs*4, fk=f.fat*9, tot=pk+ck+fk;
+  if(tot>0){
+    const split=document.createElement("div"); split.className="split";
+    [["var(--pro)",pk,"protein"],["var(--wat)",ck,"carbs"],["var(--cal)",fk,"fat"]].forEach(([c,v,l])=>{ const sp=document.createElement("span"); sp.style.background=c; sp.style.width=(100*v/tot)+"%"; sp.title=`${l} ${Math.round(100*v/tot)}%`; split.appendChild(sp); });
+    card.appendChild(split);
+    const lg=document.createElement("p"); lg.className="hint"; lg.style.margin="4px 0 8px";
+    lg.textContent=`Calories from protein ${Math.round(100*pk/tot)}% · carbs ${Math.round(100*ck/tot)}% · fat ${Math.round(100*fk/tot)}%`;
+    card.appendChild(lg);
+  }
+  const rows=[
+    {l:"Protein", v:f.protein, t:s.protein, kind:"min", note:"aim to reach"},
+    {l:"Fiber", v:f.fiber, t:T.fiber, kind:"min", note:"at least"},
+    {l:"Fruit & vegetables", v:f.fv, t:T.fv, kind:"min", unit:"g", note:"at least"},
+    {l:"Carbs", v:f.carbs, t:T.carbs, kind:"info", note:"about"},
+    {l:"Fat", v:f.fat, t:T.fat, kind:"max", note:`limit (${s.fatPct}% of calories)`},
+    {l:"Saturated fat (est.)", v:f.sat, t:T.sat, kind:"max", note:`limit (${s.satPct}% of calories)`}
+  ];
+  rows.forEach(r=>{
+    const frac=r.t? r.v/r.t : 0;
+    const color = r.kind==="max" ? (frac>1?"var(--bad)":frac>0.85?"var(--cal)":"var(--good)")
+                : r.kind==="min" ? (frac>=1?"var(--good)":frac>=0.6?"var(--cal)":"var(--track)") : "var(--wat)";
+    const row=document.createElement("div"); row.className="nrow";
+    const top=document.createElement("div"); top.className="ntop";
+    const a=document.createElement("span"); a.textContent=r.l;
+    const b=document.createElement("span"); b.textContent=`${fmt(r.v)} / ${fmt(r.t)} ${r.unit||"g"} · ${r.note}`;
+    top.append(a,b);
+    const bar=document.createElement("div"); bar.className="nbar"; const fill=document.createElement("i"); fill.style.width=Math.min(100,frac*100)+"%"; fill.style.background=color; bar.appendChild(fill);
+    row.append(top,bar); card.appendChild(row);
+  });
+  if(f.unknown){ const p=document.createElement("p"); p.className="hint"; p.style.margin="6px 0 0";
+    p.textContent=`${f.unknown} item${f.unknown>1?"s":""} today ${f.unknown>1?"have":"has"} no fat or fiber data (typed by hand or logged before this update), so these totals are a little low.`; card.appendChild(p); }
+  box.appendChild(card);
+}
+
 /* ------------------------------------------------------------------
    RENDER: SETTINGS
 ------------------------------------------------------------------ */
 const SETTING_FIELDS = [
   ["kcal","Daily calories (kcal)",1], ["floor","Never below (kcal)",1], ["protein","Protein (g)",1],
   ["water","Water (glasses of 250 ml)",1], ["steps","Steps",100], ["sleep","Sleep (hours)",0.25],
+  ["fiber","Fiber (g a day)",1], ["fatPct","Fat limit (% of calories)",1], ["satPct","Saturated fat limit (% of calories)",1], ["fvTarget","Fruit & vegetables (g a day)",10],
   ["gym","Workout (minutes)",5], ["heightCm","Height (cm)",0.5], ["age","Age (years)",1], ["sex","Sex","sex"], ["act","Activity before the plan","act"], ["startWeight","Start weight (kg)",0.1], ["goalWeight","Goal weight (kg)",0.1],
   ["startDate","Start date",null]
 ];
@@ -2559,7 +2917,8 @@ function bind(){
     const nm=document.createElement("span"); nm.className="nm"; nm.textContent=p.short;
     const mt=document.createElement("span"); mt.className="mt"; mt.textContent=`${p.kcal} kcal · ${p.protein} g`;
     b.append(art,nm,mt);
-    b.onclick=()=>{ day().foods.push({name:p.name,kcal:p.kcal,protein:p.protein,art:p.art}); changed();
+    b.onclick=()=>{ day().foods.push({name:p.name,kcal:p.kcal,protein:p.protein,art:p.art,fat:p.fat,fiber:p.fiber,sat:p.sat,fv:p.fv,
+        carbs:Math.max(0,Math.round((p.kcal-4*p.protein-9*p.fat)/4))}); changed();
       b.classList.add("added"); setTimeout(()=>b.classList.remove("added"),600); };
     pre.appendChild(b); });
   const fName=document.getElementById("fName");
@@ -2576,24 +2935,32 @@ function bind(){
   document.getElementById("fUnit").addEventListener("change",()=>{
     if(pick){ document.getElementById("fQty").value = document.getElementById("fUnit").value==="g" ? (pick.g||100) : 1; manualVals=false; }
     recalcAdder(); });
-  ["fKcal","fPro"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{ manualVals=true; }));
+  ["fKcal","fPro","fCarb","fFat","fFib"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{ manualVals=true; }));
   document.getElementById("addFood").onclick=()=>{
     const n=document.getElementById("fName"), k=document.getElementById("fKcal"), p=document.getElementById("fPro");
     const kcal=num(k.value), pro=num(p.value)||0, qty=num(document.getElementById("fQty").value)||1, mode=document.getElementById("fUnit").value;
     if(!n.value.trim() || kcal===null){ n.focus(); n.placeholder="Pick a food or type a name and kcal"; return; }
     const unit = pick ? unitLabel(mode, pick) : "serving";
-    day().foods.push({name:n.value.trim(), kcal, protein:pro, art:guessArt(n.value), qty, unit});
-    n.value=""; k.value=""; p.value=""; document.getElementById("fQty").value=1; pick=null; manualVals=false; fillUnits(null);
+    const rr = pick ? calcFood(pick, qty, mode) : null;
+    const fat=num(document.getElementById("fFat").value), fib=num(document.getElementById("fFib").value);
+    let carbs=num(document.getElementById("fCarb").value);
+    if(carbs===null && fat!==null) carbs=Math.max(0,Math.round((kcal-4*pro-9*fat)/4));
+    day().foods.push({name:n.value.trim(), kcal, protein:pro, art:guessArt(n.value), qty, unit,
+      fat, carbs, fiber:fib, sat: rr && rr.fat ? r1(rr.sat*(fat??rr.fat)/rr.fat) : (fat!=null? r1(fat*0.3) : null), fv: rr ? rr.fv : 0});
+    n.value=""; k.value=""; p.value=""; ["fCarb","fFat","fFib"].forEach(id=>document.getElementById(id).value="");
+    document.getElementById("fQty").value=1; pick=null; manualVals=false; fillUnits(null);
     document.getElementById("fInfo").textContent=""; changed(); };
   document.getElementById("addToMenu").onclick=()=>{
     const n=document.getElementById("fName"), k=document.getElementById("fKcal"), p=document.getElementById("fPro");
     const kcal=num(k.value), pro=num(p.value)||0, qty=num(document.getElementById("fQty").value)||1, mode=document.getElementById("fUnit").value;
     if(!n.value.trim() || kcal===null){ n.focus(); n.placeholder="Pick a food or type a name and kcal"; return; }
-    const f = pick && !manualVals ? pick : {name:n.value.trim(), kcal, p:pro};
+    const f = pick && !manualVals ? pick : {name:n.value.trim(), kcal, p:pro, f:num(document.getElementById("fFat").value),
+      c:num(document.getElementById("fCarb").value), fib:num(document.getElementById("fFib").value)};
     const it = menuItemFrom(f, qty, mode, kcal, pro); if(pick && manualVals){ it.base=null; }
     if(!pick){ it.base=null; it.qty=qty; }
     addMenuItem(it);
-    n.value=""; k.value=""; p.value=""; document.getElementById("fQty").value=1; pick=null; manualVals=false; fillUnits(null);
+    n.value=""; k.value=""; p.value=""; ["fCarb","fFat","fFib"].forEach(id=>document.getElementById(id).value="");
+    document.getElementById("fQty").value=1; pick=null; manualVals=false; fillUnits(null);
     document.getElementById("fInfo").textContent=`Added to your daily menu (${it.slot}). Tick it off on Today when you eat it.`; renderAll(); };
   document.getElementById("fcSearch").addEventListener("input",()=>{ fcOpen=null; renderFoodChart(); });
   document.getElementById("cfAdd").onclick=()=>{
@@ -2601,8 +2968,10 @@ function bind(){
     const g=num(document.getElementById("cfG").value), kcal=num(document.getElementById("cfKcal").value), pr=num(document.getElementById("cfPro").value)||0;
     if(!name || kcal===null){ document.getElementById("cfName").focus(); return; }
     customFoods=customFoods.filter(f=>f.name.toLowerCase()!==name.toLowerCase());
-    customFoods.push({name, unit, g:g||0, kcal, p:pr, alias:""});
-    ["cfName","cfUnit","cfG","cfKcal","cfPro"].forEach(id=>document.getElementById(id).value="");
+    const cf=num(document.getElementById("cfFat").value), cfib=num(document.getElementById("cfFib").value);
+    let cc=num(document.getElementById("cfCarb").value); if(cc===null && cf!==null) cc=Math.max(0,Math.round((kcal-4*pr-9*cf)/4*10)/10);
+    customFoods.push({name, unit, g:g||0, kcal, p:pr, alias:"", f:cf, c:cc, fib:cfib, sf: cf==null?null:r1(cf*0.3), fv:0});
+    ["cfName","cfUnit","cfG","cfKcal","cfPro","cfCarb","cfFat","cfFib"].forEach(id=>document.getElementById(id).value="");
     scheduleSave(); fcCat="My foods"; renderFoodChart(); };
   document.getElementById("waterPlus").onclick=()=>{ const d=day(); d.water=(d.water||0)+1; changed(); };
   document.getElementById("waterMinus").onclick=()=>{ const d=day(); d.water=Math.max(0,(d.water||0)-1); changed(); };
@@ -2620,7 +2989,7 @@ function bind(){
 
   document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{
     document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected", String(x===b)));
-    ["today","foods","care","body","week","progress","settings"].forEach(t=>document.getElementById("tab-"+t).hidden = t!==b.dataset.tab);
+    ["today","foods","care","body","week","progress","settings","guide"].forEach(t=>document.getElementById("tab-"+t).hidden = t!==b.dataset.tab);
     if(b.dataset.tab==="care") renderCare();
     if(b.dataset.tab==="body") renderBmi();
     if(b.dataset.tab==="foods") renderFoodChart();
@@ -2649,6 +3018,10 @@ function bind(){
     const r=document.documentElement; const dark = r.dataset.theme ? r.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
     r.dataset.theme = dark ? "light" : "dark"; try{ localStorage.setItem("cutlog.theme", r.dataset.theme); }catch(e){} };
 
+  document.getElementById("shareBtn").onclick=()=>{
+    const json=JSON.stringify({app:"cutlog",version:1,exported:new Date().toISOString(),settings,days,customFoods,habits:HABITS,menu:MENU,care:CARE},null,1);
+    shareBackup(`cut-log-backup-${todayKey()}.json`, json, "Cut Log", document.getElementById("shareBtn"), ()=>{
+      try{ localStorage.setItem("cutlog.lastBackup", new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})); }catch(e){} storageNote(); }); };
   document.getElementById("backupBtn").onclick=()=>{
     downloadFile(`cut-log-backup-${todayKey()}.json`, JSON.stringify({app:"cutlog",version:1,exported:new Date().toISOString(),settings,days,customFoods,habits:HABITS,menu:MENU,care:CARE},null,1), "application/json");
     try{ localStorage.setItem("cutlog.lastBackup", new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})); }catch(e){}
@@ -2672,9 +3045,9 @@ function bind(){
       e.target.value=""; };
     reader.readAsText(file); };
   document.getElementById("exportCsv").onclick=()=>{
-    const rows=[["date","kcal","protein_g","water_glasses","steps","workout","workout_min","sleep_h","weight_kg","waist_cm","energy","hunger","day_score",...HABITS.map(h=>h.key),"notes"]];
+    const rows=[["date","kcal","protein_g","carbs_g","fat_g","satfat_g_est","fiber_g","fruitveg_g","water_glasses","steps","workout","workout_min","sleep_h","weight_kg","waist_cm","energy","hunger","day_score",...HABITS.map(h=>h.key),"notes"]];
     Object.keys(days).sort().forEach(k=>{ const d=days[k]; if(!isLogged(d)) return; const f=sumFood(d);
-      rows.push([k,f.kcal,f.protein,d.water||0,d.steps||"",d.gymType||"",d.gymMin||"",d.sleep||"",d.weight||"",d.waist||"",d.energy||"",d.hunger||"",dayScore(d)??"",
+      rows.push([k,f.kcal,f.protein,Math.round(f.carbs),Math.round(f.fat),Math.round(f.sat),Math.round(f.fiber),Math.round(f.fv),d.water||0,d.steps||"",d.gymType||"",d.gymMin||"",d.sleep||"",d.weight||"",d.waist||"",d.energy||"",d.hunger||"",dayScore(d)??"",
         ...HABITS.map(h=>d.habits&&d.habits[h.key]?1:0), (d.notes||"").replace(/"/g,'""')]); });
     const csv = rows.map(r=>r.map(c=>/[",\n]/.test(String(c))?`"${c}"`:c).join(",")).join("\n");
     downloadFile(`cut-log-${todayKey()}.csv`, csv, "text/csv");
@@ -2691,6 +3064,7 @@ document.querySelectorAll(".secthead").forEach(h=>{ const i=document.createEleme
   i.innerHTML=ICONS[h.dataset.icon]||""; i.setAttribute("aria-hidden","true"); i.style.display="inline-flex"; h.prepend(i); });
 bind();
 loadBmi(); bindBmi(); bindCare();
+hydrateNutrients();
 if(!settings.anchorW) { setAnchor(settings.startWeight); saveLocal(); }
 autoAdjust();
 renderAll();
