@@ -149,6 +149,14 @@ section.block{transition:none}
 .donebtn{border:1px solid var(--good);color:var(--good);background:transparent;border-radius:999px;padding:5px 11px;cursor:pointer;font-weight:600;font-size:.82rem}
 .donebtn.on{background:var(--good);color:#fff}
 .care-today li{grid-template-columns:auto auto minmax(0,1fr)}
+/* portion guidance */
+.portion{border:1px solid var(--line);border-left:4px solid var(--good);background:color-mix(in srgb, var(--good) 7%, var(--surface));
+  border-radius:12px;padding:9px 11px;margin:6px 0 2px;font-size:.88rem;line-height:1.4;flex-basis:100%}
+.portion b{color:var(--good)}
+.portion .hand{color:var(--muted);display:block;margin-top:2px}
+.portion button{margin-top:6px}
+.portion.warn{border-left-color:var(--cal);background:color-mix(in srgb, var(--cal) 9%, var(--surface))}
+.portion.warn b{color:var(--cal)}
 /* daily menu */
 .menu-sec{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:12px 14px;margin:6px 0 14px}
 .menu-sec h3{margin:0;font-size:1rem;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -169,6 +177,20 @@ section.block{transition:none}
 .medit .ctl input{width:64px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 7px}
 .medit .ctl select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 6px}
 .slotlbl{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:10px 0 0}
+.tmenu li{grid-template-columns:auto auto minmax(0,1fr) auto auto}
+.tmenu li.skipped .nm span{color:var(--muted);text-decoration:line-through}
+.skipbtn{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 10px;cursor:pointer;font-size:.78rem}
+.skipbtn.on{border-color:var(--cal);color:var(--cal);font-weight:600}
+.swapbox{border:1px solid var(--cal);background:color-mix(in srgb, var(--cal) 8%, var(--surface));border-radius:14px;padding:10px 12px;margin-top:10px}
+.swapbox h4{margin:0 0 4px;font-size:.95rem}
+.swapbox .hint{margin:4px 0}
+.swaplist{display:grid;gap:6px;margin-top:6px}
+.swapitem{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 10px;cursor:pointer}
+.swapitem:hover{border-color:var(--ink)}
+.swapitem .ic{width:30px;height:30px;border-radius:50%;background:var(--plate);display:grid;place-items:center;flex:none}
+.swapitem .ic svg{width:24px;height:24px}
+.swapitem .tx{display:flex;flex-direction:column;min-width:0}
+.swapitem small{color:var(--muted);font-size:.78rem}
 /* personal plan */
 .plan h2{margin-top:0}
 .ptable{width:100%;border-collapse:collapse;font-size:.9rem}
@@ -401,6 +423,7 @@ textarea{min-height:76px;resize:vertical}
   <div class="hero" style="grid-template-columns:1fr"><div><h1>Food chart</h1>
     <p class="hint">Calories and protein for Pakistani dishes and ingredients. Tap a food, set how much, and add it to the day you're viewing. Values are typical home-cooked portions — restaurant food often has 30–50% more oil.</p></div></div>
   <div class="budget" id="budget"></div>
+  <div class="menu-sec" id="portionGuide"></div>
   <div class="menu-sec" id="menuEditor"></div>
   <div class="sugwrap" style="max-width:520px"><input id="fcSearch" placeholder="Search — biryani, chana, dahi, anda…" aria-label="Search the food chart"></div>
   <div class="catchips" id="fcCats"></div>
@@ -837,6 +860,9 @@ const FOOD_ROWS = [
 ["Tofu","Healthy","100 g",100,76,8,"tofu"],
 ["Quinoa (cooked)","Healthy","cup",185,222,8,"quinoa"],
 ["Brown rice (cooked)","Healthy","cup",195,216,5,"brown rice"],
+["Vegetable brown rice","Rice","cup",200,250,6,"brown rice pulao vegetable veg rice sabzi chawal"],
+["Vegetable pulao (white rice)","Rice","cup",200,280,5,"veg pulao sabzi chawal"],
+["Chicken brown rice","Rice","cup",220,330,22,"brown rice chicken"],
 ["Avocado","Healthy","half",100,160,2,"avocado makhan phal"],
 ["Protein bar","Healthy","bar",60,220,20,"protein bar"],
 ["Protein shake with low-fat milk","Healthy","glass",280,225,33,"whey milk shake"],
@@ -1126,7 +1152,7 @@ function renderToday(){
     const n=document.createElement("span"); n.className="nm2";
     const ic=document.createElement("span"); ic.className="ic"; ic.innerHTML=ART[fd.art||guessArt(fd.name)]||ART.plate;
     const tx=document.createElement("span"); tx.className="n"; tx.textContent=fd.name;
-    if(fd.qty){ const mt=document.createElement("span"); mt.className="meta"; mt.textContent=(fd.unit==="g" ? `${fmtQty(fd.qty)} g` : `${fmtQty(fd.qty)} × ${fd.unit}`) + (fd.menuId?" · from menu":" · extra"); tx.appendChild(mt); }
+    if(fd.qty){ const mt=document.createElement("span"); mt.className="meta"; mt.textContent=(fd.unit==="g" ? `${fmtQty(fd.qty)} g` : `${fmtQty(fd.qty)} × ${fd.unit}`) + (fd.menuId?" · from menu": fd.swapFor?" · swap for a skipped item":" · extra"); tx.appendChild(mt); }
     n.append(ic,tx);
     const k=document.createElement("span"); k.className="k"; k.textContent=fmt(fd.kcal)+" kcal";
     const p=document.createElement("span"); p.className="p"; p.textContent=fmt(fd.protein)+" g";
@@ -1382,7 +1408,9 @@ function recalcAdder(){
   const qty=num(document.getElementById("fQty").value)||0, mode=document.getElementById("fUnit").value;
   const r=calcFood(pick, qty, mode);
   document.getElementById("fKcal").value=r.kcal; document.getElementById("fPro").value=r.protein;
-  document.getElementById("fInfo").textContent = `${pick.name}: 1 ${pick.unit}${pick.g && pick.unit!=="100 g"?` (${pick.g} g)`:""} = ${pick.kcal} kcal, ${pick.p} g protein` + (r.grams?` · this entry ≈ ${r.grams} g`:"");
+  const info=document.getElementById("fInfo");
+  info.textContent = `${pick.name}: 1 ${pick.unit}${pick.g && pick.unit!=="100 g"?` (${pick.g} g)`:""} = ${pick.kcal} kcal, ${pick.p} g protein` + (r.grams?` · this entry ≈ ${r.grams} g`:"");
+  info.appendChild(portionBox(pick, P=>{ document.getElementById("fUnit").value="unit"; document.getElementById("fQty").value = P.units ? Math.round(P.units*100)/100 : 1; recalcAdder(); }));
 }
 function choose(f){ pick=f; manualVals=false; document.getElementById("fName").value=f.name;
   fillUnits(f); document.getElementById("fUnit").value="unit"; document.getElementById("fQty").value=1;
@@ -1417,7 +1445,7 @@ function renderBudget(){
     const b=document.createElement("div"); b.className="val"; b.textContent=r.v; div.append(ri,a,b); box.appendChild(div); });
 }
 function renderFoodChart(){
-  renderBudget(); renderMenuEditor();
+  renderBudget(); renderPortionGuide(); renderMenuEditor();
   const cats=document.getElementById("fcCats"); cats.innerHTML="";
   FOOD_CATS.forEach(c=>{ if(c==="My foods" && !customFoods.length) return;
     const b=document.createElement("button"); b.textContent=c; b.setAttribute("aria-pressed",String(c===fcCat));
@@ -1450,7 +1478,8 @@ function renderFoodChart(){
       const addm=document.createElement("button"); addm.className="btn ghost"; addm.textContent="Add to daily menu";
       addm.onclick=()=>{ const r=upd(); const qty=num(qi.value)||0; if(!qty) return;
         addMenuItem(menuItemFrom(f, qty, us.value, r.kcal, r.protein)); fcOpen=null; renderFoodChart(); renderAll(); };
-      upd(); ex.append(qi,us,calc,add,addm); li.appendChild(ex);
+      const pb=portionBox(f, P=>{ us.value="unit"; qi.value = P.units ? Math.round(P.units*100)/100 : 1; upd(); });
+      upd(); ex.append(pb,qi,us,calc,add,addm); li.appendChild(ex);
     }
     ul.appendChild(li); });
 }
@@ -1871,11 +1900,47 @@ function menuTotals(){ return MENU.reduce((a,m)=>({kcal:a.kcal+m.kcal, protein:a
 function qtyText(it){ const u = it.mode==="g" ? "g" : (it.base?it.base.unit:"serving"); return u==="g" ? `${fmtQty(it.qty)} g` : `${fmtQty(it.qty)} × ${u}`; }
 function addMenuItem(it){ MENU.push(it); MENU.sort((a,b)=>SLOTS.indexOf(a.slot)-SLOTS.indexOf(b.slot)); scheduleSave(); }
 
+function menuEntry(it){ return {name:it.name, kcal:it.kcal, protein:it.protein, art:it.art, qty:it.qty, unit: it.mode==="g"?"g":(it.base?it.base.unit:"serving"), menuId:it.id}; }
+function foodForMenuItem(it){ return FOOD_DB.concat(customFoods.map(f=>({...f,cat:"My foods"}))).find(f=>f.name===it.name) || {name:it.name, cat:"", kcal:it.kcal, p:it.protein, g:0, unit:"serving"}; }
+const PL_UNITS={piece:"pieces",bowl:"bowls",cup:"cups",plate:"plates",glass:"glasses",slice:"slices",scoop:"scoops",handful:"handfuls",roll:"rolls",bar:"bars",can:"cans",serving:"servings",skewer:"skewers",jar:"jars"};
+function plu(unit,q){ return q>1 && PL_UNITS[unit] ? PL_UNITS[unit] : unit; }
+function roundStep(u){ const step=u<2?0.25:0.5; return Math.max(step, Math.round(u/step)*step); }
+// suggestions to replace what was skipped
+function swapIdeas(skipped, d){
+  const freeK = skipped.reduce((a,it)=>a+it.kcal,0), freeP = skipped.reduce((a,it)=>a+it.protein,0);
+  const roles = new Set(skipped.map(it=>roleOf(foodForMenuItem(it))));
+  const ideas=[];
+  // 1) more of what's already on your menu (scalable items you are eating)
+  MENU.filter(it=>!skipped.includes(it) && it.base).forEach(it=>{
+    const f=foodForMenuItem(it), role=roleOf(f); if(["treat","sugar","sweetdrink","fat"].includes(role)) return;
+    const extraUnits = it.mode==="g" ? freeK/it.base.kcal*(it.base.g||100) : freeK/it.base.kcal;
+    const add = it.mode==="g" ? Math.max(10, Math.round(extraUnits/10)*10) : roundStep(extraUnits);
+    const r = calcFood(it.base, add, it.mode);
+    ideas.push({kind:"more", score:roles.has(role)?0:0.5, name:it.name, art:it.art, qty:add, unit: it.mode==="g"?"g":it.base.unit, kcal:r.kcal, protein:r.protein,
+      label:`More ${it.name.toLowerCase()}: +${it.mode==="g"?add+" g":niceUnits(add)+" "+plu(it.base.unit,add)}`});
+  });
+  // 2) same-type foods from the chart
+  const wantRole = [...roles][0];
+  const pool = FOOD_DB.filter(f=>{ const u=freeK/f.kcal;
+    return roleOf(f)===wantRole && !/^\d/.test(f.unit) && f.cat!=="Ingredient" && !/whey|egg white|protein bar|shake/i.test(f.name)
+      && u>=0.6 && u<=2 && !skipped.some(s=>s.name===f.name); });
+  const proteinFirst = freeP>=12;
+  // closest to one normal serving first, then (if protein was skipped) the most protein
+  pool.sort((a,b)=>{ const da=Math.abs(1-freeK/a.kcal), db=Math.abs(1-freeK/b.kcal);
+    return proteinFirst ? ((b.p/b.kcal)-(a.p/a.kcal))*400 + (da-db)*20 : da-db; });
+  pool.slice(0,3).forEach(f=>{ const u=roundStep(freeK/f.kcal); const r=calcFood(f,u,"unit");
+    ideas.push({kind:"swap", score:0, name:f.name, art:guessArt(f.name), qty:u, unit:f.unit, kcal:r.kcal, protein:r.protein,
+      label:`${f.name}: ${niceUnits(u)} ${plu(f.unit,u)}`}); });
+  ideas.sort((a,b)=>a.score-b.score);
+  return {freeK, freeP, wantRole, ideas:ideas.slice(0,5)};
+}
+
 function renderTodayMenu(){
   const box=document.getElementById("todayMenu"); box.innerHTML="";
   const sec=el2("div","menu-sec");
   const h=el2("h3"); h.append(el2("span","","My daily menu"));
-  const d=day(), eaten=MENU.filter(m=>d.foods.some(f=>f.menuId===m.id));
+  const d=day(); d.menuSkip=d.menuSkip||{};
+  const eaten=MENU.filter(m=>d.foods.some(f=>f.menuId===m.id));
   const t=menuTotals();
   h.append(el2("small","", MENU.length ? `${eaten.length}/${MENU.length} eaten · menu ${fmt(t.kcal)} kcal · ${fmt(t.protein)} g` : ""));
   sec.appendChild(h);
@@ -1884,22 +1949,49 @@ function renderTodayMenu(){
     const b=el2("button","btn ghost small","Open the Food chart"); b.onclick=()=>document.querySelector('nav.tabs button[data-tab="foods"]').click();
     sec.appendChild(b); box.appendChild(sec); return;
   }
-  let lastSlot=null; const ul=el2("ul","mlist");
+  let lastSlot=null; const ul=el2("ul","mlist tmenu");
   MENU.forEach(it=>{
     if(it.slot!==lastSlot){ lastSlot=it.slot; const li0=el2("li"); li0.style.display="block"; li0.style.borderBottom="0"; li0.style.padding="0"; li0.appendChild(el2("div","slotlbl",it.slot)); ul.appendChild(li0); }
-    const on=d.foods.some(f=>f.menuId===it.id);
-    const li=el2("li"); if(on) li.classList.add("on");
+    const on=d.foods.some(f=>f.menuId===it.id), skip=!!d.menuSkip[it.id];
+    const li=el2("li"); if(on) li.classList.add("on"); if(skip) li.classList.add("skipped");
     const cb=document.createElement("input"); cb.type="checkbox"; cb.className="mcheck"; cb.checked=on; cb.setAttribute("aria-label",`Ate ${it.name}`);
-    cb.onchange=()=>{ if(cb.checked){ d.foods.push({name:it.name, kcal:it.kcal, protein:it.protein, art:it.art, qty:it.qty, unit: it.mode==="g"?"g":(it.base?it.base.unit:"serving"), menuId:it.id}); }
-      else { d.foods=d.foods.filter(f=>f.menuId!==it.id); } changed(); };
+    cb.onchange=()=>{ if(cb.checked){ d.foods.push(menuEntry(it)); delete d.menuSkip[it.id]; } else { d.foods=d.foods.filter(f=>f.menuId!==it.id); } changed(); };
     const ic=el2("span","ic"); ic.innerHTML=ART[it.art]||ART.plate;
-    const nm=el2("span","nm"); nm.append(el2("span","",it.name), el2("small","",qtyText(it)));
+    const nm=el2("span","nm"); nm.append(el2("span","",it.name), el2("small","", skip?`${qtyText(it)} · skipped`:qtyText(it)));
     const kv=el2("span","kv"); kv.innerHTML=`${it.kcal} kcal<br>${it.protein} g`;
-    li.append(cb,ic,nm,kv); ul.appendChild(li); });
+    const sk=el2("button","skipbtn"+(skip?" on":""), skip?"Skipped":"Skip"); sk.title= skip?"Undo skip":"I didn't eat this — suggest a swap";
+    sk.onclick=()=>{ if(skip) delete d.menuSkip[it.id]; else { d.menuSkip[it.id]=true; d.foods=d.foods.filter(f=>f.menuId!==it.id); } changed(); };
+    li.append(cb,ic,nm,kv,sk); ul.appendChild(li); });
   sec.appendChild(ul);
+
+  // swap suggestions for skipped items
+  const skipped=MENU.filter(it=>d.menuSkip[it.id]);
+  const swapped=d.foods.filter(f=>f.swapFor && skipped.some(s=>f.swapFor.includes(s.id)));
+  if(skipped.length){
+    const S=swapIdeas(skipped,d), filled=swapped.reduce((a,f)=>a+f.kcal,0), left=Math.max(0,S.freeK-filled);
+    const v=el2("div","swapbox");
+    const onlyTreats = skipped.every(it=>["treat","sugar","sweetdrink"].includes(roleOf(foodForMenuItem(it))));
+    v.appendChild(el2("h4","", `You skipped ${skipped.map(s=>s.name.toLowerCase()).join(", ")} — ${fmt(S.freeK)} kcal, ${fmt(S.freeP)} g protein`));
+    if(onlyTreats){ v.appendChild(el2("p","hint","No need to replace it — skipping a snack or sweet helps your goal.")); }
+    else if(left<=40){ v.appendChild(el2("p","hint","Swap done ✓ — your day is back on plan.")); }
+    else {
+      v.appendChild(el2("p","hint", `Fill the ${fmt(left)} kcal with one of these instead${S.freeP>=12?` — keep protein in mind, you skipped ${fmt(S.freeP)} g`:""}:`));
+      const list=el2("div","swaplist");
+      S.ideas.forEach(idea=>{ const b=el2("button","swapitem");
+        const ic=el2("span","ic"); ic.innerHTML=ART[idea.art]||ART.plate;
+        const tx=el2("span","tx"); tx.append(el2("b","",idea.label), el2("small","",`${idea.kcal} kcal · ${idea.protein} g protein${S.freeP>=12 && idea.protein < S.freeP*0.5 ? " · less protein — add an egg or dahi":""}`));
+        b.append(ic,tx);
+        b.onclick=()=>{ d.foods.push({name:idea.name, kcal:idea.kcal, protein:idea.protein, art:idea.art, qty:idea.qty, unit:idea.unit, swapFor:skipped.map(s=>s.id)}); changed(); };
+        list.appendChild(b); });
+      v.appendChild(list);
+      v.appendChild(el2("p","hint","Tapping a swap adds it to today's food log as “instead of” the skipped item. You can still search any other food below."));
+    }
+    sec.appendChild(v);
+  }
+
   const row=el2("div","row"); row.style.marginTop="8px";
   const all=el2("button","btn small","Ate everything on my menu");
-  all.onclick=()=>{ MENU.forEach(it=>{ if(!d.foods.some(f=>f.menuId===it.id)) d.foods.push({name:it.name, kcal:it.kcal, protein:it.protein, art:it.art, qty:it.qty, unit: it.mode==="g"?"g":(it.base?it.base.unit:"serving"), menuId:it.id}); }); changed(); };
+  all.onclick=()=>{ MENU.forEach(it=>{ if(!d.foods.some(f=>f.menuId===it.id) && !d.menuSkip[it.id]) d.foods.push(menuEntry(it)); }); changed(); };
   const ed=el2("button","btn ghost small","Edit menu"); ed.onclick=()=>document.querySelector('nav.tabs button[data-tab="foods"]').click();
   row.append(all,ed); sec.appendChild(row);
   box.appendChild(sec);
@@ -2183,6 +2275,97 @@ function bindCare(){
     const id="c"+Date.now().toString(36); (CARE.custom||(CARE.custom=[])).push({id, name:n, every:ev, tip:""}); CARE.routine.push({id, every:ev});
     document.getElementById("ccName").value=""; scheduleSave(); renderCare(); renderAll(); };
   document.querySelectorAll("nav.tabs button").forEach(b=>{ const ic=TAB_ICONS[b.dataset.tab]; if(ic){ const sp=document.createElement("span"); sp.className="ti"; sp.innerHTML=ic; sp.setAttribute("aria-hidden","true"); b.prepend(sp); } });
+}
+
+
+/* ------------------------------------------------------------------
+   PORTION GUIDE — "how much of this is right for me?"
+   Uses your daily calorie target and the plate method:
+   breakfast ≈ 25% of the day, lunch and dinner ≈ 30% each, snacks ≈ 15%.
+   In a main meal: roti/rice ≈ ¼ plate (~35% of the meal's calories),
+   protein ≈ ¼ plate (~35%), sabzi/salad ≈ ½ plate (~20%), oil the rest.
+------------------------------------------------------------------ */
+const MEAL_WORDS = /biryani|pulao|khichdi|daal chawal|fried rice|chow mein|chowmein|pasta|spaghetti|lasagna|mac and|mandi|halwa puri|nihari|haleem|paye|shawarma|roll paratha|burger|pizza|sandwich|wrap|doner|gyro|fish and chips|steak|caesar|hot dog|nuggets|wings|lunch plate|dinner/;
+function roleOf(f){
+  const n=f.name.toLowerCase(), c=f.cat;
+  if(/oil|ghee|butter|malai|cream/.test(n) && (c==="Ingredient"||c==="Dairy")) return "fat";
+  if(/\bsugar\b|\bgur\b|honey|\bjam\b/.test(n) && c!=="Breakfast" && c!=="Sweets") return "sugar";
+  if(c==="Sweets" || /chocolate|brownie|donut|cheesecake|ice cream/.test(n)) return "treat";
+  if(c==="Snacks" && !MEAL_WORDS.test(n)) return "treat";
+  if(c==="Drinks"){ if(/whey|protein/.test(n)) return "protein"; return f.kcal>60 ? "sweetdrink" : "freedrink"; }
+  if(c==="Fruit") return "fruit";
+  if(c==="Nuts" || /chia|flax|avocado|peanut butter|hummus/.test(n)) return "fat";
+  if(c==="Breakfast" || /oats|granola|muesli/.test(n)) return "breakfast";
+  if(/rice|pulao/.test(n) && /chicken|beef|mutton|egg|prawn/.test(n)) return "meal";
+  if(/vegetable|veg |matar|sabzi/.test(n) && /rice|pulao/.test(n)) return "ricedish";
+  if(MEAL_WORDS.test(n)) return "meal";
+  if(c==="Bread" || /rice|roti|naan|paratha|quinoa|potato|corn|atta|maida|suji|pita|bread|mashed/.test(n)) return "starch";
+  if(c==="Vegetable" || /salad|soup|spinach|cauliflower|okra|peas|carrot|cucumber|cabbage|gourd|eggplant|capsicum|mushroom|lettuce|tomato|onion/.test(n)) return "veg";
+  if(c==="Daal" || /daal|dal |chana|lobia|rajma|beans|soya/.test(n)) return "legume";
+  if(c==="Dairy") return /paneer|cheese|greek|cottage/.test(n) ? "protein" : "dairy";
+  if(["Chicken","Meat","Fish","Eggs","Healthy"].includes(c) || /chicken|beef|mutton|fish|prawn|tuna|tofu|egg|liver|kebab|tikka/.test(n)) return "protein";
+  return "meal";
+}
+const ROLE = {
+  starch:   {share:0.30*0.35, hand:"about one cupped hand or your fist — a quarter of the plate", label:"roti / rice / bread"},
+  protein:  {share:0.30*0.35, hand:"about the size and thickness of your palm — a quarter of the plate", label:"protein"},
+  legume:   {share:0.30*0.35, hand:"about one bowl — counts as your protein for the meal", label:"daal / beans"},
+  veg:      {share:0.30*0.25, hand:"two fists or half the plate — eat freely if cooked in little oil", label:"vegetables"},
+  ricedish: {share:0.30*0.50, hand:"about one cup — add a palm of chicken, daal or a bowl of dahi, plus salad", label:"vegetable rice"},
+  meal:     {share:0.30*0.80, hand:"one plate with salad on the side — this is your whole meal", label:"one-dish meal"},
+  breakfast:{share:0.25*0.6, hand:"about one bowl — add eggs or dahi alongside for protein", label:"breakfast"},
+  fruit:    {share:0.06, hand:"one fist-sized piece, 1–2 times a day", label:"fruit"},
+  dairy:    {share:0.07, hand:"one glass or small bowl a day", label:"dairy"},
+  fat:      {share:0.05, hand:"about your thumb — a small amount adds up fast", label:"fats & nuts"},
+  sugar:    {share:0.02, hand:"as little as possible — try none", label:"sugar"},
+  treat:    {share:0.08, hand:"once or twice a week, not daily", label:"treat"},
+  sweetdrink:{share:0.04, hand:"occasionally — choose water, green tea or chai without sugar", label:"sweet drink"},
+  freedrink:{share:null, hand:"as you like", label:"drink"}
+};
+const FRAC={0.25:"¼",0.5:"½",0.75:"¾"};
+function niceUnits(u){ const step = u<2 ? 0.25 : 0.5; const r=Math.max(step, Math.round(u/step)*step);
+  const whole=Math.floor(r), part=+(r-whole).toFixed(2); return (whole?String(whole):"") + (FRAC[part]||(part?String(part):"")) || "¼"; }
+function portionFor(f){
+  const role=roleOf(f), R=ROLE[role], T=settings.kcal||2000;
+  if(!R || R.share==null) return {role, R, text:`${R?R.hand:""}`, units:null};
+  const budget=R.share*T;
+  const per100 = /^\d/.test(f.unit);
+  let units = budget / f.kcal;
+  if(role==="veg") units=Math.max(1, units);
+  const grams = Math.round((units*(f.g||0))/10)*10;
+  let amount;
+  if(per100){ const gq=Math.max(10, Math.round(units*(f.g||100)/10)*10); amount=`${gq} ${/ml/.test(f.unit)?"ml":"g"}`; units=gq/(f.g||100); }
+  else { const step=units<2?0.25:0.5; units=Math.max(step, Math.round(units/step)*step);
+    const gr=Math.round(units*(f.g||0)/10)*10;
+    const nu=niceUnits(units); const many=!/^(¼|½|¾|1)$/.test(nu);
+    const PL={piece:"pieces",bowl:"bowls",cup:"cups",plate:"plates",glass:"glasses",slice:"slices",scoop:"scoops",handful:"handfuls",roll:"rolls",bar:"bars",can:"cans",serving:"servings",skewer:"skewers",jar:"jars"};
+    amount = `${nu} ${many && PL[f.unit] ? PL[f.unit] : f.unit}${gr?` (≈${gr} g)`:""}`; }
+  return {role, R, amount, units, kcal:Math.round(units*f.kcal), protein:Math.round(units*f.p*10)/10};
+}
+function portionBox(f, onUse){
+  const P=portionFor(f), d=document.createElement("div");
+  const warnRoles=["treat","sugar","sweetdrink"];
+  d.className="portion"+(warnRoles.includes(P.role)?" warn":"");
+  if(P.units==null){ d.innerHTML=`<b>Right amount for you:</b> ${P.R?P.R.hand:"enjoy in moderation"}.`; return d; }
+  const T=settings.kcal||2000;
+  const head = warnRoles.includes(P.role) ? "If you have it" : "Right amount for you";
+  d.innerHTML = `<b>${head}:</b> ${P.amount} → ${P.kcal} kcal, ${P.protein} g protein`;
+  const h=document.createElement("span"); h.className="hand"; h.textContent=`Hand guide: ${P.R.hand}. Based on your ${T.toLocaleString()} kcal a day.`;
+  d.appendChild(h);
+  if(onUse){ const b=document.createElement("button"); b.className="btn small"; b.textContent="Use this amount"; b.onclick=()=>onUse(P); d.appendChild(b); }
+  return d;
+}
+function renderPortionGuide(){
+  const box=document.getElementById("portionGuide"); if(!box) return; box.innerHTML="";
+  const T=settings.kcal||2000, r=v=>Math.round(v/10)*10;
+  const h=document.createElement("h3"); h.innerHTML=`<span>How much should I eat?</span><small>based on ${T.toLocaleString()} kcal a day</small>`; box.appendChild(h);
+  const p=document.createElement("p"); p.className="hint"; p.style.margin="6px 0";
+  p.textContent=`Breakfast ≈ ${r(T*0.25)} kcal · lunch ≈ ${r(T*0.30)} · dinner ≈ ${r(T*0.30)} · snacks ≈ ${r(T*0.15)}. Open any food below and it shows the right amount for you, in its own units and grams. Change your calorie target in Targets (or from the BMI plan) and every amount updates.`;
+  box.appendChild(p);
+  const ul=document.createElement("ul"); ul.className="hint"; ul.style.paddingLeft="18px"; ul.style.margin="0";
+  ["Roti or rice: a cupped hand or your fist (¼ plate).","Chicken, fish, eggs, daal: your palm (¼ plate).","Sabzi and salad: two fists (½ plate).","Oil, ghee, nuts: your thumb."]
+    .forEach(t=>{ const li=document.createElement("li"); li.textContent=t; ul.appendChild(li); });
+  box.appendChild(ul);
 }
 
 /* ------------------------------------------------------------------
